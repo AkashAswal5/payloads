@@ -468,6 +468,7 @@ Sharp
 SpIp
 Super
 Symbol
+spiderman
 TANDBERG
 TCH
 TELESUP
@@ -483,3 +484,4 @@ WP
 Wireless
 XLSERVER
 _Cisco
+ADMIN
