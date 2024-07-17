@@ -55,13 +55,6 @@ ccrusr
 cellit
 cgadmin
 changeme
-qwerty
-boris
-secret1!
-natalya 
-bird
-xenia 
-RCP90rulez!
 changeme2
 cisco
 citel
@@ -468,7 +461,6 @@ Sharp
 SpIp
 Super
 Symbol
-spiderman
 TANDBERG
 TCH
 TELESUP
@@ -484,4 +476,3 @@ WP
 Wireless
 XLSERVER
 _Cisco
-ADMIN
