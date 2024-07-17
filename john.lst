@@ -1,16 +1,8 @@
-#!comment: This list has been compiled by Solar Designer of Openwall Project
-#!comment: in 1996 through 2011.  It is assumed to be in the public domain.
-#!comment:
-#!comment: This list is based on passwords most commonly seen on a set of Unix
-#!comment: systems in mid-1990's, sorted for decreasing number of occurrences
-#!comment: (that is, more common passwords are listed first).  It has been
-#!comment: revised to also include common website passwords from public lists
-#!comment: of "top N passwords" from major community website compromises that
-#!comment: occurred in 2006 through 2010.
-#!comment:
-#!comment: Last update: 2011/11/20 (3546 entries)
-#!comment:
-#!comment: For more wordlists, see https://www.openwall.com/wordlists/
+ This list has been compiled by Solar Designer of Openwall Project in 1996 through 2011.  It is assumed to be in the public domain.
+This list is based on passwords most commonly seen on a set of Unix systems in mid-1990's, sorted for decreasing number of occurrences
+(that is, more common passwords are listed first). 
+It has been revised to also include common website passwords from public lists of "top N passwords" from major community website compromises that occurred in 2006 through 2010.
+Last update: 2011/11/20 (3546 entries)  For more wordlists, see https://www.openwall.com/wordlists/
 123456
 12345
 password
