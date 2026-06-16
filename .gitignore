@@ -1,7 +1,5 @@
 # Ignore large wordlists that should not be committed to git
 wordlists/passwords/rockyou.txt
-wordlists/passwords/rockyou.txt.tar.gz
-
 
 # Generic editor/OS files
 .DS_Store
