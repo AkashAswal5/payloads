@@ -1,0 +1,209 @@
+# Headless Browser Detection & Bypass
+
+## ========================================
+## DETECTION METHODS
+## ========================================
+
+# WebDriver detection
+navigator.webdriver
+// true in Selenium, Puppeteer, etc.
+
+# Chrome detection
+window.chrome
+window.chrome.runtime
+
+# Plugins detection
+navigator.plugins.length
+// Usually 0 in headless
+
+# Languages
+navigator.languages
+// Often ['en-US'] in headless
+
+# User agent
+navigator.userAgent
+// May contain 'Headless' or 'PhantomJS'
+
+## ========================================
+## DETECTION SCRIPTS
+## ========================================
+
+# Comprehensive detection
+if (navigator.webdriver) {
+  console.log('WebDriver detected');
+}
+
+if (!window.chrome) {
+  console.log('Not Chrome or headless');
+}
+
+if (navigator.plugins.length === 0) {
+  console.log('No plugins - likely headless');
+}
+
+## ========================================
+## BYPASS TECHNIQUES
+## ========================================
+
+# Remove webdriver flag (Puppeteer)
+await page.evaluateOnNewDocument(() => {
+  Object.defineProperty(navigator, 'webdriver', {
+    get: () => false,
+  });
+});
+
+# Fake plugins
+await page.evaluateOnNewDocument(() => {
+  Object.defineProperty(navigator, 'plugins', {
+    get: () => [1, 2, 3, 4, 5],
+  });
+});
+
+# Fake languages
+await page.evaluateOnNewDocument(() => {
+  Object.defineProperty(navigator, 'languages', {
+    get: () => ['en-US', 'en'],
+  });
+});
+
+## ========================================
+## PUPPETEER BYPASS
+## ========================================
+
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+
+puppeteer.use(StealthPlugin());
+
+const browser = await puppeteer.launch({
+  headless: true,
+  args: [
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--disable-dev-shm-usage',
+    '--disable-accelerated-2d-canvas',
+    '--disable-gpu',
+    '--window-size=1920,1080',
+    '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+  ]
+});
+
+## ========================================
+## SELENIUM BYPASS
+## ========================================
+
+# Chrome options
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+options = Options()
+options.add_argument('--disable-blink-features=AutomationControlled')
+options.add_experimental_option("excludeSwitches", ["enable-automation"])
+options.add_experimental_option('useAutomationExtension', False)
+
+driver = webdriver.Chrome(options=options)
+
+# Remove webdriver flag
+driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
+  'source': '''
+    Object.defineProperty(navigator, 'webdriver', {
+      get: () => false
+    })
+  '''
+})
+
+## ========================================
+## USER AGENT SPOOFING
+## ========================================
+
+# Realistic user agent
+Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+
+# Set in Puppeteer
+await page.setUserAgent('Mozilla/5.0...');
+
+# Set in Selenium
+options.add_argument('user-agent=Mozilla/5.0...')
+
+## ========================================
+## CANVAS FINGERPRINTING
+## ========================================
+
+# Bypass canvas fingerprinting
+await page.evaluateOnNewDocument(() => {
+  const originalGetContext = HTMLCanvasElement.prototype.getContext;
+  HTMLCanvasElement.prototype.getContext = function(type, ...args) {
+    // Add noise to canvas
+    return originalGetContext.apply(this, [type, ...args]);
+  };
+});
+
+## ========================================
+## WEBGL FINGERPRINTING
+## ========================================
+
+# Spoof WebGL
+await page.evaluateOnNewDocument(() => {
+  const getParameter = WebGLRenderingContext.prototype.getParameter;
+  WebGLRenderingContext.prototype.getParameter = function(parameter) {
+    if (parameter === 37445) {
+      return 'Intel Inc.';
+    }
+    if (parameter === 37446) {
+      return 'Intel Iris OpenGL Engine';
+    }
+    return getParameter.apply(this, [parameter]);
+  };
+});
+
+## ========================================
+## TESTING FOR DETECTION
+## ========================================
+
+# Test sites
+- https://bot.sannysoft.com/
+- https://arh.antoinevastel.com/bots/areyouheadless
+- https://intoli.com/blog/not-possible-to-block-chrome-headless/
+
+## ========================================
+## ADVANCED EVASION
+## ========================================
+
+# Use undetected-chromedriver (Python)
+import undetected_chromedriver as uc
+
+driver = uc.Chrome()
+driver.get('https://target.com')
+
+# Use puppeteer-extra-plugin-stealth
+npm install puppeteer-extra puppeteer-extra-plugin-stealth
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Puppeteer Stealth Plugin
+npm install puppeteer-extra-plugin-stealth
+
+# undetected-chromedriver
+pip install undetected-chromedriver
+
+# Playwright Stealth
+npm install playwright-extra playwright-extra-plugin-stealth
+
+## ========================================
+## EXPLOITATION SCENARIOS
+## ========================================
+
+# Bypass bot detection
+# Scrape protected websites
+# Automate CAPTCHA bypass
+# Automated testing without detection
+
+## ========================================
+## DEFENSE TESTING
+## ========================================
+
+# Test if your site detects headless browsers
+# Verify bot protection works
+# Check for bypass techniques

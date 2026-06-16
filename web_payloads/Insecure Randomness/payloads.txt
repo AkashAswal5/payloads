@@ -1,0 +1,242 @@
+# Insecure Randomness
+
+## ========================================
+## WEAK PRNG DETECTION
+## ========================================
+
+# Indicators of weak randomness:
+- Predictable patterns
+- Sequential values
+- Timestamp-based tokens
+- Low entropy
+- Small keyspace
+
+## ========================================
+## COMMON WEAK IMPLEMENTATIONS
+## ========================================
+
+# PHP mt_rand() (predictable)
+mt_rand()
+rand()
+
+# JavaScript Math.random() (not cryptographically secure)
+Math.random()
+
+# Python random module (not cryptographically secure)
+import random
+random.randint(1, 100)
+
+# Java Random (predictable if seed known)
+new Random().nextInt()
+
+## ========================================
+## TESTING FOR WEAK RANDOMNESS
+## ========================================
+
+# 1. Collect multiple tokens/IDs
+# 2. Analyze for patterns
+# 3. Check if predictable
+
+# Sequential IDs
+1001, 1002, 1003, 1004...
+
+# Timestamp-based
+1640000000, 1640000001, 1640000002...
+
+# Small range
+A, B, C, D, E cycling
+
+## ========================================
+## SESSION ID ANALYSIS
+## ========================================
+
+# Collect multiple session IDs
+Cookie: SESSIONID=1234567890
+Cookie: SESSIONID=1234567891
+Cookie: SESSIONID=1234567892
+
+# Patterns to look for:
+- Incrementing values
+- Timestamp components
+- User ID embedded
+- Predictable format
+
+## ========================================
+## PASSWORD RESET TOKENS
+## ========================================
+
+# Weak reset token examples:
+# Timestamp + User ID
+token=1640000000_123
+
+# MD5(username + timestamp)
+token=5d41402abc4b2a76b9719d911017c592
+
+# Sequential
+token=100001
+token=100002
+
+## ========================================
+## CSRF TOKENS
+## ========================================
+
+# Test if CSRF tokens are:
+- Reusable
+- Predictable
+- Not validated
+- Same for all users
+- Never expire
+
+## ========================================
+## TOOLS FOR ANALYSIS
+## ========================================
+
+# Burp Sequencer
+1. Send request to Burp
+2. Send to Sequencer
+3. Analyze token randomness
+4. Check entropy
+
+# Custom scripts
+# Collect and analyze tokens
+import requests
+tokens = []
+for i in range(1000):
+    r = requests.get('http://target.com/get-token')
+    tokens.append(r.json()['token'])
+
+# Analyze patterns
+print(set(tokens))  # Check uniqueness
+print(sorted(tokens))  # Check sequence
+
+## ========================================
+## EXPLOITATION
+## ========================================
+
+# Predict next token/ID
+# Brute force small keyspace
+# Enumerate sequential IDs
+
+# Example: Sequential session IDs
+for i in range(1000, 2000):
+    session = f'SID{i}'
+    # Try to access with predicted session
+
+## ========================================
+## UUID ANALYSIS
+## ========================================
+
+# UUIDv1 (time-based, predictable)
+# Contains: timestamp + MAC address
+550e8400-e29b-41d4-a716-446655440000
+
+# UUIDv4 (random, preferred)
+# But if weak PRNG used, still predictable
+
+## ========================================
+## API KEYS
+## ========================================
+
+# Weak API key generation:
+- Short length (< 20 characters)
+- Limited character set
+- Predictable format
+- Based on user info
+
+## ========================================
+## TESTING EXAMPLES
+## ========================================
+
+# Test 1: Collect 100 tokens
+tokens = []
+for i in range(100):
+    token = get_new_token()
+    tokens.append(token)
+
+# Test 2: Check uniqueness
+if len(tokens) != len(set(tokens)):
+    print("Duplicate tokens found!")
+
+# Test 3: Check patterns
+if all(int(tokens[i+1]) == int(tokens[i])+1 for i in range(len(tokens)-1)):
+    print("Sequential tokens!")
+
+# Test 4: Entropy check
+import math
+from collections import Counter
+def entropy(data):
+    counter = Counter(data)
+    length = len(data)
+    return -sum((count/length) * math.log2(count/length) for count in counter.values())
+
+print(f"Entropy: {entropy(''.join(tokens))}")
+
+## ========================================
+## COMMON VULNERABILITIES
+## ========================================
+
+# Session fixation
+# Predictable password reset tokens
+# Guessable CSRF tokens
+# Sequential API keys
+# Timestamp-based IDs
+# Insufficient entropy
+
+## ========================================
+## BYPASS SCENARIOS
+## ========================================
+
+# Scenario 1: Account takeover
+1. Request password reset
+2. Get token: 100001
+3. Try nearby tokens: 100000, 100002
+4. Access other accounts
+
+# Scenario 2: Session hijacking
+1. Get session ID: SID1001
+2. Try SID1000, SID1002
+3. Access other sessions
+
+# Scenario 3: API enumeration
+1. Get API key: KEY_001
+2. Enumerate: KEY_000 to KEY_999
+3. Access other accounts
+
+## ========================================
+## SECURE VS INSECURE
+## ========================================
+
+# Insecure:
+token = str(int(time.time())) + str(user_id)
+
+# Secure:
+import secrets
+token = secrets.token_urlsafe(32)
+
+# Insecure:
+session_id = md5(username + str(time.time()))
+
+# Secure:
+import uuid
+session_id = str(uuid.uuid4())
+
+## ========================================
+## MITIGATION TESTING
+## ========================================
+
+# Verify application uses:
+- Cryptographically secure PRNG
+- Sufficient entropy (>128 bits)
+- Unpredictable tokens
+- No reuse of tokens
+- Proper expiration
+- Strong secret keys
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Burp Sequencer
+# ENT (entropy calculator)
+# Custom Python scripts
+# Statistical analysis tools

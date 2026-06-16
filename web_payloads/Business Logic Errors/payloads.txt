@@ -1,0 +1,328 @@
+# Business Logic Vulnerabilities Payloads
+
+## ========================================
+## PRICE MANIPULATION
+## ========================================
+
+# Negative prices
+{"price": -100}
+{"amount": -50}
+
+# Zero price
+{"price": 0}
+{"total": 0.00}
+
+# Decimal manipulation
+{"price": 0.01}
+{"price": 0.001}
+
+# Currency manipulation
+{"price": 100, "currency": "XXX"}
+
+## ========================================
+## QUANTITY MANIPULATION
+## ========================================
+
+# Negative quantity
+{"quantity": -1}
+{"qty": -100}
+
+# Zero quantity
+{"quantity": 0}
+
+# Large quantity
+{"quantity": 999999999}
+
+# Decimal quantity
+{"quantity": 0.5}
+{"quantity": 1.5}
+
+## ========================================
+## COUPON/DISCOUNT ABUSE
+## ========================================
+
+# Multiple coupon application
+coupon=SAVE20&coupon=SAVE30
+
+# Expired coupon reuse
+{"coupon_code": "EXPIRED2022"}
+
+# Single-use coupon multiple times
+Apply same code to multiple orders
+
+# Percentage overflow
+{"discount": 100}
+{"discount": 150}
+{"discount": -50}
+
+## ========================================
+## REFERRAL PROGRAM ABUSE
+## ========================================
+
+# Self-referral
+referral_code=own_code
+
+# Referral loop
+User A refers B, B refers A
+
+# Multiple accounts
+Create many accounts for referral bonuses
+
+## ========================================
+## REWARD POINTS MANIPULATION
+## ========================================
+
+# Negative redemption
+{"redeem_points": -1000}
+
+# Point overflow
+{"add_points": 999999999}
+
+# Duplicate point earning
+Replay point-earning requests
+
+## ========================================
+## WORKFLOW BYPASS
+## ========================================
+
+# Skip payment step
+1. Add items to cart
+2. Skip checkout
+3. Direct access to /order-confirmation
+
+# Skip verification
+1. Register account
+2. Access protected features before email verification
+
+# Process manipulation
+Change order status manually
+{"status": "shipped"} when "pending"
+
+## ========================================
+## RACE CONDITIONS
+## ========================================
+
+# Double spending
+Send multiple purchase requests simultaneously
+
+# Coupon race
+Apply same coupon multiple times in parallel
+
+# Inventory race
+Purchase more than available stock
+
+## ========================================
+## PARAMETER TAMPERING
+## ========================================
+
+# Role manipulation
+{"role": "admin"}
+{"is_premium": true}
+{"account_type": "enterprise"}
+
+# Subscription level
+{"plan": "free"} → {"plan": "premium"}
+
+# Credits/Balance
+{"balance": 1000000}
+{"credits": 999999}
+
+## ========================================
+## TIME-BASED EXPLOITATION
+## ========================================
+
+# Trial period extension
+Manipulate trial_end_date
+
+# Backdating
+{"purchase_date": "2020-01-01"}
+
+# Future dating
+{"subscription_end": "2099-12-31"}
+
+## ========================================
+## AUTHENTICATION BYPASS
+## ========================================
+
+# Skip MFA on critical operations
+Change email without MFA
+Change password without current password
+
+# Session manipulation
+Use old session after logout
+{"logged_in": true}
+
+## ========================================
+## RATE LIMIT BYPASS
+## ========================================
+
+# API abuse
+Unlimited API calls
+No rate limiting on expensive operations
+
+# Resource exhaustion
+Download large files repeatedly
+Generate expensive reports
+
+## ========================================
+## REFUND/RETURN ABUSE
+## ========================================
+
+# Return without shipping
+Request refund, keep item
+
+# Partial refund manipulation
+{"refund_amount": original_price + 100}
+
+# Double refund
+Submit refund request multiple times
+
+## ========================================
+## GIFT CARD EXPLOITATION
+## ========================================
+
+# Balance check
+Check all possible gift card numbers
+
+# Reuse gift card
+Use same code multiple times
+
+# Negative balance
+{"gift_card_value": -100}
+
+## ========================================
+## SHIPPING MANIPULATION
+## ========================================
+
+# Free shipping abuse
+{"shipping_cost": 0}
+{"shipping_method": "free_express"}
+
+# Address manipulation
+Ship to different address than billing
+
+## ========================================
+## INVENTORY BYPASS
+## ========================================
+
+# Oversell protection bypass
+Purchase when stock = 0
+{"quantity": 10} when stock = 5
+
+## ========================================
+## LOYALTY PROGRAM ABUSE
+## ========================================
+
+# Points manipulation
+{"loyalty_points": 999999}
+
+# Tier jumping
+{"loyalty_tier": "platinum"}
+
+## ========================================
+## SUBSCRIPTION ABUSE
+## ========================================
+
+# Downgrade with refund
+Upgrade → Immediate downgrade → Keep refund
+
+# Cancel and reactivate
+Exploit welcome bonuses repeatedly
+
+## ========================================
+## FRAUD DETECTION BYPASS
+## ========================================
+
+# Split transactions
+Break large transaction into many small ones
+
+# Pattern variation
+Vary transaction amounts/timing
+
+## ========================================
+## MULTI-FACTOR ISSUES
+## ========================================
+
+# MFA on login only
+No MFA on password change
+No MFA on email change
+
+# Backup codes abuse
+Unlimited backup code generation
+Predictable backup codes
+
+## ========================================
+## ACCOUNT LIMITS
+## ========================================
+
+# Multiple accounts per email
+user+1@example.com
+user+2@example.com
+
+# Bypass account limits
+Create unlimited accounts
+
+## ========================================
+## REPORTING FEATURES
+## ========================================
+
+# Expensive operations
+Generate large reports repeatedly
+Export all data multiple times
+
+# Resource consumption
+Request maximum data in queries
+
+## ========================================
+## FEATURE ABUSE
+## ========================================
+
+# File upload limits
+Upload files larger than limit
+
+# API quota bypass
+Exceed API rate limits
+
+# Search abuse
+Scrape all data via search
+
+## ========================================
+## PAYMENT BYPASS
+## ========================================
+
+# Zero-value payment
+{"payment_amount": 0}
+
+# Payment method manipulation
+Use invalid payment method
+
+# Currency arbitrage
+Exploit exchange rate differences
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Map business workflows
+# 2. Identify critical operations
+# 3. Test parameter manipulation
+# 4. Test workflow sequence bypass
+# 5. Test rate limits
+# 6. Test race conditions
+# 7. Test negative values
+# 8. Test boundary values
+
+## ========================================
+## COMMON VULNERABLE OPERATIONS
+## ========================================
+
+- Password reset
+- Email verification
+- Payment processing
+- Coupon redemption
+- Point/reward systems
+- Referral programs
+- Subscription management
+- Refund processing
+- Gift card redemption
+- File uploads/downloads

