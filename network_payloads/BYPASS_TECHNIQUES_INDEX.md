@@ -11,12 +11,22 @@ This document provides a complete index of bypass techniques for all common port
 ### By Port
 - [Port 21 - FTP](#port-21-ftp)
 - [Port 22 - SSH](#port-22-ssh)
+- [Port 23 - Telnet](#port-23-telnet)
 - [Port 25 - SMTP](#port-25-smtp)
 - [Port 53 - DNS](#port-53-dns)
 - [Port 80/443 - HTTP/HTTPS](#port-80443-httphttps)
+- [Port 88 - Kerberos](#port-88-kerberos)
 - [Port 139/445 - SMB](#port-139445-smb)
+- [Port 161/162 - SNMP](#port-161162-snmp)
 - [Port 3306 - MySQL](#port-3306-mysql)
 - [Port 3389 - RDP](#port-3389-rdp)
+- [Port 389/636 - LDAP/LDAPS](#port-389636-ldapldaps)
+- [Port 5985/5986 - WinRM](#port-59855986-winrm)
+- [Port 1433 - MSSQL](#port-1433-mssql)
+- [Port 27017 - MongoDB](#port-27017-mongodb)
+- [Port 5432 - PostgreSQL](#port-5432-postgresql)
+- [Port 5900 - VNC](#port-5900-vnc)
+- [Port 6379 - Redis](#port-6379-redis)
 
 ### By Control Type
 - [Authentication Bypass](#authentication-bypass)
@@ -80,6 +90,8 @@ ssh -i stolen_key user@target
 ---
 
 ## Port 25 - SMTP
+
+**Full Guide**: [Port_Specific_Attacks/Port_25_SMTP/README.md](Port_Specific_Attacks/Port_25_SMTP/README.md#bypass-techniques)
 
 ### Top 5 Bypass Techniques
 1. **Open Relay Test** (30% success) - Send mail through misconfigured server
@@ -182,6 +194,8 @@ nmap --script smb-vuln-ms17-010 192.168.1.100
 
 ## Port 3306 - MySQL
 
+**Full Guide**: [Port_Specific_Attacks/Port_3306_MySQL/README.md](Port_Specific_Attacks/Port_3306_MySQL/README.md#bypass-techniques)
+
 ### Top 5 Bypass Techniques
 1. **Default Credentials** (35% success) - root:root, root:[blank]
 2. **Brute Force** (40% success) - Weak password cracking
@@ -206,6 +220,8 @@ mysql -h 192.168.1.100
 
 ## Port 3389 - RDP
 
+**Full Guide**: [Port_Specific_Attacks/Port_3389_RDP/README.md](Port_Specific_Attacks/Port_3389_RDP/README.md#bypass-techniques)
+
 ### Top 5 Bypass Techniques
 1. **Brute Force** (45% success) - Weak password attacks
 2. **BlueKeep Exploit** (5% success) - CVE-2019-0708 on unpatched
@@ -221,9 +237,69 @@ hydra -l Administrator -P passwords.txt rdp://192.168.1.100
 # Check for BlueKeep
 nmap --script rdp-vuln-ms12-020 192.168.1.100
 
-# Connect
-xfreerdp /u:admin /p:password /v:192.168.1.100
-```
+  # Connect
+  xfreerdp /u:admin /p:password /v:192.168.1.100
+  ```
+
+---
+
+## Port 23 - Telnet
+
+**Full Guide**: [Port_Specific_Attacks/Port_23_Telnet/README.md](Port_Specific_Attacks/Port_23_Telnet/README.md#bypass-techniques)
+
+---
+
+## Port 88 - Kerberos
+
+**Full Guide**: [Port_Specific_Attacks/Port_88_Kerberos/README.md](Port_Specific_Attacks/Port_88_Kerberos/README.md#bypass-techniques)
+
+---
+
+## Port 161/162 - SNMP
+
+**Full Guide**: [Port_Specific_Attacks/Port_161_162_SNMP/README.md](Port_Specific_Attacks/Port_161_162_SNMP/README.md#bypass-techniques)
+
+---
+
+## Port 389/636 - LDAP/LDAPS
+
+**Full Guide**: [Port_Specific_Attacks/Port_389_636_LDAP/README.md](Port_Specific_Attacks/Port_389_636_LDAP/README.md#bypass-techniques)
+
+---
+
+## Port 5985/5986 - WinRM
+
+**Full Guide**: [Port_Specific_Attacks/Port_5985_WinRM/README.md](Port_Specific_Attacks/Port_5985_WinRM/README.md#bypass-techniques)
+
+---
+
+## Port 1433 - MSSQL
+
+**Full Guide**: [Port_Specific_Attacks/Port_1433_MSSQL/README.md](Port_Specific_Attacks/Port_1433_MSSQL/README.md#bypass-techniques)
+
+---
+
+## Port 27017 - MongoDB
+
+**Full Guide**: [Port_Specific_Attacks/Port_27017_MongoDB/README.md](Port_Specific_Attacks/Port_27017_MongoDB/README.md#bypass-techniques)
+
+---
+
+## Port 5432 - PostgreSQL
+
+**Full Guide**: [Port_Specific_Attacks/Port_5432_PostgreSQL/README.md](Port_Specific_Attacks/Port_5432_PostgreSQL/README.md#bypass-techniques)
+
+---
+
+## Port 5900 - VNC
+
+**Full Guide**: [Port_Specific_Attacks/Port_5900_VNC/README.md](Port_Specific_Attacks/Port_5900_VNC/README.md#bypass-techniques)
+
+---
+
+## Port 6379 - Redis
+
+**Full Guide**: [Port_Specific_Attacks/Port_6379_Redis/README.md](Port_Specific_Attacks/Port_6379_Redis/README.md#bypass-techniques)
 
 ---
 

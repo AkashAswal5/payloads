@@ -4,14 +4,14 @@
 
 All vulnerability categories from PayloadsAllTheThings repository have been successfully created!
 
-## 📊 Final Statistics
+## Final Statistics
 
 - **Total Vulnerability Folders**: 65
 - **Total Payload Files**: 65
 - **Documentation Files**: 6
 - **Total Files**: 71+
 
-## 📁 Complete Vulnerability Coverage
+## Complete Vulnerability Coverage
 
 ### Original 41 Vulnerabilities
 1. Account Takeover

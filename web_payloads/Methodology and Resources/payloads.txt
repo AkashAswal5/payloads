@@ -260,25 +260,25 @@
 ## ========================================
 
 # Pre-Engagement
-□ Scope defined
-□ Authorization obtained
-□ Testing windows agreed
-□ Communication channels set
-□ Emergency contacts shared
+- Scope defined
+- Authorization obtained
+- Testing windows agreed
+- Communication channels set
+- Emergency contacts shared
 
 # During Testing
-□ Notes documented
-□ Evidence collected
-□ Findings verified
-□ Severity assessed
-□ Impact demonstrated
+- Notes documented
+- Evidence collected
+- Findings verified
+- Severity assessed
+- Impact demonstrated
 
 # Post-Testing
-□ Report drafted
-□ Reviewed for accuracy
-□ Recommendations provided
-□ Presentation prepared
-□ Remediation support offered
+- Report drafted
+- Reviewed for accuracy
+- Recommendations provided
+- Presentation prepared
+- Remediation support offered
 
 ## ========================================
 ## BEST PRACTICES

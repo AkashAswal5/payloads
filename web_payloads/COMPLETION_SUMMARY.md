@@ -222,7 +222,7 @@ Potential additions for future updates:
 - OWASP: [https://owasp.org](https://owasp.org)
 - PortSwigger: [https://portswigger.net/web-security](https://portswigger.net/web-security)
 
-## 📝 Final Notes
+## Final Notes
 
 This payload collection represents a comprehensive resource for web application security testing. It combines:
 - Industry-standard payloads
