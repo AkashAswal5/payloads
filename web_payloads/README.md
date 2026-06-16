@@ -19,7 +19,7 @@ These payloads are provided for:
 ## 📚 Vulnerability Categories
 
 ### Injection Vulnerabilities
-- [XSS (Cross-Site Scripting)](./xss/README.md)
+- XSS (Cross-Site Scripting)
   - Reflected XSS
   - Stored XSS
   - DOM-based XSS
@@ -27,79 +27,82 @@ These payloads are provided for:
   - Polyglots
   - WAF Bypass
   - CSP Bypass
-- [SQL Injection](./sqli/README.md)
-- [NoSQL Injection](./nosqli/README.md)
-- [Command Injection](./command-injection/README.md)
-- [LDAP Injection](./ldap-injection/README.md)
-- [XPATH Injection](./xpath-injection/README.md)
-- [XXE (XML External Entity)](./xxe/README.md)
-- [SSTI (Server-Side Template Injection)](./ssti/README.md)
-- [CRLF Injection](./crlf-injection/README.md)
-- [CSV Injection](./csv-injection/README.md)
+- SQL Injection
+- NoSQL Injection
+- Command Injection
+- LDAP Injection
+- XPATH Injection
+- XXE (XML External Entity)
+- SSTI (Server-Side Template Injection)
+- CRLF Injection
+- CSV Injection
 
 ### File & Upload Vulnerabilities
-- [File Inclusion (LFI/RFI)](./file-inclusion/README.md)
-- [Insecure File Upload](./file-upload/README.md)
-- [Directory Traversal](./directory-traversal/README.md)
-- [Zip Slip](./zip-slip/README.md)
+- File Inclusion (LFI/RFI)
+- Insecure File Upload
+- Directory Traversal
+- Zip Slip
 
 ### Authentication & Session
-- [Account Takeover](./account-takeover/README.md)
-- [MFA Bypass](./mfa-bypass/README.md)
-- [JWT Vulnerabilities](./jwt/README.md)
-- [OAuth Misconfiguration](./oauth/README.md)
-- [CSRF (Cross-Site Request Forgery)](./csrf/README.md)
-- [Brute Force & Rate Limit Bypass](./brute-force/README.md)
+- Account Takeover
+- MFA Bypass
+- JWT Vulnerabilities
+- OAuth Misconfiguration
+- CSRF (Cross-Site Request Forgery)
+- Brute Force & Rate Limit Bypass
 
 ### Server-Side Vulnerabilities
-- [SSRF (Server-Side Request Forgery)](./ssrf/README.md)
-- [Insecure Deserialization](./deserialization/README.md)
-- [SSI (Server Side Include Injection)](./ssi/README.md)
+- SSRF (Server-Side Request Forgery)
+- Insecure Deserialization
+- SSI (Server Side Include Injection)
 
 ### Access Control
-- [IDOR (Insecure Direct Object Reference)](./idor/README.md)
-- [CORS Misconfiguration](./cors/README.md)
-- [Open Redirect](./open-redirect/README.md)
+- IDOR (Insecure Direct Object Reference)
+- CORS Misconfiguration
+- Open Redirect
 
 ### Logic & Design Flaws
-- [Business Logic Errors](./business-logic/README.md)
-- [Race Condition](./race-condition/README.md)
-- [Mass Assignment](./mass-assignment/README.md)
-- [Type Juggling](./type-juggling/README.md)
-- [Prototype Pollution](./prototype-pollution/README.md)
+- Business Logic Errors
+- Race Condition
+- Mass Assignment
+- Type Juggling
+- Prototype Pollution
 
 ### API & GraphQL
-- [GraphQL Injection](./graphql/README.md)
-- [HTTP Parameter Pollution](./hpp/README.md)
-- [Request Smuggling](./request-smuggling/README.md)
+- GraphQL Injection
+- HTTP Parameter Pollution
+- Request Smuggling
 
 ### Miscellaneous
-- [Clickjacking](./clickjacking/README.md)
-- [Tabnabbing](./tabnabbing/README.md)
-- [Web Cache Deception](./web-cache-deception/README.md)
-- [DOM Clobbering](./dom-clobbering/README.md)
-- [XS-Leak](./xs-leak/README.md)
-- [DNS Rebinding](./dns-rebinding/README.md)
+- Clickjacking
+- Tabnabbing
+- Web Cache Deception
+- DOM Clobbering
+- XS-Leak
+- DNS Rebinding
 
 ## 🚀 Quick Start
 
-Each vulnerability category has its own directory with:
-- `README.md` - Detailed explanation and methodology
+Each vulnerability category has its own directory. At minimum you will find:
 - `payloads.txt` - Ready-to-use payloads
+
+Some categories also provide:
+- `README.md` - Detailed explanation and methodology
 - `bypass-techniques.md` - Filter and WAF bypass methods
 - `examples/` - Real-world examples and scenarios
 
 ## 📖 Usage Example
 
 ```bash
-# Navigate to a specific vulnerability
-cd xss/
+# Navigate to a specific vulnerability (for example, XSS)
+cd "XSS Injection"/
 
 # View payloads
 cat payloads.txt
 
-# View bypass techniques
-cat bypass-techniques.md
+# If present, view extra documentation
+ls
+cat README.md  # when available
 ```
 
 ## 🛡️ Testing Framework

@@ -4,6 +4,8 @@
 
 This document provides a comprehensive overview of the repository structure and contents.
 
+> Note: This describes the intended full structure. Some README files and subfolders shown here may still be missing; if a file mentioned below does not exist on disk yet, it is planned content.
+
 ---
 
 ## 🏗️ Directory Structure

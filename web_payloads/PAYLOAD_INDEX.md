@@ -4,7 +4,7 @@
 
 ### ✅ Completed Payloads (Comprehensive Collections)
 
-#### 1. XSS (Cross-Site Scripting) - `xss/`
+#### 1. XSS (Cross-Site Scripting) - Directory: "XSS Injection/"
 - ✓ Basic alert payloads
 - ✓ Image tag exploits
 - ✓ SVG-based XSS
@@ -22,7 +22,7 @@
 - ✓ PostMessage XSS
 - **Files:** `payloads.txt`, `README.md`
 
-#### 2. SQL Injection - `sqli/`
+#### 2. SQL Injection - Directory: "SQL Injection/"
 - ✓ MySQL injection
 - ✓ MSSQL injection
 - ✓ PostgreSQL injection
@@ -37,7 +37,7 @@
 - ✓ Polyglot payloads
 - **Files:** `payloads.txt`
 
-#### 3. Command Injection - `command-injection/`
+#### 3. Command Injection - Directory: "Command Injection/"
 - ✓ Basic command separators
 - ✓ Command chaining
 - ✓ Bypass techniques
@@ -48,7 +48,7 @@
 - ✓ Time-based detection
 - **Files:** `payloads.txt`
 
-#### 4. SSRF (Server-Side Request Forgery) - `ssrf/`
+#### 4. SSRF (Server-Side Request Forgery) - Directory: "Server Side Request Forgery/"
 - ✓ Localhost variations
 - ✓ AWS metadata endpoints
 - ✓ Google Cloud metadata
@@ -60,7 +60,7 @@
 - ✓ Advanced exploitation (Redis, Memcache, SMTP)
 - **Files:** `payloads.txt`
 
-#### 5. File Inclusion (LFI/RFI) - `file-inclusion/`
+#### 5. File Inclusion (LFI/RFI) - Directory: "File Inclusion/"
 - ✓ Linux LFI targets
 - ✓ Windows LFI targets
 - ✓ Path traversal
@@ -71,7 +71,7 @@
 - ✓ Interesting file lists
 - **Files:** `payloads.txt`
 
-#### 6. XXE (XML External Entity) - `xxe/`
+#### 6. XXE (XML External Entity) - Directory: "XXE Injection/"
 - ✓ Basic XXE payloads
 - ✓ Blind XXE (OOB, error-based)
 - ✓ SSRF via XXE
@@ -84,7 +84,7 @@
 - ✓ Bypass techniques
 - **Files:** `payloads.txt`
 
-#### 7. SSTI (Server-Side Template Injection) - `ssti/`
+#### 7. SSTI (Server-Side Template Injection) - Directory: "Server Side Template Injection/"
 - ✓ Detection payloads
 - ✓ Jinja2 (Python/Flask)
 - ✓ Tornado (Python)
@@ -100,7 +100,7 @@
 - ✓ Bypass techniques
 - **Files:** `payloads.txt`
 
-#### 8. Directory Traversal - `directory-traversal/`
+#### 8. Directory Traversal - Directory: "Directory Traversal/"
 - ✓ Basic traversal patterns
 - ✓ Linux targets
 - ✓ Windows targets
@@ -113,7 +113,7 @@
 - ✓ Interesting file lists
 - **Files:** `payloads.txt`
 
-#### 9. JWT Vulnerabilities - `jwt/`
+#### 9. JWT Vulnerabilities - Directory: "JSON Web Token/"
 - ✓ Algorithm confusion (RS256→HS256)
 - ✓ None algorithm bypass
 - ✓ Weak secret brute force
@@ -126,7 +126,7 @@
 - ✓ Testing checklist
 - **Files:** `payloads.txt`
 
-#### 10. NoSQL Injection - `nosqli/`
+#### 10. NoSQL Injection - Directory: "NoSQL Injection/"
 - ✓ MongoDB authentication bypass
 - ✓ Boolean-based injection
 - ✓ MongoDB operators
@@ -139,7 +139,7 @@
 - ✓ Tools and testing
 - **Files:** `payloads.txt`
 
-#### 11. CSRF (Cross-Site Request Forgery) - `csrf/`
+#### 11. CSRF (Cross-Site Request Forgery) - Directory: "Cross-Site Request Forgery/"
 - ✓ Basic CSRF (GET/POST)
 - ✓ JSON CSRF
 - ✓ CSRF token bypass
@@ -153,44 +153,44 @@
 
 ### 📋 Additional Vulnerabilities (Directories Created)
 
-The following vulnerability categories have directories created and are ready for payload addition:
+The following vulnerability categories have corresponding directories in this folder (directory names in quotes) and are ready for payload addition:
 
-- `cors/` - CORS Misconfiguration
-- `deserialization/` - Insecure Deserialization
-- `idor/` - Insecure Direct Object Reference
-- `graphql/` - GraphQL Injection
-- `ldap-injection/` - LDAP Injection
-- `xpath-injection/` - XPATH Injection
-- `crlf-injection/` - CRLF Injection
-- `open-redirect/` - Open Redirect
-- `race-condition/` - Race Condition
-- `prototype-pollution/` - Prototype Pollution
-- `mass-assignment/` - Mass Assignment
-- `type-juggling/` - Type Juggling
-- `clickjacking/` - Clickjacking
-- `business-logic/` - Business Logic Errors
-- `brute-force/` - Brute Force & Rate Limit
-- `mfa-bypass/` - MFA Bypass
-- `oauth/` - OAuth Misconfiguration
-- `ssi/` - Server Side Include Injection
-- `csv-injection/` - CSV Injection
-- `xslt/` - XSLT Injection
-- `tabnabbing/` - Tabnabbing
-- `web-cache-deception/` - Web Cache Deception
-- `dom-clobbering/` - DOM Clobbering
-- `xs-leak/` - XS-Leak
-- `dns-rebinding/` - DNS Rebinding
-- `request-smuggling/` - Request Smuggling
-- `hpp/` - HTTP Parameter Pollution
-- `zip-slip/` - Zip Slip
-- `account-takeover/` - Account Takeover
-- `file-upload/` - Insecure File Upload
+- CORS Misconfiguration – "CORS Misconfiguration/"
+- Insecure Deserialization – "Insecure Deserialization/"
+- Insecure Direct Object Reference – "Insecure Direct Object References/"
+- GraphQL Injection – "GraphQL Injection/"
+- LDAP Injection – "LDAP Injection/"
+- XPATH Injection – "XPATH Injection/"
+- CRLF Injection – "CRLF Injection/"
+- Open Redirect – "Open Redirect/"
+- Race Condition – "Race Condition/"
+- Prototype Pollution – "Prototype Pollution/"
+- Mass Assignment – "Mass Assignment/"
+- Type Juggling – "Type Juggling/"
+- Clickjacking – "Clickjacking/"
+- Business Logic Errors – "Business Logic Errors/"
+- Brute Force & Rate Limit – "Brute Force Rate Limit/"
+- MFA Bypass – "mfa-bypass/"
+- OAuth Misconfiguration – "OAuth Misconfiguration/"
+- Server Side Include Injection – "Server Side Include Injection/"
+- CSV Injection – "CSV Injection/"
+- XSLT Injection – "XSLT Injection/"
+- Tabnabbing – "Tabnabbing/"
+- Web Cache Deception – "Web Cache Deception/"
+- DOM Clobbering – "DOM Clobbering/"
+- XS-Leak – "XS-Leak/"
+- DNS Rebinding – "DNS Rebinding/"
+- Request Smuggling – "Request Smuggling/"
+- HTTP Parameter Pollution – "HTTP Parameter Pollution/"
+- Zip Slip – "Zip Slip/"
+- Account Takeover – "Account Takeover/"
+- Insecure File Upload – "Upload Insecure Files/"
 
 ## 🔍 How to Use This Collection
 
 ### 1. Navigate to Specific Vulnerability
 ```bash
-cd xss/
+cd "XSS Injection"/
 cat payloads.txt
 ```
 

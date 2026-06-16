@@ -86,8 +86,10 @@ A comprehensive collection of network security testing payloads, attack vectors,
 
 ## 📂 Repository Structure
 
-Each category folder contains:
+Each category folder focuses on a specific area. Typically you will find at least:
 - `payloads.txt` - Attack commands and payloads
+
+Some categories also provide:
 - `README.md` - Detailed explanations and methodology
 - `tools.md` - Tool installation and usage guides
 - `bypass_techniques.md` - Evasion and bypass methods
