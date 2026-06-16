@@ -26,13 +26,13 @@ Navigate to the vulnerability type you want to test:
 # View all available categories
 ls -la
 
-# Navigate to specific vulnerability
-cd xss/
+# Navigate to specific vulnerability (example: XSS)
+cd "XSS Injection"/
 cat payloads.txt
 
 # Search for specific techniques
-grep -i "bypass" xss/payloads.txt
-grep -r "cookie" .
+grep -i "bypass" payloads.txt
+grep -r "cookie" ..
 ```
 
 ### 2. Understanding File Structure
