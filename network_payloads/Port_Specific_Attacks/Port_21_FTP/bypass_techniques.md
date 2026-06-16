@@ -1,6 +1,6 @@
 # Port 21 - FTP Bypass Techniques
 
-## 🛡️ Security Controls and Bypass Methods
+## Security Controls and Bypass Methods
 
 ---
 
@@ -481,7 +481,7 @@ ftp> quit
 
 ---
 
-## 📊 Bypass Success Rate by Technique
+## Bypass Success Rate by Technique
 
 | Technique | Success Rate | Detection Risk | Difficulty |
 |-----------|--------------|----------------|------------|
@@ -495,7 +495,7 @@ ftp> quit
 
 ---
 
-## ⚠️ Important Notes
+## Important Notes
 
 1. **Always test in authorized environments only**
 2. **Each bypass may trigger different detections**
@@ -505,7 +505,7 @@ ftp> quit
 
 ---
 
-## 🔗 Related Bypass Techniques
+## Related Bypass Techniques
 
 - Port 22 (SSH) - Similar authentication bypasses
 - Port 23 (Telnet) - Unencrypted alternative

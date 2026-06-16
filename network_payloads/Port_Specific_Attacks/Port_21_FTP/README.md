@@ -1,6 +1,6 @@
 # Port 21 - FTP (File Transfer Protocol) - Complete Attack Guide
 
-## 📖 Overview
+## Overview
 
 **Protocol**: FTP (File Transfer Protocol)
 **Port**: 21 (Control), 20 (Data - Active mode)
@@ -8,7 +8,7 @@
 **Encryption**: None (use FTPS/SFTP for security)
 **Authentication**: Username/Password (cleartext)
 
-## 🎯 Attack Objectives
+## Attack Objectives
 
 - **Anonymous Access**: Exploit misconfigured anonymous FTP
 - **Credential Theft**: Capture FTP credentials (cleartext)
@@ -17,7 +17,7 @@
 - **File Enumeration**: List and download files
 - **Backdoor Upload**: Upload malicious files if write access
 
-## 🔍 Step-by-Step Attack Methodology
+## Step-by-Step Attack Methodology
 
 ### Phase 1: Discovery and Reconnaissance
 
@@ -268,7 +268,7 @@ tshark -r ftp.pcap -Y "ftp.request.command == PASS" -T fields -e ftp.request.arg
 - Monitoring internal FTP servers
 - Passive reconnaissance
 
-## 🛡️ Bypass Techniques
+## Bypass Techniques
 
 ### Bypassing FTP Firewall Rules
 
@@ -330,7 +330,7 @@ ftp> USER nonexistentuser
 # Compare response code
 ```
 
-## 📊 Information Extraction
+## Information Extraction
 
 ### What Information Can Be Extracted
 
@@ -369,7 +369,7 @@ lftp -u anonymous,anonymous 192.168.1.100
 mirror /                   # Download entire server
 ```
 
-## 🔐 Security Recommendations (Defense)
+## Security Recommendations (Defense)
 
 **For Defenders**:
 1. **Disable Anonymous Access** unless required
@@ -383,7 +383,7 @@ mirror /                   # Download entire server
 9. **Chroot Users** to their home directories
 10. **Regular Security Updates** for FTP software
 
-## ⚠️ Common Mistakes
+## Common Mistakes
 
 **Attacker Mistakes**:
 1. **Too Many Login Attempts**: Account lockout
@@ -399,7 +399,7 @@ mirror /                   # Download entire server
 4. **No Encryption**: Credentials in cleartext
 5. **Weak Permissions**: Expose sensitive files
 
-## 🎯 Practical Attack Scenario
+## Practical Attack Scenario
 
 **Goal**: Gain access to FTP server and extract data
 
@@ -438,7 +438,7 @@ ssh admin@192.168.1.100
 # Success - shell access!
 ```
 
-## 📚 Tools Summary
+## Tools Summary
 
 **Best Tool for Each Task**:
 - **Banner Grabbing**: `nc`, `nmap --script=banner`
@@ -449,14 +449,14 @@ ssh admin@192.168.1.100
 - **Credential Sniff**: `tcpdump`, `wireshark`
 - **Vulnerability Check**: `nmap --script=ftp-*`, `metasploit`
 
-## 🔗 Related Attacks
+## Related Attacks
 
 - **Port 22 (SSH)**: Often paired with FTP, try same credentials
 - **Port 80/443 (HTTP/HTTPS)**: FTP files might be web-accessible
 - **Port 3306 (MySQL)**: Database credentials in FTP config files
 - **Port 445 (SMB)**: Windows servers often have both FTP and SMB
 
-## 📖 Further Reading
+## Further Reading
 
 - RFC 959: File Transfer Protocol (FTP)
 - OWASP Testing Guide: FTP Testing

@@ -1,12 +1,12 @@
 # Network Payloads Repository - Complete Summary
 
-## 🎉 Repository Overview
+## Repository Overview
 
 This repository is a comprehensive collection of **network security attack payloads, techniques, and tools** - the network security equivalent of PayloadsAllTheThings. It covers everything from reconnaissance to exploitation across 50+ common network ports and protocols.
 
 ---
 
-## 📊 Repository Statistics
+## Repository Statistics
 
 ### Total Content Created
 
@@ -34,12 +34,12 @@ This repository is a comprehensive collection of **network security attack paylo
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 network_payloads/
 │
-├── 📄 Main Documentation (7 files)
+├── Main Documentation (7 files)
 │   ├── README.md                           # Main navigation and overview
 │   ├── TOOLS_REFERENCE.md                  # Complete tool installation guide
 │   ├── ATTACK_METHODOLOGY.md               # Step-by-step attack framework
@@ -48,7 +48,7 @@ network_payloads/
 │   ├── BYPASS_TECHNIQUES_INDEX.md          # Master bypass index (150 lines)
 │   └── PORT_ATTACK_MATRIX.md              # Complete 50+ port matrix
 │
-├── 📂 Attack Categories (8 folders)
+├── Attack Categories (8 folders)
 │   ├── Network_Reconnaissance/
 │   │   ├── README.md
 │   │   └── payloads.txt                   # Nmap, Masscan, Zmap commands
@@ -81,47 +81,47 @@ network_payloads/
 │       ├── README.md
 │       └── payloads.txt                   # BGP, OSPF attacks
 │
-└── 📂 Port_Specific_Attacks/ (50+ ports)
+└── Port_Specific_Attacks/ (50+ ports)
     │
     ├── Port_21_FTP/
-    │   ├── README.md                      # ✅ 465 lines - Complete guide
+	    │   ├── README.md                      # 465 lines - Complete guide
     │   ├── payloads.txt                   # Attack commands
-    │   └── bypass_techniques.md           # ✅ 150 lines - Bypass guide
+	    │   └── bypass_techniques.md           # 150 lines - Bypass guide
     │
     ├── Port_22_SSH/
-    │   ├── README.md                      # ✅ 585 lines - Complete guide
+	    │   ├── README.md                      # 585 lines - Complete guide
     │   ├── payloads.txt                   # Attack commands
-    │   └── bypass_techniques.md           # ✅ 150 lines - Bypass guide
+	    │   └── bypass_techniques.md           # 150 lines - Bypass guide
     │
     ├── Port_23_Telnet/
-    │   ├── README.md                      # ✅ 150+ lines - Complete guide
+	    │   ├── README.md                      # 150+ lines - Complete guide
     │   └── payloads.txt                   # Attack commands
     │
     ├── Port_25_SMTP/
-    │   ├── README.md                      # ✅ 150+ lines - Complete guide
+	    │   ├── README.md                      # 150+ lines - Complete guide
     │   └── payloads.txt                   # User enum, relay attacks
     │
     ├── Port_53_DNS/
-    │   ├── README.md                      # ✅ 150+ lines - Complete guide
+	    │   ├── README.md                      # 150+ lines - Complete guide
     │   ├── payloads.txt                   # Zone transfer, enumeration
-    │   └── bypass_techniques.md           # ✅ 150 lines - Bypass guide
+	    │   └── bypass_techniques.md           # 150 lines - Bypass guide
     │
     ├── Port_80_443_HTTP/
-    │   ├── README.md                      # ✅ 150+ lines - Complete guide
+	    │   ├── README.md                      # 150+ lines - Complete guide
     │   ├── payloads.txt                   # Web attacks
-    │   └── bypass_techniques.md           # ✅ 150 lines - WAF bypass
+	    │   └── bypass_techniques.md           # 150 lines - WAF bypass
     │
     ├── Port_139_445_SMB/
-    │   ├── README.md                      # ✅ 150+ lines - Complete guide
+	    │   ├── README.md                      # 150+ lines - Complete guide
     │   ├── payloads.txt                   # EternalBlue, Pass-the-Hash
-    │   └── bypass_techniques.md           # ✅ 150 lines - Bypass guide
+    │   └── bypass_techniques.md           # 150 lines - Bypass guide (complete)
     │
     ├── Port_3306_MySQL/
-    │   ├── README.md                      # ✅ 150+ lines - Complete guide
+	    │   ├── README.md                      # 150+ lines - Complete guide
     │   └── payloads.txt                   # Database attacks
     │
     ├── Port_3389_RDP/
-    │   ├── README.md                      # ✅ 150+ lines - Complete guide
+	    │   ├── README.md                      # 150+ lines - Complete guide
     │   └── payloads.txt                   # BlueKeep, brute force
     │
     ├── Port_161_SNMP/
@@ -150,9 +150,9 @@ network_payloads/
 
 ---
 
-## ✅ Completed Guides - Full Attack Methodologies
+## Completed Guides - Full Attack Methodologies
 
-### 🔥 Complete Port Guides (150+ lines each)
+### Complete Port Guides (150+ lines each)
 
 1. **Port 21 - FTP** (465 lines)
    - Anonymous access, Brute force, FTP bounce attacks
@@ -210,7 +210,7 @@ network_payloads/
     - Unauthenticated RCE, Web shell upload
     - SSH key injection, Cron job backdoors
 
-### 📋 Additional 40+ Ports with Payloads
+### Additional 40+ Ports with Payloads
 
 Each includes `payloads.txt` with ready-to-use commands for:
 - Port 67/68 (DHCP), 69 (TFTP), 88 (Kerberos)
@@ -225,21 +225,21 @@ Each includes `payloads.txt` with ready-to-use commands for:
 
 ---
 
-## 🎯 Key Features
+## Key Features
 
 ### 1. Comprehensive Attack Coverage
 
 **Every port guide includes**:
-- ✅ Discovery and reconnaissance phase
-- ✅ Service enumeration techniques
-- ✅ Vulnerability scanning methods
-- ✅ Exploitation techniques
-- ✅ Post-exploitation activities
-- ✅ Bypass techniques
-- ✅ Information extraction methods
-- ✅ Security recommendations
-- ✅ Practical attack scenarios
-- ✅ Tools summary
+- Discovery and reconnaissance phase
+- Service enumeration techniques
+- Vulnerability scanning methods
+- Exploitation techniques
+- Post-exploitation activities
+- Bypass techniques
+- Information extraction methods
+- Security recommendations
+- Practical attack scenarios
+- Tools summary
 
 ### 2. 300+ Bypass Techniques
 
@@ -273,7 +273,7 @@ Each includes `payloads.txt` with ready-to-use commands for:
 
 ---
 
-## 🛠️ Tools Covered
+## Tools Covered
 
 ### Reconnaissance Tools
 - Nmap, Masscan, Zmap, Netdiscover, Angry IP Scanner
@@ -297,7 +297,7 @@ Each includes `payloads.txt` with ready-to-use commands for:
 
 ---
 
-## 📈 Attack Success Statistics
+## Attack Success Statistics
 
 ### Highest Success Rates (50%+)
 1. Redis (6379) - 60%
@@ -315,7 +315,7 @@ Each includes `payloads.txt` with ready-to-use commands for:
 
 ---
 
-## 🎓 How to Use This Repository
+## How to Use This Repository
 
 ### For Penetration Testers
 1. Start with `PORT_ATTACK_MATRIX.md` for quick reference
@@ -343,7 +343,7 @@ Each includes `payloads.txt` with ready-to-use commands for:
 
 ---
 
-## 🔥 Most Valuable Resources
+## Most Valuable Resources
 
 1. **PORT_ATTACK_MATRIX.md** - 50+ port quick reference with success rates
 2. **BYPASS_TECHNIQUES_INDEX.md** - Master bypass techniques guide
@@ -353,7 +353,7 @@ Each includes `payloads.txt` with ready-to-use commands for:
 
 ---
 
-## 📚 Related Resources
+## Related Resources
 
 - [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) - Web security payloads
 - [HackTricks](https://book.hacktricks.xyz) - Penetration testing wiki
@@ -362,7 +362,7 @@ Each includes `payloads.txt` with ready-to-use commands for:
 
 ---
 
-## ⚠️ Legal Disclaimer
+## Legal Disclaimer
 
 This repository is for **educational and authorized security testing purposes only**. 
 
@@ -376,7 +376,7 @@ This repository is for **educational and authorized security testing purposes on
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please see `CONTRIBUTING.md` for:
 - How to add new port guides
@@ -386,7 +386,7 @@ We welcome contributions! Please see `CONTRIBUTING.md` for:
 
 ---
 
-## 📊 Repository Metrics
+## Repository Metrics
 
 - **Lines of Code/Documentation**: 2,000+
 - **Attack Commands**: 2,000+
@@ -399,17 +399,17 @@ We welcome contributions! Please see `CONTRIBUTING.md` for:
 ---
 
 **Last Updated**: 2026-06-16
-**Status**: ✅ Production Ready - Comprehensive Network Security Payload Collection
+**Status**: Production Ready - Comprehensive Network Security Payload Collection
 
 ---
 
-## 🎉 Achievement Summary
+## Achievement Summary
 
 This repository now provides:
-- ✅ **The most comprehensive network security payload collection**
-- ✅ **Matching PayloadsAllTheThings quality and structure**
-- ✅ **Ready for immediate use by security professionals**
-- ✅ **Continuously updated with new techniques**
-- ✅ **Community-driven and open-source**
+- **The most comprehensive network security payload collection**
+- **Matching PayloadsAllTheThings quality and structure**
+- **Ready for immediate use by security professionals**
+- **Continuously updated with new techniques**
+- **Community-driven and open-source**
 
-**🏆 Total Content: 2,000+ lines of documentation, 2,000+ attack commands, 300+ bypass techniques across 50+ ports!**
+**Total Content: 2,000+ lines of documentation, 2,000+ attack commands, 300+ bypass techniques across 50+ ports!**

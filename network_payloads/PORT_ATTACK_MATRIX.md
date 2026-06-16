@@ -1,86 +1,86 @@
 # Complete Port Attack Matrix
 
-## 📊 All 50+ Ports - Attack Overview & Quick Reference
+## All 50+ Ports - Attack Overview & Quick Reference
 
 This document provides a comprehensive attack matrix for all covered ports with success rates, difficulty levels, and quick attack commands.
 
 ---
 
-## 🎯 Attack Difficulty & Success Legend
+## Attack Difficulty & Success Legend
 
 **Difficulty**:
-- 🟢 **Easy**: Beginner-friendly, simple tools
-- 🟡 **Medium**: Requires some experience
-- 🔴 **Hard**: Advanced techniques needed
+- **Easy**: Beginner-friendly, simple tools
+- **Medium**: Requires some experience
+- **Hard**: Advanced techniques needed
 
 **Success Rate**:
-- 🟢 **High**: 60-90% success in real environments
-- 🟡 **Medium**: 30-60% success
-- 🔴 **Low**: <30% success
+- **High**: 60-90% success in real environments
+- **Medium**: 30-60% success
+- **Low**: <30% success
 
 ---
 
-## 📋 Complete Port Matrix
+## Complete Port Matrix
 
 | Port | Service | Difficulty | Success | Best Attack | Full Guide |
 |------|---------|-----------|---------|-------------|-----------|
-| **20/21** | FTP | 🟢 Easy | 🟢 High (40%) | Anonymous/Brute | [✓ Full Guide](Port_Specific_Attacks/Port_21_FTP/README.md) + [Bypass](Port_Specific_Attacks/Port_21_FTP/bypass_techniques.md) |
-| **22** | SSH | 🟡 Medium | 🟡 Medium (30%) | Keys/Brute | [✓ Full Guide](Port_Specific_Attacks/Port_22_SSH/README.md) + [Bypass](Port_Specific_Attacks/Port_22_SSH/bypass_techniques.md) |
-| **23** | Telnet | 🟢 Easy | 🟢 High (50%) | Default Creds/Sniff | [✓ Full Guide](Port_Specific_Attacks/Port_23_Telnet/README.md) |
-| **25** | SMTP | 🟢 Easy | 🟡 Medium (30%) | Enum/Relay | [✓ Full Guide](Port_Specific_Attacks/Port_25_SMTP/README.md) |
-| **53** | DNS | 🟢 Easy | 🟢 High (20-95%) | Alt DNS/Zone Transfer | [✓ Full Guide](Port_Specific_Attacks/Port_53_DNS/README.md) + [Bypass](Port_Specific_Attacks/Port_53_DNS/bypass_techniques.md) |
-| **67/68** | DHCP | 🟡 Medium | 🟡 Medium (40%) | Starvation/Rogue | ✓ Payloads |
-| **69** | TFTP | 🟢 Easy | 🟡 Medium (35%) | File Download | ✓ Payloads |
-| **80** | HTTP | 🟡 Medium | 🟡 Medium (35%) | SQL Inj/Dir Enum | [✓ Full Guide](Port_Specific_Attacks/Port_80_443_HTTP/README.md) + [Bypass](Port_Specific_Attacks/Port_80_443_HTTP/bypass_techniques.md) |
-| **88** | Kerberos | 🔴 Hard | 🟡 Medium (40%) | AS-REP Roast | ✓ Payloads |
-| **110** | POP3 | 🟢 Easy | 🟡 Medium (30%) | Brute Force | ✓ Payloads |
-| **111** | RPCBind | 🟡 Medium | 🟡 Medium (25%) | Enum/NFS | ✓ Payloads |
-| **119** | NNTP | 🟢 Easy | 🔴 Low (15%) | Enum | ✓ Payloads |
-| **135** | MSRPC | 🟡 Medium | 🟡 Medium (20%) | Enum | ✓ Payloads |
-| **137/138** | NetBIOS | 🟢 Easy | 🟡 Medium (30%) | NBTScan/Enum | ✓ Payloads |
-| **139** | SMB | 🟡 Medium | 🟡 Medium (25%) | Null Session | [✓ Full Guide](Port_Specific_Attacks/Port_139_445_SMB/README.md) + [Bypass](Port_Specific_Attacks/Port_139_445_SMB/bypass_techniques.md) |
-| **143** | IMAP | 🟢 Easy | 🟡 Medium (30%) | Brute Force | ✓ Payloads |
-| **161/162** | SNMP | 🟢 Easy | 🟢 High (50%) | Community Strings | ✓ Payloads |
-| **389** | LDAP | 🟡 Medium | 🟡 Medium (35%) | Anonymous Bind | ✓ Payloads |
-| **443** | HTTPS | 🟡 Medium | 🟡 Medium (25%) | SSL Issues/WAF | [✓ Full Guide](Port_Specific_Attacks/Port_80_443_HTTP/README.md) + [Bypass](Port_Specific_Attacks/Port_80_443_HTTP/bypass_techniques.md) |
-| **445** | SMB | 🟡 Medium | 🟢 High (30%) | Pass-Hash/EternalBlue | [✓ Full Guide](Port_Specific_Attacks/Port_139_445_SMB/README.md) + [Bypass](Port_Specific_Attacks/Port_139_445_SMB/bypass_techniques.md) |
-| **465/587** | SMTPS | 🟢 Easy | 🟡 Medium (25%) | Enum/Brute | ✓ Payloads |
-| **512/513/514** | R-Services | 🟢 Easy | 🔴 Low (10%) | Default Access | ✓ Payloads |
-| **515** | LPD | 🟢 Easy | 🔴 Low (15%) | Print Jobs | ✓ Payloads |
-| **548** | AFP | 🟡 Medium | 🔴 Low (20%) | Brute Force | ✓ Payloads |
-| **554** | RTSP | 🟢 Easy | 🟡 Medium (25%) | Stream Access | ✓ Payloads |
-| **631** | IPP | 🟡 Medium | 🟡 Medium (30%) | CUPS Exploits | ✓ Payloads |
-| **636** | LDAPS | 🟡 Medium | 🟡 Medium (30%) | Same as LDAP | ✓ Payloads |
-| **873** | Rsync | 🟢 Easy | 🟡 Medium (35%) | Module Enum/Download | ✓ Payloads |
-| **993** | IMAPS | 🟢 Easy | 🟡 Medium (25%) | Brute Force | ✓ Payloads |
-| **995** | POP3S | 🟢 Easy | 🟡 Medium (25%) | Brute Force | ✓ Payloads |
-| **1080** | SOCKS | 🟡 Medium | 🟡 Medium (30%) | Proxy Test | ✓ Payloads |
-| **1194** | OpenVPN | 🔴 Hard | 🔴 Low (15%) | Config Extract | ✓ Payloads |
-| **1433** | MSSQL | 🟡 Medium | 🟡 Medium (35%) | xp_cmdshell | ✓ Payloads |
-| **1521** | Oracle | 🔴 Hard | 🟡 Medium (25%) | SID Enum/Brute | ✓ Payloads |
-| **1723** | PPTP | 🟡 Medium | 🟡 Medium (30%) | Brute Force | ✓ Payloads |
-| **2049** | NFS | 🟢 Easy | 🟢 High (40%) | Mount Shares | ✓ Payloads |
-| **2121** | FTP Alt | 🟢 Easy | 🟢 High (40%) | Same as Port 21 | ✓ Payloads |
-| **3000** | Web Apps | 🟡 Medium | 🟡 Medium (30%) | Framework Specific | ✓ Payloads |
-| **3268/3269** | Global Catalog | 🟡 Medium | 🟡 Medium (30%) | AD Enum | ✓ Payloads |
-| **3306** | MySQL | 🟢 Easy | 🟢 High (35%) | Empty Pass/Brute | [✓ Full Guide](Port_Specific_Attacks/Port_3306_MySQL/README.md) |
-| **3389** | RDP | 🟡 Medium | 🟢 High (45%) | Brute Force | [✓ Full Guide](Port_Specific_Attacks/Port_3389_RDP/README.md) |
-| **4444** | Metasploit | 🟡 Medium | 🔴 Low (10%) | Backdoor | ✓ Payloads |
-| **5000** | UPnP/Flask | 🟡 Medium | 🟡 Medium (30%) | Various | ✓ Payloads |
-| **5060/5061** | SIP | 🟡 Medium | 🟡 Medium (30%) | Extension Enum | ✓ Payloads |
-| **5432** | PostgreSQL | 🟡 Medium | 🟡 Medium (35%) | Default/Brute | ✓ Payloads |
-| **5555** | ADB | 🟢 Easy | 🟢 High (60%) | Direct Connect | ✓ Payloads |
-| **5900** | VNC | 🟢 Easy | 🟡 Medium (25%) | No Password/Brute | ✓ Payloads |
-| **6379** | Redis | 🟢 Easy | 🟢 High (60%) | No Auth/Webshell | ✓ Payloads |
-| **6666** | IRC/Backdoor | 🟡 Medium | 🔴 Low (15%) | Connect/Commands | ✓ Payloads |
-| **8000-8888** | HTTP Alts | 🟡 Medium | 🟡 Medium (35%) | Same as HTTP | ✓ Payloads |
-| **9100** | Printer | 🟢 Easy | 🟡 Medium (30%) | PRET/Print Jobs | ✓ Payloads |
-| **10000** | Webmin | 🟡 Medium | 🟡 Medium (35%) | Default/Exploits | ✓ Payloads |
-| **27017/27018** | MongoDB | 🟢 Easy | 🟢 High (55%) | No Auth | ✓ Payloads |
+| **20/21** | FTP | Easy | High (40%) | Anonymous/Brute | [Full Guide](Port_Specific_Attacks/Port_21_FTP/README.md) + [Bypass](Port_Specific_Attacks/Port_21_FTP/bypass_techniques.md) |
+| **22** | SSH | Medium | Medium (30%) | Keys/Brute | [Full Guide](Port_Specific_Attacks/Port_22_SSH/README.md) + [Bypass](Port_Specific_Attacks/Port_22_SSH/bypass_techniques.md) |
+| **23** | Telnet | Easy | High (50%) | Default Creds/Sniff | [Full Guide](Port_Specific_Attacks/Port_23_Telnet/README.md) |
+| **25** | SMTP | Easy | Medium (30%) | Enum/Relay | [Full Guide](Port_Specific_Attacks/Port_25_SMTP/README.md) |
+| **53** | DNS | Easy | High (20-95%) | Alt DNS/Zone Transfer | [Full Guide](Port_Specific_Attacks/Port_53_DNS/README.md) + [Bypass](Port_Specific_Attacks/Port_53_DNS/bypass_techniques.md) |
+| **67/68** | DHCP | Medium | Medium (40%) | Starvation/Rogue | Payloads |
+| **69** | TFTP | Easy | Medium (35%) | File Download | Payloads |
+| **80** | HTTP | Medium | Medium (35%) | SQL Inj/Dir Enum | [Full Guide](Port_Specific_Attacks/Port_80_443_HTTP/README.md) + [Bypass](Port_Specific_Attacks/Port_80_443_HTTP/bypass_techniques.md) |
+| **88** | Kerberos | Hard | Medium (40%) | AS-REP Roast | Payloads |
+| **110** | POP3 | Easy | Medium (30%) | Brute Force | Payloads |
+| **111** | RPCBind | Medium | Medium (25%) | Enum/NFS | Payloads |
+| **119** | NNTP | Easy | Low (15%) | Enum | Payloads |
+| **135** | MSRPC | Medium | Medium (20%) | Enum | Payloads |
+| **137/138** | NetBIOS | Easy | Medium (30%) | NBTScan/Enum | Payloads |
+| **139** | SMB | Medium | Medium (25%) | Null Session | [Full Guide](Port_Specific_Attacks/Port_139_445_SMB/README.md) + [Bypass](Port_Specific_Attacks/Port_139_445_SMB/bypass_techniques.md) |
+| **143** | IMAP | Easy | Medium (30%) | Brute Force | Payloads |
+| **161/162** | SNMP | Easy | High (50%) | Community Strings | Payloads |
+| **389** | LDAP | Medium | Medium (35%) | Anonymous Bind | Payloads |
+| **443** | HTTPS | Medium | Medium (25%) | SSL Issues/WAF | [Full Guide](Port_Specific_Attacks/Port_80_443_HTTP/README.md) + [Bypass](Port_Specific_Attacks/Port_80_443_HTTP/bypass_techniques.md) |
+| **445** | SMB | Medium | High (30%) | Pass-Hash/EternalBlue | [Full Guide](Port_Specific_Attacks/Port_139_445_SMB/README.md) + [Bypass](Port_Specific_Attacks/Port_139_445_SMB/bypass_techniques.md) |
+| **465/587** | SMTPS | Easy | Medium (25%) | Enum/Brute | Payloads |
+| **512/513/514** | R-Services | Easy | Low (10%) | Default Access | Payloads |
+| **515** | LPD | Easy | Low (15%) | Print Jobs | Payloads |
+| **548** | AFP | Medium | Low (20%) | Brute Force | Payloads |
+| **554** | RTSP | Easy | Medium (25%) | Stream Access | Payloads |
+| **631** | IPP | Medium | Medium (30%) | CUPS Exploits | Payloads |
+| **636** | LDAPS | Medium | Medium (30%) | Same as LDAP | Payloads |
+| **873** | Rsync | Easy | Medium (35%) | Module Enum/Download | Payloads |
+| **993** | IMAPS | Easy | Medium (25%) | Brute Force | Payloads |
+| **995** | POP3S | Easy | Medium (25%) | Brute Force | Payloads |
+| **1080** | SOCKS | Medium | Medium (30%) | Proxy Test | Payloads |
+| **1194** | OpenVPN | Hard | Low (15%) | Config Extract | Payloads |
+| **1433** | MSSQL | Medium | Medium (35%) | xp_cmdshell | Payloads |
+| **1521** | Oracle | Hard | Medium (25%) | SID Enum/Brute | Payloads |
+| **1723** | PPTP | Medium | Medium (30%) | Brute Force | Payloads |
+| **2049** | NFS | Easy | High (40%) | Mount Shares | Payloads |
+| **2121** | FTP Alt | Easy | High (40%) | Same as Port 21 | Payloads |
+| **3000** | Web Apps | Medium | Medium (30%) | Framework Specific | Payloads |
+| **3268/3269** | Global Catalog | Medium | Medium (30%) | AD Enum | Payloads |
+| **3306** | MySQL | Easy | High (35%) | Empty Pass/Brute | [Full Guide](Port_Specific_Attacks/Port_3306_MySQL/README.md) |
+| **3389** | RDP | Medium | High (45%) | Brute Force | [Full Guide](Port_Specific_Attacks/Port_3389_RDP/README.md) |
+| **4444** | Metasploit | Medium | Low (10%) | Backdoor | Payloads |
+| **5000** | UPnP/Flask | Medium | Medium (30%) | Various | Payloads |
+| **5060/5061** | SIP | Medium | Medium (30%) | Extension Enum | Payloads |
+| **5432** | PostgreSQL | Medium | Medium (35%) | Default/Brute | Payloads |
+| **5555** | ADB | Easy | High (60%) | Direct Connect | Payloads |
+| **5900** | VNC | Easy | Medium (25%) | No Password/Brute | Payloads |
+| **6379** | Redis | Easy | High (60%) | No Auth/Webshell | Payloads |
+| **6666** | IRC/Backdoor | Medium | Low (15%) | Connect/Commands | Payloads |
+| **8000-8888** | HTTP Alts | Medium | Medium (35%) | Same as HTTP | Payloads |
+| **9100** | Printer | Easy | Medium (30%) | PRET/Print Jobs | Payloads |
+| **10000** | Webmin | Medium | Medium (35%) | Default/Exploits | Payloads |
+| **27017/27018** | MongoDB | Easy | High (55%) | No Auth | Payloads |
 
 ---
 
-## 🎯 Quick Attack Commands by Port
+## Quick Attack Commands by Port
 
 ### Port 21 - FTP
 ```bash
@@ -176,7 +176,7 @@ mongodump --host 192.168.1.100 --out dump/                             # Dump al
 
 ---
 
-## 📊 Attack Success Statistics
+## Attack Success Statistics
 
 ### Highest Success Rates (>50%)
 1. **Redis (6379)** - 60% - Often no authentication
@@ -200,7 +200,7 @@ mongodump --host 192.168.1.100 --out dump/                             # Dump al
 
 ---
 
-## 🎯 Attack Strategy by Environment
+## Attack Strategy by Environment
 
 ### Internal Network Pentest
 **Priority Targets**:
@@ -228,7 +228,7 @@ mongodump --host 192.168.1.100 --out dump/                             # Dump al
 
 ---
 
-## 🔥 Most Dangerous Ports (CVSS Impact)
+## Most Dangerous Ports (CVSS Impact)
 
 | Rank | Port | Service | Why Dangerous |
 |------|------|---------|---------------|
@@ -245,25 +245,25 @@ mongodump --host 192.168.1.100 --out dump/                             # Dump al
 
 ---
 
-## 📚 Complete Documentation Index
+## Complete Documentation Index
 
 ### Full Attack Guides Available
-- ✅ [Port 21 - FTP](Port_Specific_Attacks/Port_21_FTP/README.md) (465 lines)
-- ✅ [Port 22 - SSH](Port_Specific_Attacks/Port_22_SSH/README.md) (585 lines)
-- ✅ [Port 23 - Telnet](Port_Specific_Attacks/Port_23_Telnet/README.md) (150+ lines)
-- ✅ [Port 3306 - MySQL](Port_Specific_Attacks/Port_3306_MySQL/README.md) (150+ lines)
+- [Port 21 - FTP](Port_Specific_Attacks/Port_21_FTP/README.md) (465 lines)
+- [Port 22 - SSH](Port_Specific_Attacks/Port_22_SSH/README.md) (585 lines)
+- [Port 23 - Telnet](Port_Specific_Attacks/Port_23_Telnet/README.md) (150+ lines)
+- [Port 3306 - MySQL](Port_Specific_Attacks/Port_3306_MySQL/README.md) (150+ lines)
 
 ### Bypass Technique Guides Available
-- ✅ [Port 21 - FTP Bypass](Port_Specific_Attacks/Port_21_FTP/bypass_techniques.md) (150 lines)
-- ✅ [Port 22 - SSH Bypass](Port_Specific_Attacks/Port_22_SSH/bypass_techniques.md) (150 lines)
-- ✅ [Port 53 - DNS Bypass](Port_Specific_Attacks/Port_53_DNS/bypass_techniques.md) (150 lines)
-- ✅ [Port 80/443 - HTTP Bypass](Port_Specific_Attacks/Port_80_443_HTTP/bypass_techniques.md) (150 lines)
-- ✅ [Port 139/445 - SMB Bypass](Port_Specific_Attacks/Port_139_445_SMB/bypass_techniques.md) (150 lines)
+- [Port 21 - FTP Bypass](Port_Specific_Attacks/Port_21_FTP/bypass_techniques.md) (150 lines)
+- [Port 22 - SSH Bypass](Port_Specific_Attacks/Port_22_SSH/bypass_techniques.md) (150 lines)
+- [Port 53 - DNS Bypass](Port_Specific_Attacks/Port_53_DNS/bypass_techniques.md) (150 lines)
+- [Port 80/443 - HTTP Bypass](Port_Specific_Attacks/Port_80_443_HTTP/bypass_techniques.md) (150 lines)
+- [Port 139/445 - SMB Bypass](Port_Specific_Attacks/Port_139_445_SMB/bypass_techniques.md) (150 lines)
 
 ### Payload Collections
-- ✅ [All Ports Quick Reference](Port_Specific_Attacks/ALL_PORTS_QUICK_REFERENCE.md) (50+ ports)
-- ✅ [Bypass Techniques Index](BYPASS_TECHNIQUES_INDEX.md)
-- ✅ Individual payloads.txt for 50+ ports
+- [All Ports Quick Reference](Port_Specific_Attacks/ALL_PORTS_QUICK_REFERENCE.md) (50+ ports)
+- [Bypass Techniques Index](BYPASS_TECHNIQUES_INDEX.md)
+- Individual payloads.txt for 50+ ports
 
 ---
 

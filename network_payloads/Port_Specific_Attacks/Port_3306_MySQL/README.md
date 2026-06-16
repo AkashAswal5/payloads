@@ -1,6 +1,6 @@
 # Port 3306 - MySQL/MariaDB - Complete Attack Guide
 
-## 📖 Overview
+## Overview
 
 **Protocol**: MySQL/MariaDB Database
 **Port**: 3306 (default)
@@ -8,7 +8,7 @@
 **Encryption**: Optional (SSL/TLS)
 **Authentication**: Username/Password, Native/SHA256
 
-## 🎯 Attack Objectives
+## Attack Objectives
 
 - **Brute Force**: Crack database credentials
 - **Data Extraction**: Dump databases and tables
@@ -17,7 +17,7 @@
 - **Data Exfiltration**: Extract sensitive information
 - **Backdoor Installation**: Maintain persistent access
 
-## 🔍 Attack Methodology
+## Attack Methodology
 
 ### Phase 1: Discovery and Reconnaissance
 
@@ -397,7 +397,7 @@ mysql> SELECT host, user FROM mysql.user;
 # Try those credentials on SSH, FTP, etc.
 ```
 
-## 🛡️ Bypass Techniques
+## Bypass Techniques
 
 ### Bypassing Firewall
 ```bash
@@ -421,7 +421,7 @@ proxychains mysql -h 192.168.1.100 -u root -p
 # Can lead to direct MySQL access
 ```
 
-## 📊 Information Extraction
+## Information Extraction
 
 **Critical Data to Extract**:
 ```sql
@@ -444,7 +444,7 @@ SHOW VARIABLES;
 SELECT * FROM information_schema.USER_PRIVILEGES;
 ```
 
-## 🔐 Security Recommendations
+## Security Recommendations
 
 **For Defenders**:
 1. **Disable Remote Root** - `bind-address = 127.0.0.1`
@@ -458,7 +458,7 @@ SELECT * FROM information_schema.USER_PRIVILEGES;
 9. **Least Privilege** - Grant minimum required permissions
 10. **Network Segmentation** - Isolate database servers
 
-## 🎯 Practical Attack Scenario
+## Practical Attack Scenario
 
 ```bash
 # Discovery
@@ -497,7 +497,7 @@ ssh admin@192.168.1.100  # Using found credentials
 # Success - system access!
 ```
 
-## 📚 Tools Summary
+## Tools Summary
 
 **Best Tool for Each Task**:
 - **Brute Force**: Hydra, Metasploit
@@ -506,7 +506,7 @@ ssh admin@192.168.1.100  # Using found credentials
 - **Exploitation**: Metasploit, sqlmap
 - **Enumeration**: Nmap, manual SQL
 
-## 🔗 Related Attacks
+## Related Attacks
 
 - **Port 1433 (MSSQL)**: Similar attack vectors
 - **Port 5432 (PostgreSQL)**: Similar database attacks

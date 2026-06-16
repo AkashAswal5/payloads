@@ -1,10 +1,10 @@
 # Man-in-the-Middle (MITM) Attacks - Complete Guide
 
-## 📖 What is a MITM Attack?
+## What is a MITM Attack?
 
 A Man-in-the-Middle attack occurs when an attacker intercepts communication between two parties, allowing them to eavesdrop, modify, or inject data into the communication stream.
 
-## 🎯 When to Perform MITM Attacks
+## When to Perform MITM Attacks
 
 - **Traffic Analysis**: Understanding unencrypted protocols
 - **Credential Harvesting**: Capturing login credentials
@@ -13,7 +13,7 @@ A Man-in-the-Middle attack occurs when an attacker intercepts communication betw
 - **Packet Injection**: Modifying data in transit
 - **Protocol Analysis**: Understanding custom protocols
 
-## 🛠️ Tool Selection Guide
+## Tool Selection Guide
 
 ### Ettercap vs Bettercap vs Arpspoof
 
@@ -46,7 +46,7 @@ A Man-in-the-Middle attack occurs when an attacker intercepts communication betw
 - Lightweight solution needed
 - Part of larger attack chain
 
-## 🔍 MITM Attack Types
+## MITM Attack Types
 
 ### 1. ARP Poisoning/Spoofing
 
@@ -207,7 +207,7 @@ function onResponse(req, res) {
 - **Session Binding**: Need to spoof IP/User-Agent
 - **Short Timeouts**: Attack quickly after capture
 
-## 🎭 Advanced MITM Techniques
+## Advanced MITM Techniques
 
 ### IPv6 MITM
 
@@ -289,7 +289,7 @@ john --format=netntlmv2 hashes.txt
 - **SMB Signing**: Still get hash, but can't relay
 - **Network Segmentation**: Limited attack scope
 
-## 🛡️ Detection Evasion
+## Detection Evasion
 
 ### Avoiding ARP Spoofing Detection
 
@@ -322,7 +322,7 @@ set arp.spoof.interval 10  # 10 seconds between packets
 3. **Protocol Compliance**: Use valid protocol behavior
 4. **Timing Manipulation**: Avoid pattern detection
 
-## 📊 Traffic Capture and Analysis
+## Traffic Capture and Analysis
 
 ### What to Capture
 
@@ -364,7 +364,7 @@ wireshark capture.pcap
 tshark -r capture.pcap -Y "http.request.method==POST" -T fields -e http.file_data
 ```
 
-## 🎯 Practical Attack Scenarios
+## Practical Attack Scenarios
 
 ### Scenario 1: Corporate Network Credential Harvest
 
@@ -441,7 +441,7 @@ wireshark iot_traffic.pcap
 # Look for API endpoints, unencrypted data, auth tokens
 ```
 
-## ⚠️ Common Mistakes and Fixes
+## Common Mistakes and Fixes
 
 ### Mistake 1: Forgetting IP Forwarding
 **Problem**: Traffic stops, causes DoS
@@ -485,7 +485,7 @@ echo 0 > /proc/sys/net/ipv4/ip_forward
 arpspoof -i eth0 -t 192.168.1.100 -r 192.168.1.1  # Restore
 ```
 
-## 🔒 Defense Bypass Strategies
+## Defense Bypass Strategies
 
 ### Bypassing ARP Inspection
 - **Not Bypassable**: Must use different MITM method (DNS, DHCP, etc.)
@@ -502,7 +502,7 @@ arpspoof -i eth0 -t 192.168.1.100 -r 192.168.1.1  # Restore
 - **Compromised Host**: Pivot through allowed hosts
 - **VLAN Hopping**: Double tagging or DTP attacks
 
-## 📚 Tools Comparison
+## Tools Comparison
 
 **Best Tool for Each Scenario**:
 
@@ -513,7 +513,7 @@ arpspoof -i eth0 -t 192.168.1.100 -r 192.168.1.1  # Restore
 - **Simple Automation**: Arpspoof + custom scripts
 - **Traffic Analysis**: Wireshark
 
-## 🎓 Best Practices
+## Best Practices
 
 1. **Always enable IP forwarding** before MITM
 2. **Test in isolated environment** first
@@ -524,7 +524,7 @@ arpspoof -i eth0 -t 192.168.1.100 -r 192.168.1.1  # Restore
 7. **Capture to file** for offline analysis
 8. **Be ready to stop immediately** if detected
 
-## 📖 Further Learning
+## Further Learning
 
 - **Bettercap Wiki**: https://www.bettercap.org/
 - **Ettercap Man Page**: https://www.ettercap-project.org/

@@ -1,10 +1,10 @@
 # Usage Guide - Web Vulnerability Payloads
 
-## 🚀 Getting Started
+## Getting Started
 
 This repository contains comprehensive payloads for testing web application vulnerabilities. All payloads are sourced from [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings).
 
-## ⚠️ Legal Disclaimer
+## Legal Disclaimer
 
 **USE THESE PAYLOADS ONLY ON:**
 - Systems you own
@@ -16,7 +16,7 @@ This repository contains comprehensive payloads for testing web application vuln
 - Use for malicious purposes
 - Attack systems you don't own
 
-## 📖 How to Use This Repository
+## How to Use This Repository
 
 ### 1. Finding Payloads
 
@@ -88,7 +88,7 @@ vulnerability-name/
 - Document findings
 ```
 
-## 🔧 Integration with Security Tools
+## Integration with Security Tools
 
 ### Burp Suite
 
@@ -150,7 +150,7 @@ data = {"comment": xss_payload}
 response = requests.post("http://target.com/comment", data=data)
 ```
 
-## 📊 Testing Methodology
+## Testing Methodology
 
 ### Phase 1: Reconnaissance
 ```
@@ -185,7 +185,7 @@ response = requests.post("http://target.com/comment", data=data)
 5. Rate severity (CVSS)
 ```
 
-## 🎯 Common Use Cases
+## Common Use Cases
 
 ### Case 1: Testing Login Form
 
@@ -235,7 +235,7 @@ POST /api/users
 {"username": {"$ne": null}}
 ```
 
-## 🛡️ Bypass Techniques Reference
+## Bypass Techniques Reference
 
 ### Filter Bypass Cheat Sheet
 
@@ -263,7 +263,7 @@ SeLeCt * FrOm users
 SELECT/**/username/**/FROM/**/users
 ```
 
-## 📝 Creating Test Reports
+## Creating Test Reports
 
 ### Template
 ```markdown
@@ -297,7 +297,7 @@ Detailed description of the vulnerability
 - Use prepared statements
 ```
 
-## 🔍 Troubleshooting
+## Troubleshooting
 
 ### Payload Not Working?
 
@@ -328,7 +328,7 @@ Detailed description of the vulnerability
 4. Testing in different contexts
 ```
 
-## 📚 Learning Resources
+## Learning Resources
 
 ### Recommended Order
 1. Read QUICK_REFERENCE.md
@@ -344,7 +344,7 @@ Detailed description of the vulnerability
 - TryHackMe
 - PentesterLab
 
-## 🤝 Contributing
+## Contributing
 
 Found a new bypass technique? Want to add payloads?
 
@@ -355,7 +355,7 @@ Found a new bypass technique? Want to add payloads?
 4. Submit pull request
 ```
 
-## 📞 Support
+## Support
 
 For questions or issues:
 - Check existing documentation
@@ -364,4 +364,4 @@ For questions or issues:
 
 ---
 
-**Happy Ethical Hacking! 🔒**
+**Happy Ethical Hacking!**

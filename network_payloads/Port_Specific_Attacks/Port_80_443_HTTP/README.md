@@ -1,6 +1,6 @@
 # Port 80/443 - HTTP/HTTPS - Complete Attack Guide
 
-## 📖 Overview
+## Overview
 
 **Protocol**: HTTP (HyperText Transfer Protocol) / HTTPS (HTTP Secure)
 **Ports**: 80 (HTTP), 443 (HTTPS), 8080, 8443 (alternate)
@@ -8,7 +8,7 @@
 **Encryption**: None (HTTP), TLS/SSL (HTTPS)
 **Authentication**: Various (Basic, Digest, Bearer, OAuth, etc.)
 
-## 🎯 Attack Objectives
+## Attack Objectives
 
 - **SQL Injection**: Extract database contents
 - **Directory Enumeration**: Find hidden files/directories
@@ -18,7 +18,7 @@
 - **Command Injection**: Execute OS commands
 - **Information Disclosure**: Extract sensitive data
 
-## 🔍 Attack Methodology
+## Attack Methodology
 
 ### Phase 1: Discovery and Reconnaissance
 
@@ -373,7 +373,7 @@ http://192.168.1.100/search.php?q=<script>alert('XSS')</script>
 xsstrike -u "http://192.168.1.100/search.php?q=test"
 ```
 
-## 🛡️ Bypass Techniques
+## Bypass Techniques
 
 See [Full Bypass Techniques Guide](bypass_techniques.md) for detailed WAF/filter bypass methods.
 
@@ -395,7 +395,7 @@ shell.php.jpg
 shell.phar
 ```
 
-## 📊 Information Extraction
+## Information Extraction
 
 ```bash
 # Find comments in source
@@ -411,7 +411,7 @@ curl http://192.168.1.100/.git/config
 curl http://192.168.1.100/.env
 ```
 
-## 🔐 Security Recommendations
+## Security Recommendations
 
 **For Defenders**:
 1. **Input Validation** - Sanitize all user input
@@ -425,7 +425,7 @@ curl http://192.168.1.100/.env
 9. **Update Software** - Patch CMS and plugins
 10. **Least Privilege** - Minimize permissions
 
-## 🎯 Practical Attack Scenario
+## Practical Attack Scenario
 
 ```bash
 # Discovery
@@ -454,7 +454,7 @@ sqlmap -u "http://192.168.1.100/product.php?id=1" --dbs
 # System compromised!
 ```
 
-## 📚 Tools Summary
+## Tools Summary
 
 - **Directory Enum**: Gobuster, Dirb, ffuf, Feroxbuster
 - **Vulnerability Scan**: Nikto, Nmap, Burp Suite

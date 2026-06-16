@@ -1,6 +1,6 @@
 # Web Vulnerability Quick Reference Guide
 
-## 🎯 Most Common Vulnerabilities - Quick Payloads
+## Most Common Vulnerabilities - Quick Payloads
 
 ### XSS (Cross-Site Scripting)
 ```html
@@ -73,7 +73,7 @@ username[$ne]=admin&password[$ne]=pass
 <script>document.forms[0].submit();</script>
 ```
 
-## 📊 Testing Methodology
+## Testing Methodology
 
 ### 1. Reconnaissance
 - Identify input points (forms, URL parameters, headers, cookies)
@@ -96,7 +96,7 @@ username[$ne]=admin&password[$ne]=pass
 - Include impact assessment
 - Suggest remediation
 
-## 🔧 Essential Tools
+## Essential Tools
 
 ### Scanners
 - **Burp Suite** - Web application security testing
@@ -116,7 +116,7 @@ username[$ne]=admin&password[$ne]=pass
 - **ffuf** - Fuzzing tool
 - **wfuzz** - Web application fuzzer
 
-## 🛡️ Common Bypass Techniques
+## Common Bypass Techniques
 
 ### Filter Bypass - General
 ```
@@ -135,7 +135,7 @@ username[$ne]=admin&password[$ne]=pass
 - Case manipulation: UnIoN SeLeCt
 ```
 
-## 📝 Quick Testing Commands
+## Quick Testing Commands
 
 ### XSS
 ```bash
@@ -179,7 +179,7 @@ http://169.254.169.254/latest/meta-data/
 http://[::1]
 ```
 
-## 🎨 Payload Categories by Impact
+## Payload Categories by Impact
 
 ### Information Disclosure
 - LFI: Read sensitive files
@@ -205,7 +205,7 @@ http://[::1]
 - JWT: Change user claims
 - SQL Injection: Union-based escalation
 
-## 🔍 Detection vs Exploitation
+## Detection vs Exploitation
 
 ### Detection Phase
 ```
@@ -225,7 +225,7 @@ Advanced payloads for maximum impact:
 - SSTI: Server-side code execution
 ```
 
-## 📚 Vulnerability Severity
+## Vulnerability Severity
 
 ### Critical
 - Remote Code Execution (RCE)
@@ -251,7 +251,7 @@ Advanced payloads for maximum impact:
 - Information Leakage (minor)
 - Clickjacking
 
-## 🚀 Pro Tips
+## Pro Tips
 
 1. **Always test in authorized environments**
 2. **Start with detection, then exploitation**
@@ -264,7 +264,7 @@ Advanced payloads for maximum impact:
 9. **Think like an attacker, defend like a pro**
 10. **Stay updated with latest techniques**
 
-## 📖 References
+## References
 
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
 - [PortSwigger Web Security Academy](https://portswigger.net/web-security)

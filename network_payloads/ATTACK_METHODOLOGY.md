@@ -1,12 +1,12 @@
 # Network Security Attack Methodology Guide
 
-## 📋 Complete Penetration Testing Workflow
+## Complete Penetration Testing Workflow
 
 This document outlines a comprehensive methodology for network security testing, covering when to use which tools and techniques.
 
 ---
 
-## 🎯 Phase 1: Information Gathering (Reconnaissance)
+## Phase 1: Information Gathering (Reconnaissance)
 
 ### Passive Reconnaissance
 **Objective**: Gather information without touching the target
@@ -66,28 +66,28 @@ nmap --script vuln target         # Vulnerability scripts
 
 ---
 
-## 🎯 Phase 2: Scanning and Enumeration
+## Phase 2: Scanning and Enumeration
 
 ### Decision Tree: Which Scanner to Use?
 
 **Use Nmap When**:
-- Detailed service version needed ✓
-- NSE scripts required ✓
-- OS fingerprinting needed ✓
-- Small to medium networks (< 10k hosts) ✓
-- Stealth/evasion required ✓
+- Detailed service version needed
+- NSE scripts required
+- OS fingerprinting needed
+- Small to medium networks (< 10k hosts)
+- Stealth/evasion required
 
 **Use Masscan When**:
-- Large networks (10k+ hosts) ✓
-- Speed is priority ✓
-- Initial port discovery only ✓
-- Internet-wide scanning ✓
+- Large networks (10k+ hosts)
+- Speed is priority
+- Initial port discovery only
+- Internet-wide scanning
 
 **Use Netdiscover When**:
-- Local network discovery ✓
-- Layer 2 enumeration ✓
-- Passive monitoring ✓
-- Hosts don't respond to ping ✓
+- Local network discovery
+- Layer 2 enumeration
+- Passive monitoring
+- Hosts don't respond to ping
 
 ### Port-by-Port Enumeration Strategy
 
@@ -143,7 +143,7 @@ nmap -p 3389 --script=rdp-* target
 
 ---
 
-## 🎯 Phase 3: Vulnerability Assessment
+## Phase 3: Vulnerability Assessment
 
 ### Automated Vulnerability Scanning
 
@@ -177,7 +177,7 @@ nikto, burpsuite, sqlmap, etc.
 
 ---
 
-## 🎯 Phase 4: Exploitation
+## Phase 4: Exploitation
 
 ### Decision Tree: Attack Path Selection
 
@@ -273,7 +273,7 @@ sqlmap -u "http://target/page?id=1" -D database -T users --dump
 
 ---
 
-## 🎯 Phase 5: Post-Exploitation
+## Phase 5: Post-Exploitation
 
 ### Information Gathering After Access
 
@@ -354,7 +354,7 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v Backdoor /t REG_
 
 ---
 
-## 🎯 Phase 6: Reporting
+## Phase 6: Reporting
 
 ### What to Document
 
@@ -384,7 +384,7 @@ tcpdump -w evidence.pcap
 
 ---
 
-## ⚙️ Tool Selection Matrix
+## Tool Selection Matrix
 
 | Task | Fast | Stealthy | Comprehensive | Easy |
 |------|------|----------|---------------|------|
@@ -397,7 +397,7 @@ tcpdump -w evidence.pcap
 
 ---
 
-## ⚠️ Common Pitfalls to Avoid
+## Common Pitfalls to Avoid
 
 1. **Scanning too aggressively** → Detection/blocking
 2. **Not documenting** → Can't write report
@@ -409,7 +409,7 @@ tcpdump -w evidence.pcap
 
 ---
 
-## 🎓 Quick Reference: When to Use What
+## Quick Reference: When to Use What
 
 **Reconnaissance**: Passive (OSINT) → Active (Nmap)
 **Scanning**: Quick (nmap -F) → Full (nmap -p-)

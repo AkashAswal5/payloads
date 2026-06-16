@@ -1,12 +1,12 @@
 # Complete Bypass Techniques Index
 
-## 📋 Comprehensive Guide to Bypassing Security Controls
+## Comprehensive Guide to Bypassing Security Controls
 
 This document provides a complete index of bypass techniques for all common ports and protocols, organized by security control type.
 
 ---
 
-## 🎯 Quick Navigation
+## Quick Navigation
 
 ### By Port
 - [Port 21 - FTP](#port-21-ftp)
@@ -28,7 +28,7 @@ This document provides a complete index of bypass techniques for all common port
 
 ---
 
-## 🔐 Port 21 - FTP
+## Port 21 - FTP
 
 **Full Guide**: [Port_Specific_Attacks/Port_21_FTP/bypass_techniques.md](Port_Specific_Attacks/Port_21_FTP/bypass_techniques.md)
 
@@ -53,7 +53,7 @@ ftp localhost 2121
 
 ---
 
-## 🔐 Port 22 - SSH
+## Port 22 - SSH
 
 **Full Guide**: [Port_Specific_Attacks/Port_22_SSH/bypass_techniques.md](Port_Specific_Attacks/Port_22_SSH/bypass_techniques.md)
 
@@ -79,7 +79,7 @@ ssh -i stolen_key user@target
 
 ---
 
-## 🔐 Port 25 - SMTP
+## Port 25 - SMTP
 
 ### Top 5 Bypass Techniques
 1. **Open Relay Test** (30% success) - Send mail through misconfigured server
@@ -105,7 +105,7 @@ RCPT TO: <victim@target.com>
 
 ---
 
-## 🔐 Port 53 - DNS
+## Port 53 - DNS
 
 **Full Guide**: [Port_Specific_Attacks/Port_53_DNS/bypass_techniques.md](Port_Specific_Attacks/Port_53_DNS/bypass_techniques.md)
 
@@ -130,7 +130,7 @@ curl http://93.184.216.34/  # Instead of example.com
 
 ---
 
-## 🔐 Port 80/443 - HTTP/HTTPS
+## Port 80/443 - HTTP/HTTPS
 
 **Full Guide**: [Port_Specific_Attacks/Port_80_443_HTTP/bypass_techniques.md](Port_Specific_Attacks/Port_80_443_HTTP/bypass_techniques.md)
 
@@ -155,7 +155,7 @@ curl -H "X-Original-URL: /admin" http://target/
 
 ---
 
-## 🔐 Port 139/445 - SMB
+## Port 139/445 - SMB
 
 **Full Guide**: [Port_Specific_Attacks/Port_139_445_SMB/bypass_techniques.md](Port_Specific_Attacks/Port_139_445_SMB/bypass_techniques.md)
 
@@ -180,7 +180,7 @@ nmap --script smb-vuln-ms17-010 192.168.1.100
 
 ---
 
-## 🔐 Port 3306 - MySQL
+## Port 3306 - MySQL
 
 ### Top 5 Bypass Techniques
 1. **Default Credentials** (35% success) - root:root, root:[blank]
@@ -204,7 +204,7 @@ mysql -h 192.168.1.100
 
 ---
 
-## 🔐 Port 3389 - RDP
+## Port 3389 - RDP
 
 ### Top 5 Bypass Techniques
 1. **Brute Force** (45% success) - Weak password attacks
@@ -227,7 +227,7 @@ xfreerdp /u:admin /p:password /v:192.168.1.100
 
 ---
 
-## 🛡️ By Control Type
+## By Control Type
 
 ### Authentication Bypass
 
@@ -318,7 +318,7 @@ xfreerdp /u:admin /p:password /v:192.168.1.100
 
 ---
 
-## 📊 Bypass Success Matrix
+## Bypass Success Matrix
 
 | Port/Service | Easiest Bypass | Hardest Bypass | Overall Difficulty |
 |--------------|----------------|----------------|-------------------|
@@ -333,7 +333,7 @@ xfreerdp /u:admin /p:password /v:192.168.1.100
 
 ---
 
-## 🎯 General Bypass Strategy
+## General Bypass Strategy
 
 ### Phase 1: Reconnaissance (Low Risk)
 1. Identify security controls in place
@@ -361,7 +361,7 @@ xfreerdp /u:admin /p:password /v:192.168.1.100
 
 ---
 
-## ⚠️ Important Reminders
+## Important Reminders
 
 1. **Always get authorization** before testing
 2. **Test in safe environments** (labs, CTFs, authorized targets)
@@ -373,7 +373,7 @@ xfreerdp /u:admin /p:password /v:192.168.1.100
 
 ---
 
-## 📚 Additional Resources
+## Additional Resources
 
 - **OWASP Testing Guide**: https://owasp.org/www-project-web-security-testing-guide/
 - **PortSwigger Web Security Academy**: https://portswigger.net/web-security

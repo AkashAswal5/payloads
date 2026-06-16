@@ -1,6 +1,6 @@
 # Port 53 - DNS (Domain Name System) - Complete Attack Guide
 
-## 📖 Overview
+## Overview
 
 **Protocol**: DNS (Domain Name System)
 **Port**: 53 (TCP/UDP)
@@ -8,7 +8,7 @@
 **Encryption**: Optional (DoH, DoT, DNSCrypt)
 **Purpose**: Domain name resolution
 
-## 🎯 Attack Objectives
+## Attack Objectives
 
 - **Zone Transfer**: Extract complete DNS records
 - **DNS Enumeration**: Discover subdomains and hosts
@@ -17,7 +17,7 @@
 - **Subdomain Takeover**: Hijack abandoned subdomains
 - **Information Gathering**: Map network infrastructure
 
-## 🔍 Attack Methodology
+## Attack Methodology
 
 ### Phase 1: Discovery and Reconnaissance
 
@@ -324,7 +324,7 @@ target.evil.com -> 1.2.3.4 (TTL: 1 second)
 # Allows access to localhost/internal services
 ```
 
-## 🛡️ Bypass Techniques
+## Bypass Techniques
 
 ### Bypassing DNS Filtering
 
@@ -378,7 +378,7 @@ for ns in $(dig +short target.com NS); do
 done
 ```
 
-## 📊 Information Extraction
+## Information Extraction
 
 **Critical DNS Records to Query**:
 ```bash
@@ -408,7 +408,7 @@ dig target.com CAA
 dig target.com ANY
 ```
 
-## 🔐 Security Recommendations
+## Security Recommendations
 
 **For Defenders**:
 1. **Restrict Zone Transfers** - Allow only trusted servers
@@ -422,7 +422,7 @@ dig target.com ANY
 9. **Firewall Rules** - Restrict who can query
 10. **DoH/DoT** - Encrypt DNS traffic
 
-## ⚠️ Common Mistakes
+## Common Mistakes
 
 **Attacker Mistakes**:
 1. Not trying zone transfer first
@@ -437,7 +437,7 @@ dig target.com ANY
 4. Revealing software version
 5. No DNSSEC - Cache poisoning possible
 
-## 🎯 Practical Attack Scenario
+## Practical Attack Scenario
 
 ```bash
 # Phase 1: Discovery
@@ -469,7 +469,7 @@ dig dev.target.com CNAME
 # Claim it!
 ```
 
-## 📚 Tools Summary
+## Tools Summary
 
 **Best Tool for Each Task**:
 - **Zone Transfer**: dig, fierce, dnsrecon
@@ -479,7 +479,7 @@ dig dev.target.com CNAME
 - **Subdomain Takeover**: subjack, can-i-take-over-xyz
 - **Reconnaissance**: DNSRecon, fierce, dnsenum
 
-## 🔗 Related Attacks
+## Related Attacks
 
 - **Port 80/443**: Web servers on discovered subdomains
 - **Port 25**: Mail servers from MX records

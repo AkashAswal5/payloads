@@ -1,6 +1,6 @@
 # Port 88 - Kerberos - Complete Attack Guide
 
-## 📖 Overview
+## Overview
 
 **Protocol**: Kerberos Authentication
 **Port**: 88 (TCP/UDP)
@@ -8,7 +8,7 @@
 **Encryption**: RC4, AES128, AES256
 **Purpose**: Network authentication protocol for Active Directory
 
-## 🎯 Attack Objectives
+## Attack Objectives
 
 - **Kerberoasting**: Extract and crack service account passwords
 - **AS-REP Roasting**: Attack accounts without Kerberos pre-authentication
@@ -19,7 +19,7 @@
 - **Delegation Abuse**: Exploit unconstrained/constrained delegation
 - **MS14-068**: Domain privilege escalation
 
-## 🔍 Attack Methodology
+## Attack Methodology
 
 ### Phase 1: Discovery and Reconnaissance
 
@@ -347,7 +347,7 @@ export KRB5CCNAME=TGT_user@corp.local.ccache
 psexec.py -k -no-pass administrator@dc.corp.local
 ```
 
-## 🛡️ Bypass Techniques
+## Bypass Techniques
 
 ### Bypassing AES Kerberoasting
 ```bash
@@ -370,7 +370,7 @@ GetUserSPNs.py corp.local/user:password -dc-ip 192.168.1.100 -request -outputfil
 # Rotate source IPs if possible
 ```
 
-## 📊 Information Extraction
+## Information Extraction
 
 **Critical Commands**:
 ```bash
@@ -388,7 +388,7 @@ Get-DomainComputer -Unconstrained
 Get-DomainUser -TrustedToAuth
 ```
 
-## 🔐 Security Recommendations
+## Security Recommendations
 
 **For Defenders**:
 1. **Strong Service Account Passwords** - 25+ characters
@@ -402,7 +402,7 @@ Get-DomainUser -TrustedToAuth
 9. **Protect krbtgt** - Reset password regularly
 10. **Honey Accounts** - Detect Kerberoasting attempts
 
-## 🎯 Practical Attack Scenario
+## Practical Attack Scenario
 
 ```bash
 # Phase 1: Reconnaissance (NO CREDS)
@@ -445,7 +445,7 @@ psexec.py -k -no-pass administrator@dc.corp.local
 # Domain Admin!
 ```
 
-## 📚 Tools Summary
+## Tools Summary
 
 **Best Tool for Each Task**:
 - **User Enumeration**: Kerbrute
@@ -455,7 +455,7 @@ psexec.py -k -no-pass administrator@dc.corp.local
 - **Golden/Silver Tickets**: Impacket ticketer, Mimikatz
 - **Delegation**: PowerView, Rubeus
 
-## 🔗 Related Attacks
+## Related Attacks
 
 - **Port 389 (LDAP)**: Domain enumeration
 - **Port 445 (SMB)**: Lateral movement with tickets

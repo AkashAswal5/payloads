@@ -4,7 +4,7 @@
 
 This repository contains an extensive collection of payloads for various web vulnerabilities, organized by category. All payloads are sourced from [PayloadsAllTheThings](https://swisskyrepo.github.io/PayloadsAllTheThings/).
 
-## ⚠️ Disclaimer
+## Disclaimer
 
 **FOR EDUCATIONAL AND AUTHORIZED SECURITY TESTING ONLY**
 
@@ -16,7 +16,7 @@ These payloads are provided for:
 
 **NEVER** use these payloads against systems you don't own or have explicit written permission to test.
 
-## 📚 Vulnerability Categories
+## Vulnerability Categories
 
 ### Injection Vulnerabilities
 - XSS (Cross-Site Scripting)
@@ -81,7 +81,7 @@ These payloads are provided for:
 - XS-Leak
 - DNS Rebinding
 
-## 🚀 Quick Start
+## Quick Start
 
 Each vulnerability category has its own directory. At minimum you will find:
 - `payloads.txt` - Ready-to-use payloads
@@ -91,7 +91,7 @@ Some categories also provide:
 - `bypass-techniques.md` - Filter and WAF bypass methods
 - `examples/` - Real-world examples and scenarios
 
-## 📖 Usage Example
+## Usage Example
 
 ```bash
 # Navigate to a specific vulnerability (for example, XSS)
@@ -105,7 +105,7 @@ ls
 cat README.md  # when available
 ```
 
-## 🛡️ Testing Framework
+## Testing Framework
 
 Recommended tools for testing:
 - Burp Suite
@@ -115,18 +115,18 @@ Recommended tools for testing:
 - XSStrike
 - Commix
 
-## 📝 Contributing
+## Contributing
 
 Feel free to contribute additional payloads, bypass techniques, or corrections.
 
-## 📚 Resources
+## Resources
 
 - [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings)
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
 - [PortSwigger Web Security Academy](https://portswigger.net/web-security)
 - [HackTricks](https://book.hacktricks.xyz/)
 
-## 📄 License
+## License
 
 Educational purposes only. Use responsibly and ethically.
 

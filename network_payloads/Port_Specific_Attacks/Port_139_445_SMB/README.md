@@ -1,6 +1,6 @@
 # Port 139/445 - SMB (Server Message Block) - Complete Attack Guide
 
-## 📖 Overview
+## Overview
 
 **Protocol**: SMB (Server Message Block) / CIFS
 **Ports**: 139 (SMB over NetBIOS), 445 (SMB over TCP)
@@ -8,7 +8,7 @@
 **Encryption**: Optional (SMB 3.0+)
 **Authentication**: NTLM, Kerberos, NTLMv2
 
-## 🎯 Attack Objectives
+## Attack Objectives
 
 - **Null Session**: Anonymous enumeration
 - **EternalBlue**: MS17-010 exploitation (RCE)
@@ -18,7 +18,7 @@
 - **Credential Brute Force**: Crack SMB credentials
 - **Lateral Movement**: Access other Windows systems
 
-## 🔍 Attack Methodology
+## Attack Methodology
 
 ### Phase 1: Discovery and Reconnaissance
 
@@ -365,7 +365,7 @@ crackmapexec smb 192.168.1.0/24 -u administrator -p password -x whoami
 crackmapexec smb 192.168.1.0/24 -u administrator -H <NTLM_hash>
 ```
 
-## 🛡️ Bypass Techniques
+## Bypass Techniques
 
 ### Bypassing SMB Signing
 
@@ -388,7 +388,7 @@ crackmapexec smb 192.168.1.100 -u administrator -p password -M mimikatz
 crackmapexec smb 192.168.1.100 -u administrator -p password --exec-method smbexec
 ```
 
-## 📊 Information Extraction
+## Information Extraction
 
 **Critical Information**:
 ```bash
@@ -409,7 +409,7 @@ rpcclient $> querydominfo
 crackmapexec smb 192.168.1.100 -u administrator -p password --loggedon-users
 ```
 
-## 🔐 Security Recommendations
+## Security Recommendations
 
 **For Defenders**:
 1. **Require SMB Signing** - Prevent relay attacks
@@ -423,7 +423,7 @@ crackmapexec smb 192.168.1.100 -u administrator -p password --loggedon-users
 9. **Enable firewall** - Block SMB from internet
 10. **Use LAPS** - Randomize local admin passwords
 
-## ⚠️ Common Mistakes
+## Common Mistakes
 
 **Attacker Mistakes**:
 1. Not checking for EternalBlue first
@@ -439,7 +439,7 @@ crackmapexec smb 192.168.1.100 -u administrator -p password --loggedon-users
 5. SMB exposed to internet - Critical risk
 6. Not patched for MS17-010
 
-## 🎯 Practical Attack Scenario
+## Practical Attack Scenario
 
 ```bash
 # Discovery
@@ -475,7 +475,7 @@ crackmapexec smb 192.168.1.0/24 -u Administrator -H <hash>
 # Full domain compromise!
 ```
 
-## 📚 Tools Summary
+## Tools Summary
 
 **Best Tool for Each Task**:
 - **Enumeration**: enum4linux, CrackMapExec, smbmap
@@ -486,7 +486,7 @@ crackmapexec smb 192.168.1.0/24 -u Administrator -H <hash>
 - **Lateral Movement**: CrackMapExec
 - **Credential Dumping**: secretsdump, CrackMapExec
 
-## 🔗 Related Attacks
+## Related Attacks
 
 - **Port 88 (Kerberos)**: Kerberoasting attacks
 - **Port 389 (LDAP)**: Domain enumeration

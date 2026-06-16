@@ -1,6 +1,6 @@
 # Port 389/636 - LDAP/LDAPS (Lightweight Directory Access Protocol) - Complete Attack Guide
 
-## 📖 Overview
+## Overview
 
 **Protocol**: LDAP (Lightweight Directory Access Protocol)
 **Ports**: 389 (LDAP), 636 (LDAPS), 3268/3269 (Global Catalog)
@@ -8,7 +8,7 @@
 **Encryption**: None (389), SSL/TLS (636), STARTTLS (389)
 **Authentication**: Anonymous, Simple, SASL, Kerberos
 
-## 🎯 Attack Objectives
+## Attack Objectives
 
 - **Anonymous Bind**: Access directory without credentials
 - **Domain Enumeration**: Map Active Directory structure
@@ -19,7 +19,7 @@
 - **AS-REP Roasting**: Target accounts without pre-auth
 - **Privilege Escalation**: Find admin accounts and groups
 
-## 🔍 Attack Methodology
+## Attack Methodology
 
 ### Phase 1: Discovery and Reconnaissance
 
@@ -322,7 +322,7 @@ ntlmrelayx.py -t ldap://192.168.1.100 --escalate-user lowpriv
 # Escalates lowpriv to Domain Admin!
 ```
 
-## 🛡️ Bypass Techniques
+## Bypass Techniques
 
 ### Bypassing Anonymous Bind Restrictions
 
@@ -343,7 +343,7 @@ ldapsearch -x -h 192.168.1.100 -D "guest" -w "" -b "DC=corp,DC=local"
 ldapsearch -x -H ldaps://192.168.1.100:636 -b "DC=corp,DC=local"
 ```
 
-## 📊 Information Extraction
+## Information Extraction
 
 **Critical Attributes**:
 ```bash
@@ -360,7 +360,7 @@ cn, member, memberOf
 defaultNamingContext, dnsHostName, domainFunctionality
 ```
 
-## 🔐 Security Recommendations
+## Security Recommendations
 
 **For Defenders**:
 1. **Disable Anonymous Bind** - Require authentication
@@ -374,7 +374,7 @@ defaultNamingContext, dnsHostName, domainFunctionality
 9. **Remove SPNs** - From user accounts when possible
 10. **Audit Privileged Groups** - Regularly review members
 
-## 🎯 Practical Attack Scenario
+## Practical Attack Scenario
 
 ```bash
 # Discovery
@@ -414,7 +414,7 @@ bloodhound-python -u sqlservice -p Password1 -d corp.local -ns 192.168.1.10 -c a
 # Domain compromise achieved!
 ```
 
-## 📚 Tools Summary
+## Tools Summary
 
 **Best Tool for Each Task**:
 - **Enumeration**: ldapsearch, windapsearch
@@ -425,7 +425,7 @@ bloodhound-python -u sqlservice -p Password1 -d corp.local -ns 192.168.1.10 -c a
 - **Attack Paths**: BloodHound
 - **Brute Force**: Hydra
 
-## 🔗 Related Attacks
+## Related Attacks
 
 - **Port 88 (Kerberos)**: Kerberoasting, AS-REP Roasting
 - **Port 445 (SMB)**: SMB relay from LDAP

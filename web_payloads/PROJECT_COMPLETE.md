@@ -1,12 +1,12 @@
-# 🎉 WEB VULNERABILITY PAYLOADS - PROJECT COMPLETE! 🎉
+# WEB VULNERABILITY PAYLOADS - PROJECT COMPLETE!
 
-## ✅ **MISSION ACCOMPLISHED**
+## **MISSION ACCOMPLISHED**
 
 A comprehensive collection of web vulnerability payloads has been successfully created based on PayloadsAllTheThings!
 
 ---
 
-## 📊 **FINAL STATISTICS**
+## **FINAL STATISTICS**
 
 - **Total Vulnerability Directories:** 41
 - **Payload Files Created:** 41 payloads.txt
@@ -17,55 +17,55 @@ A comprehensive collection of web vulnerability payloads has been successfully c
 
 ---
 
-## 📁 **COMPLETE PAYLOAD COLLECTION**
+## **COMPLETE PAYLOAD COLLECTION**
 
-### ✅ **All 41 Vulnerabilities Covered:**
+### **All 41 Vulnerabilities Covered:**
 
-1. ✅ **account-takeover** - Password reset, OAuth, session attacks
-2. ✅ **brute-force** - Password lists, rate limit bypass, credential stuffing
-3. ✅ **business-logic** - Price manipulation, workflow bypass, race conditions
-4. ✅ **clickjacking** - UI redressing, frame overlays, likejacking
-5. ✅ **command-injection** - OS commands, reverse shells, data exfiltration
-6. ✅ **cors** - Origin bypass, credential theft, cache poisoning
-7. ✅ **crlf-injection** - Header injection, HTTP response splitting
-8. ✅ **csrf** - Token bypass, GET/POST attacks, SameSite bypass
-9. ✅ **csv-injection** - Formula injection, DDE attacks, command execution
-10. ✅ **deserialization** - Java, PHP, .NET, Python, Ruby, Node.js
-11. ✅ **directory-traversal** - Path traversal, encoding bypass, LFI
-12. ✅ **dns-rebinding** - Same-origin bypass, internal network access
-13. ✅ **dom-clobbering** - Window property override, form manipulation
-14. ✅ **file-inclusion** - LFI/RFI, PHP wrappers, path traversal
-15. ✅ **file-upload** - Extension bypass, magic bytes, web shells
-16. ✅ **graphql** - Introspection, injection, DOS attacks
-17. ✅ **hpp** - Parameter pollution, backend-specific behavior
-18. ✅ **idor** - Object reference manipulation, enumeration
-19. ✅ **jwt** - Algorithm confusion, None bypass, token manipulation
-20. ✅ **ldap-injection** - Filter injection, authentication bypass
-21. ✅ **mass-assignment** - Parameter injection, privilege escalation
-22. ✅ **mfa-bypass** - 2FA circumvention, brute force, response manipulation
-23. ✅ **nosqli** - MongoDB, NoSQL operators, injection techniques
-24. ✅ **oauth** - Redirect URI bypass, authorization code theft
-25. ✅ **open-redirect** - URL manipulation, protocol smuggling, phishing
-26. ✅ **prototype-pollution** - JavaScript object pollution, RCE
-27. ✅ **race-condition** - TOCTOU, double spending, parallel attacks
-28. ✅ **request-smuggling** - CL.TE, TE.CL, cache poisoning
-29. ✅ **sqli** - MySQL, MSSQL, PostgreSQL, Oracle, blind injection
-30. ✅ **ssi** - Server-side includes, command execution, file inclusion
-31. ✅ **ssrf** - Cloud metadata, internal network, protocol bypass
-32. ✅ **ssti** - Template injection for Jinja2, Twig, etc.
-33. ✅ **tabnabbing** - Reverse tabnabbing, window.opener exploitation
-34. ✅ **type-juggling** - PHP magic hashes, loose comparison bypass
-35. ✅ **web-cache-deception** - Cache manipulation, private data leak
-36. ✅ **xpath-injection** - XML query injection, blind attacks
-37. ✅ **xs-leak** - Cross-site leaks, timing attacks, cache probing
-38. ✅ **xslt** - XSLT injection, file read, RCE
-39. ✅ **xss** - Reflected, stored, DOM, polyglots, WAF bypass
-40. ✅ **xxe** - XML external entity, SSRF, file disclosure
-41. ✅ **zip-slip** - Archive path traversal, file overwrite
+1. **account-takeover** - Password reset, OAuth, session attacks
+2. **brute-force** - Password lists, rate limit bypass, credential stuffing
+3. **business-logic** - Price manipulation, workflow bypass, race conditions
+4. **clickjacking** - UI redressing, frame overlays, likejacking
+5. **command-injection** - OS commands, reverse shells, data exfiltration
+6. **cors** - Origin bypass, credential theft, cache poisoning
+7. **crlf-injection** - Header injection, HTTP response splitting
+8. **csrf** - Token bypass, GET/POST attacks, SameSite bypass
+9. **csv-injection** - Formula injection, DDE attacks, command execution
+10. **deserialization** - Java, PHP, .NET, Python, Ruby, Node.js
+11. **directory-traversal** - Path traversal, encoding bypass, LFI
+12. **dns-rebinding** - Same-origin bypass, internal network access
+13. **dom-clobbering** - Window property override, form manipulation
+14. **file-inclusion** - LFI/RFI, PHP wrappers, path traversal
+15. **file-upload** - Extension bypass, magic bytes, web shells
+16. **graphql** - Introspection, injection, DOS attacks
+17. **hpp** - Parameter pollution, backend-specific behavior
+18. **idor** - Object reference manipulation, enumeration
+19. **jwt** - Algorithm confusion, None bypass, token manipulation
+20. **ldap-injection** - Filter injection, authentication bypass
+21. **mass-assignment** - Parameter injection, privilege escalation
+22. **mfa-bypass** - 2FA circumvention, brute force, response manipulation
+23. **nosqli** - MongoDB, NoSQL operators, injection techniques
+24. **oauth** - Redirect URI bypass, authorization code theft
+25. **open-redirect** - URL manipulation, protocol smuggling, phishing
+26. **prototype-pollution** - JavaScript object pollution, RCE
+27. **race-condition** - TOCTOU, double spending, parallel attacks
+28. **request-smuggling** - CL.TE, TE.CL, cache poisoning
+29. **sqli** - MySQL, MSSQL, PostgreSQL, Oracle, blind injection
+30. **ssi** - Server-side includes, command execution, file inclusion
+31. **ssrf** - Cloud metadata, internal network, protocol bypass
+32. **ssti** - Template injection for Jinja2, Twig, etc.
+33. **tabnabbing** - Reverse tabnabbing, window.opener exploitation
+34. **type-juggling** - PHP magic hashes, loose comparison bypass
+35. **web-cache-deception** - Cache manipulation, private data leak
+36. **xpath-injection** - XML query injection, blind attacks
+37. **xs-leak** - Cross-site leaks, timing attacks, cache probing
+38. **xslt** - XSLT injection, file read, RCE
+39. **xss** - Reflected, stored, DOM, polyglots, WAF bypass
+40. **xxe** - XML external entity, SSRF, file disclosure
+41. **zip-slip** - Archive path traversal, file overwrite
 
 ---
 
-## 📚 **DOCUMENTATION FILES**
+## **DOCUMENTATION FILES**
 
 1. **README.md** - Project overview and quick start
 2. **QUICK_REFERENCE.md** - Essential payloads for rapid testing
@@ -76,20 +76,20 @@ A comprehensive collection of web vulnerability payloads has been successfully c
 
 ---
 
-## 🎯 **KEY FEATURES**
+## **KEY FEATURES**
 
-✅ **Comprehensive Coverage** - All major web vulnerabilities
-✅ **Real-World Payloads** - Tested and proven techniques
-✅ **Multiple Languages** - PHP, Python, Java, JavaScript, etc.
-✅ **Bypass Techniques** - WAF evasion, filter bypass, encoding
-✅ **Tool Integration** - Burp Suite, curl, Python scripts
-✅ **Testing Methodology** - Step-by-step exploitation guides
-✅ **Framework-Specific** - Tailored for different platforms
-✅ **Educational Focus** - Clear explanations and examples
+- **Comprehensive Coverage** - All major web vulnerabilities
+- **Real-World Payloads** - Tested and proven techniques
+- **Multiple Languages** - PHP, Python, Java, JavaScript, etc.
+- **Bypass Techniques** - WAF evasion, filter bypass, encoding
+- **Tool Integration** - Burp Suite, curl, Python scripts
+- **Testing Methodology** - Step-by-step exploitation guides
+- **Framework-Specific** - Tailored for different platforms
+- **Educational Focus** - Clear explanations and examples
 
 ---
 
-## 📖 **HOW TO USE**
+## **HOW TO USE**
 
 ### Quick Start:
 ```bash
@@ -121,21 +121,21 @@ curl "http://target.com?id=$(cat sqli/payloads.txt | head -1)"
 
 ---
 
-## ⚠️ **LEGAL DISCLAIMER**
+## **LEGAL DISCLAIMER**
 
 **THIS COLLECTION IS FOR:**
-- ✅ Authorized security testing
-- ✅ Educational purposes
-- ✅ Penetration testing with permission
-- ✅ Bug bounty programs
-- ✅ Security research
-- ✅ Lab environments
+- Authorized security testing
+- Educational purposes
+- Penetration testing with permission
+- Bug bounty programs
+- Security research
+- Lab environments
 
 **NEVER USE FOR:**
-- ❌ Unauthorized access
-- ❌ Malicious purposes
-- ❌ Illegal activities
-- ❌ Systems you don't own or have permission to test
+- Unauthorized access
+- Malicious purposes
+- Illegal activities
+- Systems you don't own or have permission to test
 
 **ALWAYS:**
 - Get written permission before testing
@@ -145,7 +145,7 @@ curl "http://target.com?id=$(cat sqli/payloads.txt | head -1)"
 
 ---
 
-## 🔒 **SECURITY TESTING WORKFLOW**
+## **SECURITY TESTING WORKFLOW**
 
 1. **Reconnaissance** - Understand the target
 2. **Select Payloads** - Choose appropriate vulnerability type
@@ -155,7 +155,7 @@ curl "http://target.com?id=$(cat sqli/payloads.txt | head -1)"
 
 ---
 
-## 🌟 **HIGHLIGHTS**
+## **HIGHLIGHTS**
 
 - **12,427+ Lines** of carefully curated payloads
 - **100% Coverage** of vulnerability folders
@@ -166,7 +166,7 @@ curl "http://target.com?id=$(cat sqli/payloads.txt | head -1)"
 
 ---
 
-## 🎓 **EDUCATIONAL VALUE**
+## **EDUCATIONAL VALUE**
 
 Perfect for:
 - Security researchers and professionals
@@ -178,7 +178,7 @@ Perfect for:
 
 ---
 
-## 🔧 **TOOLS REFERENCED**
+## **TOOLS REFERENCED**
 
 - Burp Suite
 - OWASP ZAP
@@ -192,7 +192,7 @@ Perfect for:
 
 ---
 
-## 📊 **PAYLOAD BREAKDOWN**
+## **PAYLOAD BREAKDOWN**
 
 Each vulnerability folder contains:
 - Basic exploitation payloads
@@ -206,7 +206,7 @@ Each vulnerability folder contains:
 
 ---
 
-## 🚀 **NEXT STEPS**
+## **NEXT STEPS**
 
 1. **Explore** the documentation files
 2. **Read** QUICK_REFERENCE.md for essential payloads
@@ -217,7 +217,7 @@ Each vulnerability folder contains:
 
 ---
 
-## 💡 **PRO TIPS**
+## **PRO TIPS**
 
 - Always start with detection payloads
 - Understand what each payload does before using
@@ -229,19 +229,19 @@ Each vulnerability folder contains:
 
 ---
 
-## 🎯 **SUCCESS METRICS**
+## **SUCCESS METRICS**
 
-✅ 41/41 vulnerability folders populated
-✅ 12,427+ lines of payloads
-✅ Comprehensive documentation
-✅ Real-world exploitation examples
-✅ Tool integration guides
-✅ Educational focus maintained
-✅ Organized and searchable structure
+- 41/41 vulnerability folders populated
+- 12,427+ lines of payloads
+- Comprehensive documentation
+- Real-world exploitation examples
+- Tool integration guides
+- Educational focus maintained
+- Organized and searchable structure
 
 ---
 
-## 🙏 **ACKNOWLEDGMENTS**
+## **ACKNOWLEDGMENTS**
 
 - **PayloadsAllTheThings** - Primary source (SwissKyRepo)
 - **OWASP** - Vulnerability classifications and guidance
@@ -251,7 +251,7 @@ Each vulnerability folder contains:
 
 ---
 
-## 📞 **RESOURCES**
+## **RESOURCES**
 
 - **Source:** https://github.com/swisskyrepo/PayloadsAllTheThings
 - **OWASP:** https://owasp.org
@@ -261,7 +261,7 @@ Each vulnerability folder contains:
 
 ---
 
-## ✨ **FINAL NOTES**
+## **FINAL NOTES**
 
 This collection represents thousands of hours of security research condensed into an accessible, organized format. Use it wisely, test ethically, and contribute to making the web more secure!
 
@@ -269,9 +269,9 @@ This collection represents thousands of hours of security research condensed int
 
 ---
 
-**Project Status:** ✅ **COMPLETE**  
+**Project Status:** **COMPLETE**  
 **Last Updated:** June 16, 2026  
 **Version:** 1.0  
 **Total Payloads:** 12,427+ lines across 41 vulnerabilities
 
-**Happy (ethical) hacking! 🔒🛡️**
+**Happy (ethical) hacking!**

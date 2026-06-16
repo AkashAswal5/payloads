@@ -1,16 +1,16 @@
 # Network Payloads Repository - Expansion Roadmap
 
-## 🎯 What Can Be Added
+## What Can Be Added
 
 This document outlines additional content that would make this repository even more comprehensive.
 
 ---
 
-## 📋 **Missing Critical Ports** (Need Full Guides)
+## **Missing Critical Ports** (Need Full Guides)
 
 ### High Priority Ports
 
-1. **Port 88 - Kerberos** ⚠️ CRITICAL
+1. **Port 88 - Kerberos** CRITICAL
    - Kerberoasting attacks
    - AS-REP Roasting
    - Golden/Silver ticket attacks
@@ -94,7 +94,7 @@ This document outlines additional content that would make this repository even m
 
 ---
 
-## 🛡️ **Missing Bypass Techniques** (Need Dedicated Guides)
+## **Missing Bypass Techniques** (Need Dedicated Guides)
 
 ### 1. **WAF Bypass Techniques** (150+ lines needed)
    - SQL injection WAF bypass
@@ -161,7 +161,7 @@ This document outlines additional content that would make this repository even m
 
 ---
 
-## 🚀 **Missing Attack Categories** (Need Full Folders)
+## **Missing Attack Categories** (Need Full Folders)
 
 ### 1. **Cloud Security Attacks/**
    - AWS attacks (S3, EC2, IAM, Lambda)
@@ -244,7 +244,7 @@ This document outlines additional content that would make this repository even m
 
 ---
 
-## 🔧 **Additional Tools & Techniques**
+## **Additional Tools & Techniques**
 
 ### **Post-Exploitation Frameworks**
 - Empire/Starkiller
@@ -291,7 +291,7 @@ This document outlines additional content that would make this repository even m
 
 ---
 
-## 📚 **Additional Documentation Needed**
+## **Additional Documentation Needed**
 
 ### 1. **Cheat Sheets/**
    - Nmap cheat sheet
@@ -346,7 +346,7 @@ This document outlines additional content that would make this repository even m
 
 ---
 
-## 🎓 **Training Resources**
+## **Training Resources**
 
 ### **Scenario-Based Labs**
 - Real-world attack scenarios
@@ -361,32 +361,32 @@ This document outlines additional content that would make this repository even m
 
 ---
 
-## 🔥 **High-Value Additions (Priority Order)**
+## **High-Value Additions (Priority Order)**
 
 ### **Tier 1 - Critical (Add Immediately)**
-1. ✅ Port 88 - Kerberos attacks
-2. ✅ Port 5985/5986 - WinRM
-3. ✅ Active Directory attack category
-4. ✅ WAF bypass techniques
-5. ✅ Cloud security attacks
+1. Port 88 - Kerberos attacks
+2. Port 5985/5986 - WinRM
+3. Active Directory attack category
+4. WAF bypass techniques
+5. Cloud security attacks
 
 ### **Tier 2 - Important (Add Soon)**
-6. ✅ Port 2049 - NFS
-7. ✅ Port 9200 - Elasticsearch
-8. ✅ Port 1521 - Oracle
-9. ✅ Container/Kubernetes attacks
-10. ✅ IDS/IPS evasion
+6. Port 2049 - NFS
+7. Port 9200 - Elasticsearch
+8. Port 1521 - Oracle
+9. Container/Kubernetes attacks
+10. IDS/IPS evasion
 
 ### **Tier 3 - Nice to Have (Add Later)**
-11. ✅ IoT attacks
-12. ✅ Mobile network attacks
-13. ✅ Cheat sheets
-14. ✅ Payload libraries
-15. ✅ Lab setup guides
+11. IoT attacks
+12. Mobile network attacks
+13. Cheat sheets
+14. Payload libraries
+15. Lab setup guides
 
 ---
 
-## 📊 **Current vs. Proposed Coverage**
+## **Current vs. Proposed Coverage**
 
 ### **Current Coverage**
 - 18 detailed port guides
@@ -407,7 +407,7 @@ This document outlines additional content that would make this repository even m
 
 ---
 
-## 🎯 **Next Steps**
+## **Next Steps**
 
 I can immediately start adding:
 
@@ -424,4 +424,4 @@ I can immediately start adding:
 
 ---
 
-**This repository can become the MOST COMPREHENSIVE network security resource available!** 🚀
+**This repository can become the MOST COMPREHENSIVE network security resource available!**

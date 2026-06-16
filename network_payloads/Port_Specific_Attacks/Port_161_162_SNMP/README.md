@@ -1,6 +1,6 @@
 # Port 161/162 - SNMP (Simple Network Management Protocol) - Complete Attack Guide
 
-## 📖 Overview
+## Overview
 
 **Protocol**: SNMP (Simple Network Management Protocol)
 **Ports**: 161 (SNMP), 162 (SNMP Trap)
@@ -8,7 +8,7 @@
 **Encryption**: SNMPv3 (optional), SNMPv1/v2c (plaintext)
 **Authentication**: Community strings (v1/v2c), User-based (v3)
 
-## 🎯 Attack Objectives
+## Attack Objectives
 
 - **Community String Brute Force**: Discover public/private strings
 - **Information Gathering**: Extract device configuration
@@ -17,7 +17,7 @@
 - **Configuration Extraction**: Dump running configs
 - **MIB Walking**: Extract all SNMP data
 
-## 🔍 Attack Methodology
+## Attack Methodology
 
 ### Phase 1: Discovery and Reconnaissance
 
@@ -364,7 +364,7 @@ snmpset -v 2c -c private 192.168.1.100 [specific_OID] s "command"
 # Very device/vendor specific
 ```
 
-## 🛡️ Bypass Techniques
+## Bypass Techniques
 
 ### Bypassing Firewalls
 ```bash
@@ -387,7 +387,7 @@ onesixtyone -c community.txt -w 60 192.168.1.100
 # Use multiple attacking IPs
 ```
 
-## 📊 Information Extraction Summary
+## Information Extraction Summary
 
 **Critical OIDs to Query**:
 ```bash
@@ -414,7 +414,7 @@ onesixtyone -c community.txt -w 60 192.168.1.100
 1.3.6.1.2.1.25.2.3.1.3        # Storage description
 ```
 
-## 🔐 Security Recommendations
+## Security Recommendations
 
 **For Defenders**:
 1. **Disable SNMP** - If not needed
@@ -428,7 +428,7 @@ onesixtyone -c community.txt -w 60 192.168.1.100
 9. **Complex Strings** - Long, random community strings
 10. **Regular Audits** - Review SNMP configuration
 
-## ⚠️ Common Mistakes
+## Common Mistakes
 
 **Attacker Mistakes**:
 1. Forgetting UDP - SNMP uses UDP not TCP
@@ -443,7 +443,7 @@ onesixtyone -c community.txt -w 60 192.168.1.100
 4. SNMP from internet - Critical exposure
 5. Write access enabled - Allows modification
 
-## 🎯 Practical Attack Scenario
+## Practical Attack Scenario
 
 ```bash
 # Phase 1: Discovery
@@ -478,7 +478,7 @@ use auxiliary/scanner/snmp/cisco_config_tftp
 # Result: Complete network compromise
 ```
 
-## 📚 Tools Summary
+## Tools Summary
 
 **Best Tool for Each Task**:
 - **Discovery**: Nmap (UDP scan)
@@ -487,7 +487,7 @@ use auxiliary/scanner/snmp/cisco_config_tftp
 - **Automated**: Metasploit modules
 - **Comprehensive**: Nmap NSE scripts
 
-## 🔗 Related Attacks
+## Related Attacks
 
 - **Port 80/443**: Often reveals SNMP strings in web configs
 - **Port 22**: SSH may use same passwords as SNMP

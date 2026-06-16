@@ -1,6 +1,6 @@
 # Port 53 - DNS Bypass Techniques
 
-## 🛡️ Security Controls and Bypass Methods
+## Security Controls and Bypass Methods
 
 ---
 
@@ -434,7 +434,7 @@ dig @8.8.8.8 example.com +subnet=1.2.3.0/24
 
 ---
 
-## 📊 Bypass Success Rates
+## Bypass Success Rates
 
 | Technique | Success Rate | Detection Risk | Difficulty |
 |-----------|--------------|----------------|------------|
@@ -449,7 +449,7 @@ dig @8.8.8.8 example.com +subnet=1.2.3.0/24
 
 ---
 
-## 🎯 Recommended Bypass Order
+## Recommended Bypass Order
 
 1. **Alternative DNS servers** (8.8.8.8, 1.1.1.1)
 2. **Direct IP access** (skip DNS entirely)
@@ -475,7 +475,7 @@ dig @8.8.8.8 example.com +subnet=1.2.3.0/24
 
 ---
 
-## ⚠️ Important Notes
+## Important Notes
 
 - DNS filtering is easy to bypass with alternative servers
 - DoH/DoT effectively bypass most DNS-based controls

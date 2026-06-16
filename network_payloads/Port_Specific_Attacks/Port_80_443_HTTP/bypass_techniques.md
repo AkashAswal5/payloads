@@ -1,6 +1,6 @@
 # Port 80/443 - HTTP/HTTPS Bypass Techniques
 
-## 🛡️ Security Controls and Bypass Methods
+## Security Controls and Bypass Methods
 
 ---
 
@@ -539,7 +539,7 @@ http://target.com/admin/page.js
 
 ---
 
-## 📊 Bypass Success Rates
+## Bypass Success Rates
 
 | Technique | Success Rate | Detection Risk | Difficulty |
 |-----------|--------------|----------------|------------|
@@ -554,7 +554,7 @@ http://target.com/admin/page.js
 
 ---
 
-## 🎯 Recommended Attack Order
+## Recommended Attack Order
 
 1. **Default credentials** (quick wins)
 2. **Forced browsing** (discover hidden paths)
@@ -568,7 +568,7 @@ http://target.com/admin/page.js
 
 ---
 
-## ⚠️ Important Notes
+## Important Notes
 
 - Test in authorized environments only
 - WAF bypass requires creativity and persistence

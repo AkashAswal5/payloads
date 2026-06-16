@@ -2,7 +2,7 @@
 
 Thank you for your interest in contributing! This document provides guidelines for adding new payloads, attack techniques, and improving existing content.
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [How to Contribute](#how-to-contribute)
 - [Repository Structure](#repository-structure)
@@ -12,7 +12,7 @@ Thank you for your interest in contributing! This document provides guidelines f
 
 ---
 
-## 🤝 How to Contribute
+## How to Contribute
 
 We welcome contributions in the following areas:
 
@@ -26,7 +26,7 @@ We welcome contributions in the following areas:
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 network_payloads/
@@ -74,7 +74,7 @@ network_payloads/
 
 ---
 
-## 📝 Content Guidelines
+## Content Guidelines
 
 ### For payloads.txt Files
 
@@ -107,7 +107,7 @@ EOF
 
 1. **Overview** - Protocol/service description
    ```markdown
-   ## 📖 Overview
+   ## Overview
    **Protocol**: Name
    **Port**: Number
    **Transport**: TCP/UDP
@@ -128,14 +128,14 @@ EOF
 ```markdown
 # Port XX - Service Name - Complete Attack Guide
 
-## 📖 Overview
+## Overview
 [Service description]
 
-## 🎯 Attack Objectives
+## Attack Objectives
 - Objective 1
 - Objective 2
 
-## 🔍 Attack Methodology
+## Attack Methodology
 
 ### Phase 1: Discovery
 [Commands and explanation]
@@ -143,18 +143,18 @@ EOF
 ### Phase 2: Exploitation
 [Detailed attack steps]
 
-## 🛡️ Bypass Techniques
+## Bypass Techniques
 
 ### Bypassing XXX
 [How to bypass security control]
 
-## 📊 Information Extraction
+## Information Extraction
 [What information can be extracted and how]
 
-## 🎯 Practical Attack Scenario
+## Practical Attack Scenario
 [Complete walkthrough]
 
-## 🔐 Security Recommendations
+## Security Recommendations
 [Defense strategies]
 ```
 
@@ -212,7 +212,7 @@ nmap -sS target  # Run nmap with -sS flag
 
 ---
 
-## 🚀 Submission Process
+## Submission Process
 
 ### 1. Fork the Repository
 ```bash
@@ -253,7 +253,7 @@ git commit -m "Add: Port 3306 MySQL attack guide"
 
 ---
 
-## 🧪 Testing Requirements
+## Testing Requirements
 
 ### Before Submitting
 
@@ -279,7 +279,7 @@ git commit -m "Add: Port 3306 MySQL attack guide"
 
 ---
 
-## 📋 Checklist for New Port-Specific Guide
+## Checklist for New Port-Specific Guide
 
 When adding a new port guide, ensure it includes:
 
@@ -300,7 +300,7 @@ When adding a new port guide, ensure it includes:
 
 ---
 
-## 🎯 Content Priorities
+## Content Priorities
 
 **High Priority** (Most Needed):
 - Port-specific attack guides (23, 25, 53, 80, 139/445, 443, 1433, 3306, 3389, 5432)
@@ -322,7 +322,7 @@ When adding a new port guide, ensure it includes:
 
 ---
 
-## ✅ Review Criteria
+## Review Criteria
 
 Pull requests will be evaluated on:
 
@@ -336,7 +336,7 @@ Pull requests will be evaluated on:
 
 ---
 
-## 🙏 Recognition
+## Recognition
 
 Contributors will be:
 - Listed in repository contributors
@@ -345,7 +345,7 @@ Contributors will be:
 
 ---
 
-## 📧 Questions?
+## Questions?
 
 If you have questions about contributing:
 - Open an issue with the `question` label
@@ -354,7 +354,7 @@ If you have questions about contributing:
 
 ---
 
-## ⚠️ Legal Notice
+## Legal Notice
 
 By contributing, you agree that:
 - Content is for authorized security testing only
@@ -364,7 +364,7 @@ By contributing, you agree that:
 
 ---
 
-## 🎓 Resources for Contributors
+## Resources for Contributors
 
 **Learning Resources**:
 - OWASP Testing Guide
@@ -387,4 +387,4 @@ By contributing, you agree that:
 
 ---
 
-Thank you for contributing to the network security community! 🔐
+Thank you for contributing to the network security community!

@@ -1,6 +1,6 @@
 # Port 139/445 - SMB Bypass Techniques
 
-## 🛡️ Security Controls and Bypass Methods
+## Security Controls and Bypass Methods
 
 ---
 
@@ -528,7 +528,7 @@ net use Z: \\192.168.1.100\share /user:admin password
 
 ---
 
-## 📊 Bypass Success Rates
+## Bypass Success Rates
 
 | Technique | Success Rate | Detection Risk | Difficulty |
 |-----------|--------------|----------------|------------|
@@ -543,7 +543,7 @@ net use Z: \\192.168.1.100\share /user:admin password
 
 ---
 
-## 🎯 Recommended Attack Order
+## Recommended Attack Order
 
 1. **Null session** (quick, low risk)
 2. **Guest account** (often enabled)
@@ -558,7 +558,7 @@ net use Z: \\192.168.1.100\share /user:admin password
 
 ---
 
-## ⚠️ Important Notes
+## Important Notes
 
 - SMB is heavily monitored in corporate environments
 - Failed logins trigger alerts quickly

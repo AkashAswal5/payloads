@@ -1,6 +1,6 @@
 # Port 5985/5986 - WinRM (Windows Remote Management) - Complete Attack Guide
 
-## 📖 Overview
+## Overview
 
 **Protocol**: WinRM (Windows Remote Management)
 **Ports**: 5985 (HTTP), 5986 (HTTPS)
@@ -8,7 +8,7 @@
 **Encryption**: None (5985), TLS/SSL (5986)
 **Authentication**: Kerberos, NTLM, CredSSP, Certificate
 
-## 🎯 Attack Objectives
+## Attack Objectives
 
 - **Remote Command Execution**: Execute PowerShell remotely
 - **Lateral Movement**: Move across Windows network
@@ -18,7 +18,7 @@
 - **Persistence**: Maintain access via PS remoting
 - **Data Exfiltration**: Extract files and data
 
-## 🔍 Attack Methodology
+## Attack Methodology
 
 ### Phase 1: Discovery and Reconnaissance
 
@@ -329,7 +329,7 @@ Invoke-Command -ComputerName 192.168.1.100 -Credential $cred -ScriptBlock {
 }
 ```
 
-## 🛡️ Bypass Techniques
+## Bypass Techniques
 
 ### Bypassing Firewall
 ```bash
@@ -364,7 +364,7 @@ crackmapexec winrm 192.168.1.100 -u admin -P passwords.txt --continue-on-success
 crackmapexec winrm 192.168.1.0/24 -u users.txt -p 'Password123'
 ```
 
-## 📊 Information Extraction
+## Information Extraction
 
 **Key Commands**:
 ```powershell
@@ -394,7 +394,7 @@ sc query
 Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*
 ```
 
-## 🔐 Security Recommendations
+## Security Recommendations
 
 **For Defenders**:
 1. **Disable WinRM** - If not needed
@@ -408,7 +408,7 @@ Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uni
 9. **Disable NTLM** - Kerberos only if possible
 10. **JEA** - Just Enough Administration
 
-## 🎯 Practical Attack Scenario
+## Practical Attack Scenario
 
 ```bash
 # Discovery
@@ -442,7 +442,7 @@ evil-winrm -i 192.168.1.100 -u admin -p 'P@ssw0rd'
 # Domain compromised!
 ```
 
-## 📚 Tools Summary
+## Tools Summary
 
 **Best Tool for Each Task**:
 - **Connection**: Evil-WinRM (Linux), PowerShell (Windows)
@@ -451,7 +451,7 @@ evil-winrm -i 192.168.1.100 -u admin -p 'P@ssw0rd'
 - **Credential Dump**: Mimikatz, Invoke-Mimikatz
 - **Automation**: PowerShell scripts
 
-## 🔗 Related Attacks
+## Related Attacks
 
 - **Port 445 (SMB)**: Often same credentials
 - **Port 3389 (RDP)**: Alternative remote access

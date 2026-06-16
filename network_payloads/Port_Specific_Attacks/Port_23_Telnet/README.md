@@ -1,6 +1,6 @@
 # Port 23 - Telnet - Complete Attack Guide
 
-## 📖 Overview
+## Overview
 
 **Protocol**: Telnet (Telecommunication Network)
 **Port**: 23 (default)
@@ -8,11 +8,11 @@
 **Encryption**: None (plaintext)
 **Authentication**: Username/Password (unencrypted)
 
-## ⚠️ Security Warning
+## Security Warning
 
 Telnet transmits **everything in cleartext** including credentials. Always prefer SSH (Port 22) for secure remote access.
 
-## 🎯 Attack Objectives
+## Attack Objectives
 
 - **Credential Sniffing**: Capture passwords in transit
 - **Brute Force**: Crack weak passwords
@@ -21,7 +21,7 @@ Telnet transmits **everything in cleartext** including credentials. Always prefe
 - **Command Injection**: Exploit vulnerable implementations
 - **Man-in-the-Middle**: Intercept and modify traffic
 
-## 🔍 Attack Methodology
+## Attack Methodology
 
 ### Phase 1: Discovery and Reconnaissance
 
@@ -333,7 +333,7 @@ done
 find /home -name "id_rsa" 2>/dev/null
 ```
 
-## 🛡️ Bypass Techniques
+## Bypass Techniques
 
 ### Bypassing Firewall
 
@@ -379,7 +379,7 @@ done
 proxychains telnet 192.168.1.100
 ```
 
-## 📊 Information Extraction
+## Information Extraction
 
 ### What to Extract
 
@@ -416,7 +416,7 @@ export                  # Mikrotik
 cat /etc/config/*       # OpenWRT
 ```
 
-## 🔐 Security Recommendations
+## Security Recommendations
 
 **For Defenders**:
 1. **Disable Telnet** - Use SSH instead
@@ -428,7 +428,7 @@ cat /etc/config/*       # OpenWRT
 7. **Replace with SSH** - Port 22 with encryption
 8. **VPN Access** - Require VPN for remote access
 
-## ⚠️ Common Mistakes
+## Common Mistakes
 
 **Attacker Mistakes**:
 1. **Too many failed logins** - Account lockout
@@ -443,7 +443,7 @@ cat /etc/config/*       # OpenWRT
 4. **No logging** - Can't detect attacks
 5. **Mixed with SSH** - Confusion about which is enabled
 
-## 🎯 Practical Attack Scenario
+## Practical Attack Scenario
 
 ```bash
 # Phase 1: Discovery
@@ -480,7 +480,7 @@ show cdp neighbors
 # Try same credentials
 ```
 
-## 📚 Tools Summary
+## Tools Summary
 
 **Best Tool for Each Task**:
 - **Banner Grabbing**: `nc`, `telnet`, `nmap --script=banner`
@@ -489,14 +489,14 @@ show cdp neighbors
 - **MITM**: `bettercap`, `ettercap`
 - **Session Analysis**: `wireshark`, `tshark`
 
-## 🔗 Related Attacks
+## Related Attacks
 
 - **Port 22 (SSH)**: Secure alternative to Telnet
 - **Port 23 (SSH on 23)**: Some systems run SSH on port 23
 - **Port 80/443**: Web-based management often uses same credentials
 - **Port 161 (SNMP)**: Often has similar or related credentials
 
-## 📖 Further Reading
+## Further Reading
 
 - RFC 854: Telnet Protocol Specification
 - Telnet Security Considerations

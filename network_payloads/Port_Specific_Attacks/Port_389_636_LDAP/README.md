@@ -1,6 +1,6 @@
 # Port 389/636 - LDAP/LDAPS - Complete Attack Guide
 
-## 📖 Overview
+## Overview
 
 **Protocol**: LDAP (Lightweight Directory Access Protocol)
 **Ports**: 389 (LDAP), 636 (LDAPS - SSL), 3268/3269 (Global Catalog)
@@ -8,7 +8,7 @@
 **Encryption**: None (389), SSL/TLS (636)
 **Authentication**: Anonymous, Simple, SASL, Kerberos
 
-## 🎯 Attack Objectives
+## Attack Objectives
 
 - **Anonymous Bind**: Access directory without credentials
 - **Credential Brute Force**: Crack LDAP credentials
@@ -18,7 +18,7 @@
 - **AS-REP Roasting**: Target accounts without pre-auth
 - **Data Exfiltration**: Dump entire directory
 
-## 🔍 Attack Methodology
+## Attack Methodology
 
 ### Phase 1: Discovery and Reconnaissance
 
@@ -303,7 +303,7 @@ crackmapexec ldap 192.168.1.100 -u username -p password --groups
 crackmapexec ldap 192.168.1.100 -u username -p password --trusted-for-delegation
 ```
 
-## 🛡️ Bypass Techniques
+## Bypass Techniques
 
 ### Bypassing Firewall
 ```bash
@@ -325,7 +325,7 @@ ldapsearch -x -H ldap://localhost -b "dc=corp,dc=local"
 # Use multiple source IPs if possible
 ```
 
-## 📊 Information Extraction
+## Information Extraction
 
 **Critical LDAP Queries**:
 ```bash
@@ -348,7 +348,7 @@ ldapsearch -x -H ldap://localhost -b "dc=corp,dc=local"
 (memberOf=CN=Domain Admins,CN=Users,DC=corp,DC=local)
 ```
 
-## 🔐 Security Recommendations
+## Security Recommendations
 
 **For Defenders**:
 1. **Disable Anonymous Bind** - Require authentication
@@ -362,7 +362,7 @@ ldapsearch -x -H ldap://localhost -b "dc=corp,dc=local"
 9. **Audit Logs** - Track all LDAP queries
 10. **Disable Pre-Auth** - Require for all accounts
 
-## ⚠️ Common Mistakes
+## Common Mistakes
 
 **Attacker Mistakes**:
 1. Not trying anonymous bind first
@@ -377,7 +377,7 @@ ldapsearch -x -H ldap://localhost -b "dc=corp,dc=local"
 4. No monitoring - Attacks go undetected
 5. Service accounts with weak passwords
 
-## 🎯 Practical Attack Scenario
+## Practical Attack Scenario
 
 ```bash
 # Phase 1: Discovery
@@ -406,7 +406,7 @@ hashcat -m 13100 hash.txt rockyou.txt
 # Domain compromise!
 ```
 
-## 📚 Tools Summary
+## Tools Summary
 
 **Best Tool for Each Task**:
 - **Discovery**: Nmap
@@ -416,7 +416,7 @@ hashcat -m 13100 hash.txt rockyou.txt
 - **Kerberoasting**: Impacket (GetUserSPNs)
 - **AS-REP Roasting**: Impacket (GetNPUsers)
 
-## 🔗 Related Attacks
+## Related Attacks
 
 - **Port 88 (Kerberos)**: Kerberoasting, AS-REP roasting
 - **Port 445 (SMB)**: Often same credentials

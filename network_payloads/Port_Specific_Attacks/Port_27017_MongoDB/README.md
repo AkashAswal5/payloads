@@ -1,6 +1,6 @@
 # Port 27017/27018 - MongoDB - Complete Attack Guide
 
-## 📖 Overview
+## Overview
 
 **Protocol**: MongoDB (NoSQL Database)
 **Ports**: 27017 (default), 27018 (sharded cluster), 27019 (config server)
@@ -8,7 +8,7 @@
 **Encryption**: Optional (TLS/SSL)
 **Authentication**: Optional (SCRAM, x.509, LDAP, Kerberos), often none
 
-## 🎯 Attack Objectives
+## Attack Objectives
 
 - **Unauthenticated Access**: Connect without credentials
 - **Data Extraction**: Dump all databases and collections
@@ -18,7 +18,7 @@
 - **Information Gathering**: Extract sensitive documents
 - **NoSQL Injection**: Exploit web app MongoDB queries
 
-## 🔍 Attack Methodology
+## Attack Methodology
 
 ### Phase 1: Discovery and Reconnaissance
 
@@ -400,7 +400,7 @@ mongo 192.168.1.101:27017
 > db.sensitive_data.find()
 ```
 
-## 🛡️ Bypass Techniques
+## Bypass Techniques
 
 ### Bypassing Authentication
 
@@ -424,7 +424,7 @@ mongo localhost:27018
 # Authentication bypass in older MongoDB
 ```
 
-## 📊 Information Extraction
+## Information Extraction
 
 **Critical Commands**:
 ```javascript
@@ -450,7 +450,7 @@ db.currentOp()
 db.stats()
 ```
 
-## 🔐 Security Recommendations
+## Security Recommendations
 
 **For Defenders**:
 1. **Enable Authentication** - Always require credentials
@@ -464,7 +464,7 @@ db.stats()
 9. **Update MongoDB** - Patch vulnerabilities
 10. **Monitor Access** - Log all connections
 
-## ⚠️ Common Mistakes
+## Common Mistakes
 
 **Attacker Mistakes**:
 1. Not checking for no-auth first
@@ -480,7 +480,7 @@ db.stats()
 5. **No monitoring** - Attacks go undetected
 6. **Running as root** - Privilege escalation risk
 
-## 🎯 Practical Attack Scenario
+## Practical Attack Scenario
 
 ```bash
 # Discovery
@@ -518,7 +518,7 @@ mongodump --host 192.168.1.50 --out /tmp/mongodb_loot
 # Total compromise + data breach
 ```
 
-## 📚 Tools Summary
+## Tools Summary
 
 **Best Tool for Each Task**:
 - **Discovery**: Nmap, Shodan
@@ -528,7 +528,7 @@ mongodump --host 192.168.1.50 --out /tmp/mongodb_loot
 - **Brute Force**: Metasploit
 - **Automation**: Python pymongo library
 
-## 🔗 Related Attacks
+## Related Attacks
 
 - **Port 80/443**: NoSQL injection in web apps
 - **Port 6379 (Redis)**: Similar NoSQL attacks

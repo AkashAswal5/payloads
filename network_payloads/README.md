@@ -1,10 +1,10 @@
-# Network Security Payloads 🔐
+# Network Security Payloads
 
 A comprehensive collection of network security testing payloads, attack vectors, and defense techniques. Similar to [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) but focused on network security.
 
-⚠️ **WARNING**: This repository is for educational and authorized security testing purposes ONLY. Unauthorized access to computer networks is illegal.
+**WARNING**: This repository is for educational and authorized security testing purposes ONLY. Unauthorized access to computer networks is illegal.
 
-## 📑 Table of Contents
+## Table of Contents
 
 ### Core Attack Categories
 
@@ -72,7 +72,7 @@ A comprehensive collection of network security testing payloads, attack vectors,
   - HTTP/HTTPS (80/443) - Web exploitation
   - And 50+ more ports
 
-## 🛠️ Essential Tools Covered
+## Essential Tools Covered
 
 - **Scanning**: Nmap, Masscan, Zmap, Unicornscan
 - **Sniffing**: Wireshark, tcpdump, tshark, Ettercap
@@ -84,7 +84,7 @@ A comprehensive collection of network security testing payloads, attack vectors,
 - **Evasion**: Proxychains, Tor, VPN tools
 - **Custom**: Python/Scapy scripts, Bash automation
 
-## 📂 Repository Structure
+## Repository Structure
 
 Each category folder focuses on a specific area. Typically you will find at least:
 - `payloads.txt` - Attack commands and payloads
@@ -96,7 +96,7 @@ Some categories also provide:
 - `defenses.md` - Detection and mitigation strategies
 - `examples/` - Real-world attack scenarios
 
-## 🎯 Quick Start Examples
+## Quick Start Examples
 
 ```bash
 # Network reconnaissance
@@ -116,18 +116,18 @@ arpspoof -i eth0 -t 192.168.1.100 192.168.1.1
 aircrack-ng -w wordlist.txt -b 00:11:22:33:44:55 capture.cap
 ```
 
-## 🔒 Legal Disclaimer
+## Legal Disclaimer
 
 This repository is intended for:
-- ✅ Authorized penetration testing
-- ✅ Security research and education
-- ✅ Red team exercises with permission
-- ✅ Capture The Flag (CTF) competitions
-- ✅ Personal lab environments
+- Authorized penetration testing
+- Security research and education
+- Red team exercises with permission
+- Capture The Flag (CTF) competitions
+- Personal lab environments
 
 Always obtain written authorization before testing any network you don't own.
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please:
 1. Follow the existing structure
@@ -136,14 +136,14 @@ Contributions are welcome! Please:
 4. Test all payloads in lab environments
 5. Cite sources and references
 
-## 📚 Resources
+## Resources
 
 - [OWASP Testing Guide](https://owasp.org/www-project-web-security-testing-guide/)
 - [PTES - Penetration Testing Execution Standard](http://www.pentest-standard.org/)
 - [NIST Cybersecurity Framework](https://www.nist.gov/cyberframework)
 - [MITRE ATT&CK Framework](https://attack.mitre.org/)
 
-## ⭐ Credits
+## Credits
 
 Inspired by [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings)
 

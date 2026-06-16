@@ -4,7 +4,7 @@
 
 ---
 
-## 📡 Network Scanning & Reconnaissance
+## Network Scanning & Reconnaissance
 
 ### Nmap - Network Mapper
 **Description**: The industry standard for network discovery and security auditing
@@ -86,7 +86,7 @@ tshark -r capture.pcap -Y "dns.qry.name"      # DNS queries
 
 ---
 
-## 🔓 Password & Authentication Attacks
+## Password & Authentication Attacks
 
 ### Hydra - Fast Network Logon Cracker
 **Description**: Supports numerous protocols for online password cracking
@@ -164,7 +164,7 @@ hashcat -a 3 -m 0 hashes.txt ?d?d?d?d?d?d     # Mask attack (6 digits)
 
 ---
 
-## 🎭 Man-in-the-Middle Tools
+## Man-in-the-Middle Tools
 
 ### Bettercap - Swiss Army Knife for Network Attacks
 **Description**: Modern, powerful MITM framework
@@ -215,7 +215,7 @@ ettercap -T -i eth0 -M arp /192.168.1.100/ /192.168.1.1/  # Target specific host
 
 ---
 
-## 📶 Wireless Attack Tools
+## Wireless Attack Tools
 
 ### Aircrack-ng Suite - WiFi Security Auditing
 **Description**: Complete suite for WiFi network security assessment
@@ -276,7 +276,7 @@ reaver -i wlan0mon -b XX:XX:XX:XX:XX:XX -vv -K  # Pixie dust attack
 
 ---
 
-## 🐍 Packet Crafting & Manipulation
+## Packet Crafting & Manipulation
 
 ### Scapy - Interactive Packet Manipulation
 **Description**: Powerful Python-based interactive packet manipulation program
@@ -336,7 +336,7 @@ hping3 --flood -S -p 80 192.168.1.100         # SYN flood
 
 ---
 
-## 🔍 Enumeration Tools
+## Enumeration Tools
 
 ### Enum4linux - SMB Enumeration
 **Description**: Tool for enumerating data from Windows and Samba hosts
@@ -360,7 +360,7 @@ enum4linux -S 192.168.1.100                   # Share enumeration
 
 ---
 
-## 🌐 Web Tools for Network Testing
+## Web Tools for Network Testing
 
 ### cURL - Command Line URL Transfer
 **Description**: Transfer data with URLs, supports many protocols
@@ -384,7 +384,7 @@ curl --proxy socks5://127.0.0.1:1080 http://target.com
 
 ---
 
-## 📊 Traffic Analysis & Monitoring
+## Traffic Analysis & Monitoring
 
 ### tcpdump - Command-line Packet Analyzer
 **Description**: Powerful command-line packet analyzer
@@ -408,7 +408,7 @@ tcpdump -i eth0 host 192.168.1.100            # Filter by host
 
 ---
 
-## 🔐 VPN & Tunneling
+## VPN & Tunneling
 
 ### OpenVPN - Open Source VPN
 **Installation**:
@@ -422,7 +422,7 @@ brew install openvpn
 
 ---
 
-## 💥 Exploitation Frameworks
+## Exploitation Frameworks
 
 ### Metasploit Framework
 **Description**: World's most used penetration testing framework
@@ -446,7 +446,7 @@ use auxiliary/dos/tcp/synflood
 
 ---
 
-## 🛡️ Security Distributions
+## Security Distributions
 
 ### Kali Linux
 Most tools pre-installed. Download from: https://www.kali.org/
@@ -456,7 +456,7 @@ Alternative to Kali: https://www.parrotsec.org/
 
 ---
 
-## 📚 Additional Resources
+## Additional Resources
 
 - **Nmap Reference Guide**: https://nmap.org/book/man.html
 - **Wireshark User Guide**: https://www.wireshark.org/docs/
@@ -465,4 +465,4 @@ Alternative to Kali: https://www.parrotsec.org/
 
 ---
 
-**⚠️ Legal Notice**: These tools should only be used on networks you own or have explicit written permission to test. Unauthorized network scanning and exploitation is illegal.
+**Legal Notice**: These tools should only be used on networks you own or have explicit written permission to test. Unauthorized network scanning and exploitation is illegal.

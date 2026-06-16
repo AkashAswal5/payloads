@@ -1,6 +1,6 @@
 # Port 3389 - RDP (Remote Desktop Protocol) - Complete Attack Guide
 
-## 📖 Overview
+## Overview
 
 **Protocol**: RDP (Remote Desktop Protocol)
 **Port**: 3389 (default), 3388, 3390 (alternate)
@@ -8,7 +8,7 @@
 **Encryption**: TLS/SSL (modern), RC4 (legacy)
 **Authentication**: NLA, Username/Password, Smart Card
 
-## 🎯 Attack Objectives
+## Attack Objectives
 
 - **Credential Attacks**: Brute force RDP credentials
 - **BlueKeep Exploitation**: CVE-2019-0708
@@ -17,7 +17,7 @@
 - **Credential Theft**: Extract saved credentials
 - **Lateral Movement**: Access other Windows systems
 
-## 🔍 Attack Methodology
+## Attack Methodology
 
 ### Phase 1: Discovery and Reconnaissance
 
@@ -306,7 +306,7 @@ done
 crackmapexec rdp 192.168.1.0/24 -u Administrator -p password
 ```
 
-## 🛡️ Bypass Techniques
+## Bypass Techniques
 
 ### Bypassing NLA (Network Level Authentication)
 
@@ -351,7 +351,7 @@ ssh -D 1080 user@jumphost
 proxychains xfreerdp /u:Administrator /p:password /v:192.168.1.100
 ```
 
-## 📊 Information Extraction
+## Information Extraction
 
 **Key Information to Gather**:
 ```bash
@@ -383,7 +383,7 @@ schtasks /query /fo LIST /v
 reg query "HKEY_CURRENT_USER\Software\Microsoft\Terminal Server Client\Default"
 ```
 
-## 🔐 Security Recommendations
+## Security Recommendations
 
 **For Defenders**:
 1. **Enable NLA** - Require Network Level Authentication
@@ -397,7 +397,7 @@ reg query "HKEY_CURRENT_USER\Software\Microsoft\Terminal Server Client\Default"
 9. **Monitor Logs** - Alert on failed RDP attempts
 10. **Disable if Unused** - Turn off RDP if not needed
 
-## ⚠️ Common Mistakes
+## Common Mistakes
 
 **Attacker Mistakes**:
 1. Too many failed attempts - Account lockout
@@ -414,7 +414,7 @@ reg query "HKEY_CURRENT_USER\Software\Microsoft\Terminal Server Client\Default"
 6. No account lockout - Unlimited brute force
 7. No logging/monitoring - Attacks go unnoticed
 
-## 🎯 Practical Attack Scenario
+## Practical Attack Scenario
 
 ```bash
 # Phase 1: Discovery
@@ -448,7 +448,7 @@ xfreerdp /u:Administrator /p:Password1 /v:192.168.1.50 /cert-ignore
 # Lateral movement successful
 ```
 
-## 📚 Tools Summary
+## Tools Summary
 
 **Best Tool for Each Task**:
 - **Connection**: xfreerdp, rdesktop
@@ -458,7 +458,7 @@ xfreerdp /u:Administrator /p:Password1 /v:192.168.1.50 /cert-ignore
 - **Credential Theft**: Mimikatz
 - **Lateral Movement**: CrackMapExec
 
-## 🔗 Related Attacks
+## Related Attacks
 
 - **Port 22 (SSH)**: Alternative remote access
 - **Port 445 (SMB)**: Often same credentials

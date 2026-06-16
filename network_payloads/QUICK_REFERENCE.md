@@ -1,6 +1,6 @@
 # Network Security Quick Reference Cheat Sheet
 
-## 🎯 Common Attack Scenarios
+## Common Attack Scenarios
 
 ### Scenario 1: Internal Network Penetration Test
 ```bash
@@ -65,7 +65,7 @@ http.proxy on
 
 ---
 
-## 🔍 Port-by-Port Quick Reference
+## Port-by-Port Quick Reference
 
 ### Port 21 (FTP)
 ```bash
@@ -129,7 +129,7 @@ hydra -l admin -P pass.txt rdp://192.168.1.100
 
 ---
 
-## 🛠️ One-Liner Payloads
+## One-Liner Payloads
 
 ### Network Reconnaissance
 ```bash
@@ -172,7 +172,7 @@ for sub in www mail ftp vpn; do host $sub.target.com; done
 
 ---
 
-## 🎭 Evasion Techniques Quick Reference
+## Evasion Techniques Quick Reference
 
 ### Nmap Evasion
 ```bash
@@ -196,7 +196,7 @@ proxychains ssh user@192.168.1.100
 
 ---
 
-## 📊 Traffic Analysis Filters
+## Traffic Analysis Filters
 
 ### Wireshark Display Filters
 ```
@@ -219,7 +219,7 @@ tcpdump -i eth0 'src host 192.168.1.100'      # From specific host
 
 ---
 
-## 🔐 Credential Attacks
+## Credential Attacks
 
 ### Hydra Quick Reference
 ```bash
@@ -241,7 +241,7 @@ hydra -l root -P pass.txt mysql://192.168.1.100
 
 ---
 
-## 🚀 Automation Scripts
+## Automation Scripts
 
 ### Bash: Quick Network Sweep
 ```bash
@@ -265,7 +265,7 @@ for port in range(1, 1025):
 
 ---
 
-## 🎯 Common Command Combinations
+## Common Command Combinations
 
 ### Full Network Assessment
 ```bash
@@ -285,7 +285,7 @@ aircrack-ng -w wordlist.txt scan-01.cap
 
 ---
 
-## ⚡ Emergency Commands
+## Emergency Commands
 
 ### Stop All Attacks
 ```bash
@@ -303,4 +303,4 @@ ifconfig eth0 down && ifconfig eth0 up
 
 ---
 
-**⚠️ Remember**: Always get written authorization before performing any security testing!
+**Remember**: Always get written authorization before performing any security testing!

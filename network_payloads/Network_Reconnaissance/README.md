@@ -1,10 +1,10 @@
 # Network Reconnaissance - Complete Guide
 
-## 📖 What is Network Reconnaissance?
+## What is Network Reconnaissance?
 
 Network reconnaissance is the first phase of any penetration test or security assessment. It involves gathering information about target networks, hosts, services, and potential vulnerabilities without direct exploitation.
 
-## 🎯 When to Use Network Reconnaissance
+## When to Use Network Reconnaissance
 
 - **Initial Assessment**: Before any penetration testing
 - **Network Mapping**: Understanding network topology
@@ -12,7 +12,7 @@ Network reconnaissance is the first phase of any penetration test or security as
 - **Service Enumeration**: Identifying running services and versions
 - **Vulnerability Assessment**: Finding potential security weaknesses
 
-## 🔍 Types of Reconnaissance
+## Types of Reconnaissance
 
 ### 1. Passive Reconnaissance
 - **Definition**: Gathering information without directly interacting with the target
@@ -34,7 +34,7 @@ Network reconnaissance is the first phase of any penetration test or security as
   - OS detection
   - Network mapping
 
-## 🛠️ Tool Selection Guide
+## Tool Selection Guide
 
 ### When to Use Nmap
 - **Detailed service/version detection needed**
@@ -73,7 +73,7 @@ netdiscover -r 192.168.1.0/24                 # Active ARP scan
 netdiscover -p                                # Passive monitoring
 ```
 
-## 📊 Reconnaissance Methodology
+## Reconnaissance Methodology
 
 ### Phase 1: Network Discovery (Layer 2/3)
 **Objective**: Find all live hosts
@@ -152,7 +152,7 @@ nmap --script=ssl-heartbleed 192.168.1.100
 nmap --script=safe 192.168.1.100
 ```
 
-## 🎭 Evasion Techniques
+## Evasion Techniques
 
 ### Firewall Detection and Bypass
 
@@ -197,7 +197,7 @@ nmap --scan-delay 10s 192.168.1.100           # Custom 10s delay
 ```
 **When to Use**: Sensitive targets with IDS/IPS
 
-## 🔒 Stealth Scanning Techniques
+## Stealth Scanning Techniques
 
 ### SYN Scan (Half-Open)
 ```bash
@@ -228,7 +228,7 @@ nmap -sI zombie.host:80 192.168.1.100
 - **Bypass**: Complete source IP hiding
 - **When to Use**: Need absolute anonymity, have idle zombie host
 
-## 🎯 DNS Reconnaissance Techniques
+## DNS Reconnaissance Techniques
 
 ### Basic DNS Enumeration
 ```bash
@@ -277,7 +277,7 @@ amass enum -passive -d target.com             # OSINT only
 curl -s "https://crt.sh/?q=%25.target.com&output=json" | jq -r '.[].name_value'
 ```
 
-## 📡 SNMP Enumeration
+## SNMP Enumeration
 
 ### Why SNMP is Valuable
 - Reveals system information
@@ -310,7 +310,7 @@ snmpwalk -v 2c -c public 192.168.1.100 .1.3.6.1.2.1.25.6.3.1.2  # Software
 - community
 - manager
 
-## 🚦 Traffic Analysis for Reconnaissance
+## Traffic Analysis for Reconnaissance
 
 ### Passive Network Monitoring
 ```bash
@@ -346,7 +346,7 @@ telnet 192.168.1.100 110                      # POP3
 nmap -sV --script=banner 192.168.1.100
 ```
 
-## 🛡️ Defenses to Bypass
+## Defenses to Bypass
 
 ### Common Defense Mechanisms
 
@@ -383,7 +383,7 @@ nmap -p 22 target.com
   - Services that shouldn't exist
 - **Avoid**: Reconnaissance only, don't exploit
 
-## 📝 Practical Attack Scenarios
+## Practical Attack Scenarios
 
 ### Scenario 1: Corporate Network Assessment
 ```bash
@@ -419,7 +419,7 @@ enum4linux -a 192.168.1.10
 snmpwalk -v 2c -c public 192.168.1.20
 ```
 
-## 🎓 Best Practices
+## Best Practices
 
 1. **Always get written authorization** before scanning
 2. **Start passive**, move to active only if needed
@@ -429,20 +429,20 @@ snmpwalk -v 2c -c public 192.168.1.20
 6. **Be aware of impact** - some scans can crash services
 7. **Use VPN/proxy** when appropriate for attribution hiding
 
-## 🔍 Information to Extract
+## Information to Extract
 
 From reconnaissance, you should gather:
-- ✅ Network topology and IP ranges
-- ✅ Live host inventory
-- ✅ Open ports and services
-- ✅ Service versions and OS
-- ✅ Domain names and subdomains
-- ✅ Email addresses and usernames
-- ✅ Network architecture (routers, firewalls, etc.)
-- ✅ Potential vulnerabilities
-- ✅ Security controls in place
+- Network topology and IP ranges
+- Live host inventory
+- Open ports and services
+- Service versions and OS
+- Domain names and subdomains
+- Email addresses and usernames
+- Network architecture (routers, firewalls, etc.)
+- Potential vulnerabilities
+- Security controls in place
 
-## ⚠️ Common Mistakes to Avoid
+## Common Mistakes to Avoid
 
 1. **Too aggressive scanning** → Detection and blocking
 2. **Not checking UDP** → Missing critical services (DNS, SNMP)
@@ -451,7 +451,7 @@ From reconnaissance, you should gather:
 5. **No baseline** → Can't detect changes
 6. **Assuming closed = secure** → Filtered ports need investigation
 
-## 📚 Additional Resources
+## Additional Resources
 
 - Nmap Reference Guide: https://nmap.org/book/
 - NSE Script Documentation: https://nmap.org/nsedoc/

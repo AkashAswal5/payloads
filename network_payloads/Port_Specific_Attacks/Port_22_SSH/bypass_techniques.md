@@ -1,6 +1,6 @@
 # Port 22 - SSH Bypass Techniques
 
-## 🛡️ Security Controls and Bypass Methods
+## Security Controls and Bypass Methods
 
 ---
 
@@ -595,7 +595,7 @@ nmap -p 22 --script ssh2-enum-algos 192.168.1.100
 
 ---
 
-## 📊 Bypass Success Rates
+## Bypass Success Rates
 
 | Technique | Success Rate | Detection Risk | Difficulty |
 |-----------|--------------|----------------|------------|
@@ -610,7 +610,7 @@ nmap -p 22 --script ssh2-enum-algos 192.168.1.100
 
 ---
 
-## 🎯 Recommended Bypass Order
+## Recommended Bypass Order
 
 1. **Try default credentials** (quick win)
 2. **Check for alternate ports** (22, 2222, etc.)
@@ -623,7 +623,7 @@ nmap -p 22 --script ssh2-enum-algos 192.168.1.100
 
 ---
 
-## ⚠️ Important Notes
+## Important Notes
 
 - Always get authorization before testing
 - Combine multiple techniques for better success

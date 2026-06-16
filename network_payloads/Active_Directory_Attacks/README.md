@@ -1,10 +1,10 @@
 # Active Directory Attacks - Complete Guide
 
-## 📖 Overview
+## Overview
 
 Active Directory (AD) is the central authentication and authorization service for Windows environments. This guide covers comprehensive attack methodologies against AD infrastructure.
 
-## 🎯 Attack Objectives
+## Attack Objectives
 
 - **Initial Access**: Gain foothold in AD environment
 - **Enumeration**: Map entire AD structure
@@ -14,7 +14,7 @@ Active Directory (AD) is the central authentication and authorization service fo
 - **Persistence**: Maintain long-term access
 - **Data Exfiltration**: Extract sensitive AD data
 
-## 📋 **Attack Kill Chain**
+## **Attack Kill Chain**
 
 ```
 1. Reconnaissance → 2. Initial Access → 3. Enumeration → 
@@ -406,7 +406,7 @@ psexec.py DSRM_user:DSRM_password@192.168.1.10
 
 ---
 
-## 🔧 Essential Tools
+## Essential Tools
 
 ### Enumeration
 - BloodHound/SharpHound
@@ -428,7 +428,7 @@ psexec.py DSRM_user:DSRM_password@192.168.1.10
 
 ---
 
-## 📚 Further Reading
+## Further Reading
 
 - See `Port_88_Kerberos/README.md` for Kerberos attacks
 - See `Port_389_LDAP/README.md` for LDAP enumeration

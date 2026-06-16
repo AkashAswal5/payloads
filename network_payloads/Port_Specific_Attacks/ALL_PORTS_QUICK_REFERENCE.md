@@ -1,6 +1,6 @@
 # All Common Ports - Quick Attack Reference
 
-## 🎯 Top 50 Most Common Ports Attack Payloads
+## Top 50 Most Common Ports Attack Payloads
 
 This document provides quick attack payloads for the 50 most common network ports.
 
@@ -1049,7 +1049,7 @@ mongo --host 192.168.1.100 --port 27017
 
 ---
 
-## 📊 Port Security Summary
+## Port Security Summary
 
 | Port | Service | Default Auth | Easy Win Rate |
 |------|---------|--------------|---------------|

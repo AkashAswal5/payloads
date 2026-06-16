@@ -1,6 +1,6 @@
 # Port 161/162 - SNMP (Simple Network Management Protocol) - Complete Attack Guide
 
-## 📖 Overview
+## Overview
 
 **Protocol**: SNMP (Simple Network Management Protocol)
 **Ports**: 161 (SNMP), 162 (SNMP Trap)
@@ -8,7 +8,7 @@
 **Versions**: SNMPv1, SNMPv2c (community-based), SNMPv3 (authentication)
 **Authentication**: Community strings (v1/v2c), User-based (v3)
 
-## 🎯 Attack Objectives
+## Attack Objectives
 
 - **Community String Brute Force**: Discover valid community strings
 - **Information Gathering**: Extract device configuration
@@ -18,7 +18,7 @@
 - **Device Modification**: Change configuration (write access)
 - **DoS Attacks**: Crash SNMP service
 
-## 🔍 Attack Methodology
+## Attack Methodology
 
 ### Phase 1: Discovery and Reconnaissance
 
@@ -385,7 +385,7 @@ send(IP(src="victim_ip", dst="snmp_server")/UDP()/SNMP(community="public", PDU=S
 snmptrap -v 2c -c public manager_ip "" .1.3.6.1.4.1 system "" 6 17 "" .1.3.6.1.4.1 s "Fake Alert"
 ```
 
-## 🛡️ Bypass Techniques
+## Bypass Techniques
 
 ### Bypassing Access Control
 
@@ -407,7 +407,7 @@ snmpwalk -v2c -c public udp6:[fe80::1%eth0]:161 system
 nmap -sU -p 1-65535 192.168.1.100 | grep snmp
 ```
 
-## 📊 Information Extraction Summary
+## Information Extraction Summary
 
 **Critical OIDs**:
 ```bash
@@ -429,7 +429,7 @@ nmap -sU -p 1-65535 192.168.1.100 | grep snmp
 .1.3.6.1.4.1.9.9.96.1.1.1.1.4  # Running config
 ```
 
-## 🔐 Security Recommendations
+## Security Recommendations
 
 **For Defenders**:
 1. **Change Default Community Strings** - Use complex strings
@@ -443,7 +443,7 @@ nmap -sU -p 1-65535 192.168.1.100 | grep snmp
 9. **Encryption** - SNMPv3 with authPriv
 10. **Regular Audits** - Check SNMP configuration
 
-## 🎯 Practical Attack Scenario
+## Practical Attack Scenario
 
 ```bash
 # Discovery
@@ -481,7 +481,7 @@ snmp-check -v -c public 192.168.1.1 > router_config.txt
 # Network fully mapped!
 ```
 
-## 📚 Tools Summary
+## Tools Summary
 
 **Best Tool for Each Task**:
 - **Discovery**: Nmap (UDP scan)
@@ -491,7 +491,7 @@ snmp-check -v -c public 192.168.1.1 > router_config.txt
 - **Windows Enumeration**: Nmap snmp-win32-* scripts
 - **MIB Walking**: snmpwalk, snmpbulkwalk
 
-## 🔗 Related Attacks
+## Related Attacks
 
 - **Port 69 (TFTP)**: Upload router configs via SNMP+TFTP
 - **Port 22/23**: SSH/Telnet credentials found in SNMP
